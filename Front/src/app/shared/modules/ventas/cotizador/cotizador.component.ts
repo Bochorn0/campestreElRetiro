@@ -2,6 +2,8 @@ import { Component, OnInit , ViewChild, Input, Output, EventEmitter} from '@angu
 import { routerTransition } from '../../../../router.animations';
 import { VentasService } from '../../../../shared/services/ventas.service'
 import swal from 'sweetalert2';
+import * as XLSX from  'xlsx';
+import * as FileSaver from 'file-saver';
 import * as moment from 'moment';
 @Component({
     selector: 'app-cotizador',
@@ -14,6 +16,7 @@ export class CotizadorComponent implements OnInit {
     @ViewChild('datatableMensualidades')datatableMensualidades;
     @ViewChild('datatableAnualidades')datatableAnualidades;
     @Input('datosCotizacionInput') datosCotizacionInput: any
+    @Input('Prospecto') Prospecto: any
     vistaCentro;
     //Nueva Cotizacion
     cotizacionNueva;montoCredito;interesAnual;pagosMensuales;totalMensual;costoTotal;superficie;
@@ -118,7 +121,7 @@ export class CotizadorComponent implements OnInit {
         for(let i = 1; i <= this.pagosMensuales ; i++){
             totalAnual += restanteMensual;
             fecha_pivote = moment(fecha_pivote).add('1','month').format('YYYY-MM-DD');
-            datos.push({ Fecha:fecha_pivote ,Pago: i,Mensualidad: this.totalMensual.toFixed(2), Abono: restanteMensual.toFixed(2) });
+//            datos.push({ Fecha:fecha_pivote ,Pago: i,Mensualidad: this.totalMensual.toFixed(2), Abono: restanteMensual.toFixed(2) });
             if(i%12 == 0){
                 this.numAnualidades ++;
                 datos.push({ Fecha:fecha_pivote ,Pago: (i/12),Mensualidad: 'Total = ', Abono: totalAnual.toFixed(2) });
@@ -165,6 +168,35 @@ export class CotizadorComponent implements OnInit {
     }
     _limpiarVistaYVariables(){
         this.vistaCentro = this.cotizacionNueva = false;
+    }
+    descargarCotizacion(){        
+        console.log('cotiazcion',this.cotizacionMensualidades);
+        console.log('cotizacionAnualidades',this.cotizacionAnualidades);
+        if(this.cotizacionMensualidades){
+            let mensualidades = []; let anualidades = []; 
+            if(this.cotizacionMensualidades.Datos[0]){
+                mensualidades.push(['Fecha','Numero de Pago', 'Interes', 'A Capital', 'Total', 'Saldo']);
+                this.cotizacionMensualidades.Datos.forEach(c=>{
+                    mensualidades.push([`${c.Fecha}`,`${c.Pago}`, `${c.Interes}`, `${c.Capital}`, `${c.Total}`, `${c.Saldo}`]);
+                });
+            }
+            if(this.cotizacionAnualidades){
+                anualidades.push(['Fecha','Numero de Anualidad', 'Abono']);
+                this.cotizacionAnualidades.Datos.forEach(c=>{
+                    anualidades.push([`${c.Fecha}`,`${c.Pago}`, `${c.Abono}`]);
+                });
+            }
+            let worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(mensualidades);
+            let worksheet2: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(anualidades);
+            let workbook: XLSX.WorkBook = { Sheets: { 'Financiaminto Mensualidades': worksheet,'Financiamiento Anualidades':worksheet2 }, SheetNames: ['Financiaminto Mensualidades','Financiamiento Anualidades'] };
+            let excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            let excelString: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+            let datas: Blob = new Blob([excelBuffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'});
+            if(!this.Prospecto){
+                FileSaver.saveAs(datas, `Cotizacion_${moment().format('YYYY-MM-DD')}.xlsx`);
+            }
+            this.vista.emit({Activa : 'EnviarCotizacion', Cotizacion_buffer: excelBuffer, Cotizacion_string: excelString, Prospecto:this.Prospecto});
+        }
     }
     _confirmarGuardar(DatosAlert){
         return new Promise ((resolve,reject)=>{

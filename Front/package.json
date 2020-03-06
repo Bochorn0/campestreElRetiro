@@ -44,6 +44,7 @@
     "bootstrap": "^4.3.1",
     "chart.js": "^2.7.2",
     "core-js": "^2.5.5",
+    "file-saver": "^2.0.2",
     "font-awesome": "^4.7.0",
     "fullcalendar": "^3.10.1",
     "http": "0.0.0",
@@ -65,6 +66,7 @@
     "sass-loader": "^7.1.0",
     "sweetalert2": "^7.20.7",
     "typeahead": "^0.2.2",
+    "xlsx": "^0.15.5",
     "yarn": "^1.6.0",
     "zone.js": "^0.8.26"
   },

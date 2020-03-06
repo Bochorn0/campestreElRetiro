@@ -48,7 +48,7 @@ module.exports = class Catalogos {
         return new Promise((resolve, reject)=>{
             // as cli JOIN Clientes_terrenos as cter on cli.IdCliente = cter.IdCliente JOIN Terrenos as ter on ter.IdTerreno = cter.IdTerreno;
             mysql.ejecutar('SELECT * from Clientes_terrenos as cter JOIN Terrenos as ter on ter.IdTerreno = cter.IdTerreno').then((res)=>{
-                console.log('res',res);
+                //console.log('res',res);
                 return resolve({Data: res, error: false});
             }).catch(err=>{ console.log('error',err); reject(err);})
         })
@@ -213,7 +213,7 @@ module.exports = class Catalogos {
     obtener_prospectos_ventas(datos){
         return new Promise((resolve, reject)=>{
             let condiciones = ` IdUsuario = ${datos.IdUsuario} `;
-            console.log('q',`SELECT * FROM Prospectos_ventas WHERE ${condiciones}; `);
+//            console.log('q',`SELECT * FROM Prospectos_ventas WHERE ${condiciones}; `);
             mysql.ejecutar(`SELECT * FROM Prospectos_ventas WHERE ${condiciones}; `).then((res)=>{
                 return resolve({Data: res, error: false});
             }).catch(err=>{ console.log('error',err); reject(err);})
@@ -223,8 +223,12 @@ module.exports = class Catalogos {
         return new Promise((resolve, reject)=>{
             console.log('datos',datos);
             let update = ` Fecha_modificacion = '${moment().format('YYYY-MM-DD HH:mm:ss')}' `;
-            update += (datos.Comentarios)?` Comentarios = '${datos.Comentarios}',`:``;
-            update += (datos.Resolucion)?` Resolucion = ${datos.Resolucion},`:``;
+            update += (datos.Comentarios)?`, Comentarios = '${datos.Comentarios}'`:``;
+            update += (datos.Resolucion)?`, Resolucion = '${datos.Resolucion}'`:``;
+            update += (datos.Informacion)?`, Informacion = true `:``;
+            update += (datos.Cotizacion)?`, Cotizacion = true `:``;
+            update += (datos.Apartado)?`, Apartado = true `:``;
+            update += (datos.CitaNueva)?`, Cita = '${moment(`${datos.CitaNueva}`).format('YYYY-MM-DD HH:mm:ss')}',`:``;
             update += (datos.Activo || datos.Activo == 0)?` Activo = ${datos.Activo},`:``;
             update = update.slice(0,-1);
             mysql.ejecutar(`UPDATE Prospectos_ventas SET ${update} WHERE IdProspecto = ${datos.IdProspecto} ; `).then((res)=>{
@@ -361,7 +365,7 @@ module.exports = class Catalogos {
             console.log('datos update',`UPDATE Clientes SET ${datos_update} WHERE ${condiciones};`);
 
             mysql.ejecutar(`UPDATE Clientes SET ${datos_update} WHERE ${condiciones};`).then((res)=>{
-                console.log('res',res);
+                //console.log('res',res);
                 return resolve({Procesado: true, Operacion: 'Los Datos del Cliente fueron cambiados exitosamente ', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err }); });
         })
@@ -610,7 +614,7 @@ module.exports = class Catalogos {
             });
             ids = (ids.indexOf(',') > -1 )?ids.slice(0,-1):ids;            
             mysql.ejecutar(`UPDATE Datos_todos WHERE Id IN (${ids}); `).then((res)=>{
-                console.log('res',res);
+                //console.log('res',res);
                 return resolve({Procesado: true, Operacion: 'Los Datos de fueron eliminados correctamente; ', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
@@ -668,6 +672,31 @@ module.exports = class Catalogos {
             return pathFinal;
         }).catch((error)=>{
             return error;
+        });
+    }
+    envio_correo_cotizacion(datos){
+        return new Promise((resolve, reject) => {
+            if(`${datos.Para}`.indexOf('@') > -1 && datos.Asunto != ''  && datos.Mensaje != ''){
+                const nodemailer = require('nodemailer');
+                let usr = 'contacto.campestreelretiro@gmail.com';
+                let pas = `Retiro87`;
+                let Contenido = `${datos.Mensaje}`;
+                nodemailer.createTestAccount((err, account) => {
+                    var transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: usr, pass: pas} });
+                    //`campestreretiro@gmail.com, bocho_sup@hotmail.com`
+                    //let Para = `${datos.Para}`;
+                    let mailOptions = { from: usr ,to: `luisfernandocordova.24@gmail.com`, subject: `${datos.Asunto}`, html: `${Contenido}` };
+                    if(datos.Adjunto){
+                        mailOptions.attachments = [{'filename': `Cotizacion_${moment().format('YYYY-MM-DD')}.xlsx`, 'content': new Buffer(datos.Adjunto, "base64")}];
+                    }
+                    transporter.sendMail(mailOptions, (error, info) => {
+                        let respuesta = {Procesado: false, Operacion: 'Fallo el envio de correo', Tipo: 'error',Error: error};
+                        if (error) { return reject(respuesta); }
+                        return resolve({Procesado: true, Operacion: 'Correo Enviado Correctamente', Tipo: 'success'});
+                        //console.log('Message sent: %s', info.messageId); console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+                    });
+                });
+            }
         });
     }
     envio_correo_contacto(datos){

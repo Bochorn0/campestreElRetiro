@@ -1,4 +1,4 @@
-<div [@routerTransition]>
+<div [@routerTransition] style="margin-bottom: 75px;">
     <!-- <app-page-header [heading]="'ModuloVentas'" [icon]="'fa-dashboard'"></app-page-header> -->
     <!--Menu principal-->
     <!-- <div class="row text-center">
@@ -68,32 +68,32 @@
     </div>
     <!-- MENU PRINCIPAL -->
     <div class="row text-center menuPrincipal" *ngIf="mostrarPrincipal ">
-        <div class="col-sm-1"></div>
-        <a (click)="mostrarPrincipal=false; panelVisualizar = 'Prospectos';" class="col-sm-4 text-menu ">
-            <img src="../../../assets/images/App_icons/Prospectos.png" />
-            <br>
+        <div class="col-1 col-sm-1"></div>
+        <a (click)="mostrarPrincipal=false; obtenerProspectos('Prospectos'); " class="col-4 col-sm-4 text-menu ">
+            <img src="../../../assets/images/App_icons/Prospectos.png" class="img-fluid" />
+            <br> 
             <b >Prospectos</b>
         </a> 
-        <div class="col-sm-2"></div>
-        <a (click)="mostrarPrincipal=false; obtenerCitas(); panelVisualizar = 'Citas';" class="col-sm-4 text-menu">
-            <img src="../../../assets/images/App_icons/Citas.png" />
+        <div class="col-2 col-sm-2"></div>
+        <a (click)="mostrarPrincipal=false; obtenerProspectos('Citas');" class="col-4 col-sm-4 text-menu">
+            <img src="../../../assets/images/App_icons/Citas.png" class="img-fluid"  />
             <br>
             <b >Citas</b>
-        </a>
-        <div class="col-sm-1"></div>
-        <div class="col-sm-1"></div>
-        <a (click)="mostrarPrincipal=false; panelVisualizar = 'Cotizaciones';" class="col-sm-4 text-menu">
-            <img src="../../../assets/images/App_icons/Cotizaciones.png" />
+        </a> 
+        <div class="col-1 col-sm-1"></div>
+        <div class="col-1 col-sm-1"></div>
+        <a (click)="mostrarPrincipal=false; panelVisualizar = 'Cotizaciones';" class="col-4 col-sm-4 text-menu">
+            <img src="../../../assets/images/App_icons/Cotizaciones.png" class="img-fluid"  />
             <br>
             <b >Cotizaciones</b>
         </a>
-        <div class="col-sm-2"></div>
-        <a (click)="mostrarPrincipal=false; obtenerTerrenosDisponibles(); panelVisualizar = 'Lotes';" class="col-sm-4 text-menu">
-            <img src="../../../assets/images/App_icons/Lotes_disponibles.png" />
+        <div class="col-2 col-sm-2"></div>
+        <a (click)="mostrarPrincipal=false; obtenerTerrenosDisponibles(); panelVisualizar = 'Lotes';" class="col-4 col-sm-4 text-menu">
+            <img src="../../../assets/images/App_icons/Lotes_disponibles.png" class="img-fluid"  />
             <br>
             <b >Lotes</b>
         </a>
-        <div class="col-sm-1"></div>
+        <div class="col-1 col-sm-1"></div>
 
     </div>
 
@@ -186,7 +186,7 @@
             <h3 class="text-center">Terrenos Activos</h3>
             <input type="text" class="form-control" placeholder="Buscar terrenos relacionados con :" [(ngModel)]="terrenosBuscar" (keydown)="filtrarTerrenos();" />
             <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-6 text-center" *ngFor="let a of terrenos | paginate: { itemsPerPage: 6, currentPage: pageTerr, id: 'terr_r' };">
+                <div class="col-12 col-sm-12 col-md-6 text-center" *ngFor="let a of terrenos | paginate: { itemsPerPage: 6, currentPage: pageTerr, id: 'terr_r' };">
                     <div class="card mb-3">
                         <div class="card-header bg-{{(a.Color)?a.Color:'default'}}">
                             <i class="fa fa-user"></i> TER-{{a.IdTerreno}}
@@ -200,8 +200,8 @@
                             <span style="font-size: 15px;"><i class="fa fa-chart-area"></i> Superficie : {{a.Superficie}} |  Asignado : <i class="fa fa-{{(!a.Asignado)?'times-circle text-danger':'plus-circle text-success'}}"></i> </span>
                             <br/>
                             <br/>
-                            <button (click)="apartarTerreno();" style="margin: 10px;" class="btn btn-info col-xs-6"> Apartar Terreno <i class="fa fa-shopping-cart"></i> </button>
-                            <button class="btn btn-warning col-xs-6 " style="margin: 10px;"  (click)="abrirModal(modalTerrenosLat); terrenoActual = a; modalDatos = {Tipo: 'Modal Terrenos', Clase: 'bg-info', Titulo: 'Mapa del Terreno'};"><i class="fa fa-map"></i> Datos y Ubicación</button>
+                            <button (click)="asignarTerreno(a);" style="margin: 10px;" class="btn btn-info col-6"> Apartar Terreno <i class="fa fa-shopping-cart"></i> </button>
+                            <button class="btn btn-warning col-6 " style="margin: 10px;"  (click)="abrirModal(modalTerrenosLat); terrenoActual = a; modalDatos = {Tipo: 'Modal Terrenos', Clase: 'bg-info', Titulo: 'Mapa del Terreno'};"><i class="fa fa-map"></i> Datos y Ubicación</button>
                         </div>
                     </div>
                 </div>
@@ -585,13 +585,49 @@
     </div>
     <!-- COTIZADOR -->
     <div class="row" *ngIf="panelVisualizar == 'Cotizaciones' ">
-        <div class="col-sm-12">
-            <h3 class="text-center">Nueva Cotización</h3>
+        <div class="col-12">
+            <br>
             <div class="row">
-                <app-cotizador></app-cotizador>
+                <div class="col-12">
+                    <app-cotizador [Prospecto]="prospectoActivo" (vista)="vistaEnviarCotizacion($event);"></app-cotizador>
+                </div>
             </div>
         </div>
     </div>
+    <!-- DETALLES APROBADOS -->
+    <div class="row" *ngIf="panelVisualizar == 'Aprobados' ">
+        <div class="col-12">
+            <div class="card-header bg-transparent">
+                <h3>
+                    Prospectos Aprobados
+                </h3>
+            </div>
+            <div class="card-body" style=" max-height: 500px; overflow:auto;" > 
+                <div class="list-group" *ngIf="ProspectosAprobados[0]">
+                    <div class="list-group-item list-group-item-action " *ngFor="let p of ProspectosAprobados"  (touchstart)="marcarLateral($event);"  (touchmove)="menuLateral($event,p)"  >
+                    <a (click)="confirmarEliminarUsuario(p);" style="cursor:pointer;"><div *ngIf="p.Lateral" [@flyInOut]="'in'"  class="danger-element list-group-item list-group-item-action"> <i class="fa fa-2x fa-times-circle"></i></div></a>
+                        <div class="media" (click)="p.Atender = !p.Atender;">
+                            <div class="align-self-start mx-2 circle thumb55" >
+                                <i class="fa fa-user text-primary fa-3x" style="margin-left:8px;"></i> 
+                            </div>
+                            <div class="media-body text-truncate">
+                                <p class="mb-1">
+                                    <strong class="text-primary">
+                                        <span class="circle bg-success circle-lg text-left"></span>
+                                        <span>{{p.Nombre_prospecto}}</span>
+                                    </strong>
+                                </p>
+                                <p class="mb-1 text-sm">{{p.Correo}}</p>
+                            </div>
+                            <div class="ml-auto">
+                                <small class="text-muted ml-2">{{p.Lapso}}h</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
     <!-- DETALLES PROSPECTOS -->
     <div class="row" *ngIf="panelVisualizar == 'Prospectos' ">
         <div class="col-sm-12">
@@ -630,7 +666,7 @@
                     <a (click)="confirmarEliminarUsuario(p);" style="cursor:pointer;"><div *ngIf="p.Lateral" [@flyInOut]="'in'"  class="danger-element list-group-item list-group-item-action"> <i class="fa fa-2x fa-times-circle"></i></div></a>
                         <div class="media" (click)="p.Atender = !p.Atender;">
                             <div class="align-self-start mx-2 circle thumb55" >
-                                <i class="fa fa-user fa-3x" style="margin-left:8px;"></i> 
+                                <i class="fa fa-user text-primary fa-3x" style="margin-left:8px;"></i> 
                             </div>
                             <div class="media-body text-truncate">
                                 <p class="mb-1">
@@ -647,10 +683,26 @@
                         </div>
                         <div class="media-body list-group" *ngIf="p.Atender">
                             <br>
-                            <a href="tel:{{p.Telefono}}"><div class="list-group-item list-group" ><i class="fa fa-phone-square"></i> Llamar </div></a>
-                            <a href="https://mail.google.com/mail/?view=cm&fs=1&tf=1&to={{p.Correo}}" target="_blank"><div class="list-group-item list-group" ><i class="fa fa-envelope"></i> Mandar Información </div></a>
-                            <a href="https://mail.google.com/mail/?view=cm&fs=1&tf=1&to={{p.Correo}}" target="_blank"><div class="list-group-item list-group" ><i class="fa fa-envelope"></i> Enviar Cotización </div></a>
-                            <a style="cursor:pointer; color: #007bff;" (click)="agendarCita(); modalDatos = {Tipo: 'AgendarCita', Clase: 'bg-info', Titulo: 'Agendar Cita al retiro'} "><div class="list-group-item list-group" ><i class="fa fa-calendar"></i> Agendar Visita </div></a>
+                            <a href="tel:{{p.Telefono}}"><div class="list-group-item list-group" ><i class="fa fa-phone-square text-green"></i> Llamar </div></a>
+                            <a style="cursor:pointer; color: #007bff;" (click)="prospectoActivo = p; mandarInformacionModal(modalInformacion);  modalDatos = {Tipo: 'MandarInformacion', Clase: 'bg-warning', Titulo: 'Enviar Información a Cliente'} " >
+                                <div class="list-group-item list-group" >
+                                    <i class="fa fa-check-circle text-success" *ngIf="p.Informacion" style="margin:0 5px;"></i>  
+                                    <i class="fa fa-envelope text-info"></i> Mandar Información 
+                                </div>
+                            </a>
+                            <a style="cursor:pointer; color: #007bff;" (click)="prospectoActivo = p; enviarCotizacionModal(modalCotizacion);  modalDatos = {Tipo: 'EnviarCotizacion', Clase: 'bg-warning', Titulo: 'Enviar Cotización a Cliente'} " >
+                                <div class="list-group-item list-group" >
+                                    <i class="fa fa-check-circle text-success" *ngIf="p.Cotizacion" style="margin:0 5px;"></i> 
+                                    <i class="fa fa-envelope text-warning"></i> Enviar Cotización 
+                                </div>
+                            </a>
+                            <a style="cursor:pointer; color: #007bff;" (click)="prospectoActivo = p; agendarCita(modalCita);  modalDatos = {Tipo: 'AgendarCita', Clase: 'bg-info', Titulo: 'Agendar Cita al retiro'} ">
+                                <div class="list-group-item list-group" >
+                                    <i class="fa fa-check-circle text-success" *ngIf="p.Cita" style="margin:0 5px;"></i> 
+                                    <i class="fa fa-calendar text-danger"></i> Agendar Visita 
+                                </div>
+                            </a>
+                            <!-- <button class="btn btn-primary" (click)=" prospectoActivo = p; apartarProspecto(modalApartado); modalDatos = {Tipo: 'ModalApartado', Clase: 'bg-info', Titulo: 'Apartar Terreno'} ">Apartar</button> -->
                             <button class="btn btn-primary" (click)="apartarTerreno(p);">Apartar</button>
                         </div>
                     </div>
@@ -660,34 +712,96 @@
     </div>
 </div>
 <div class="row text-center navbarBottom">
-    <div class="col-sm-4">
+    <div class="col-4 col-sm-4 col-md-4">
         <a  (click)="mostrarPrincipal=false; panelVisualizar = 'NuevoCliente';" > <i class="fa fa-plus-circle text-success"></i> Nuevo</a>
     </div>
-    <div class="col-sm-4">
+    <div class="col-4 col-sm-4 col-md-4">
         <a  class="menuCenter" (click)="mostrarPrincipal = true; panelVisualizar = '' "> <i class="fa fa-bars"></i>  </a>
     </div>
-    <div class="col-sm-4">
-        <a  (click)="mostrarPrincipal=false; panelVisualizar = 'Cotizaciones';" > <i class="fa fa-clipboard text-warning"></i> Cotizaciones</a>
+    <div class="col-4 col-sm-4 col-md-4">
+        <a  (click)="mostrarPrincipal=false; obtenerProspectos('Aprobados'); " > <i class="fa fa-clipboard text-warning"></i> Aprobados </a>
     </div>          
     <!-- <a  (click)="mostrarPrincipal=false; panelVisualizar = 'Terrenos';" ><i class="fa fa-map text-danger"></i> Terrenos</a>  -->  
 </div>
+
+<ng-template #modalApartado let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header modal-lg">
+        <!-- Generar Pagos con Cotizacion -->
+        <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row" *ngIf="prospectoActivo">
+            <div class="col-6" *ngFor="let a of Terrenos">
+                <a (click)="confirmarSeleccionarTereno();">
+                    <div class="card mb-3">
+                        <div class="card-header bg-{{(a.Color)?a.Color:'default'}}">
+                            <i class="fa fa-user"></i> TER-{{a.IdTerreno}}
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <tr><th>Etapa:{{a.etapa}}</th><th>Lote: {{a.lote}}</th><th>Parcela: {{a.parcela}}</th><th>Estatus: {{a.Estado}}</th></tr>
+                            </table>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</ng-template>
 <ng-template #modalCita let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-header modal-lg">
         <!-- Generar Pagos con Cotizacion -->
         <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
-        <button type="button" class="close" aria-label="Close" (click)="modalCita.dismiss()">
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row" *ngIf="prospectoActivo">
+            <div class="col-12">
+                <div class="form-group"> 
+                    <label class="label-form">Fecha</label><br>
+                    <input type="datetime-local" class="form-control" class="form-control" [(ngModel)]="prospectoActivo.CitaNueva" />
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group"> 
+                    <button class="btn btn-success pull-right" (click)="actualizarProspecto();"><i class="fa fa-calendar"></i> Agendar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #modalInformacion let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header {{modalDatos.Clase?modalDatos.Clase:''}}">
+        <!-- Generar Pagos con Cotizacion -->
+        <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
     <div class="modal-body">
         <div class="row">
-            <div class="col-xs-12">
-                <div class="form-group"> 
-                    <label class="label-form">Fecha</label><br>
-                    <input type="date" class="form-control" />
+            <div class="col-12">
+                <div class="form-group">
+                    <label class="label-form">Para: </label>
+                    <input type="text" class="form-control" [(ngModel)]="objInformacion.Para" placeholder="jesus.ortiz@gmail.com" />
+                </div>
+                <div class="form-group">
+                    <label class="label-form">Asunto: </label>
+                    <input type="text" class="form-control" [(ngModel)]="objInformacion.Asunto" placeholder="Información Sobre Terreno" />
+                </div>
+                <div class="form-group">
+                    <label class="label-form">Mensaje:</label>
+                    <textarea rows="10" class="form-control" [(ngModel)]="objInformacion.Mensaje" placeholder="Cuerpo del correo"></textarea>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary form-control" (click)="enviarCorreoInformacion();"><i class="fa fa-envelope"></i> Enviar</button>
                 </div>
             </div>
-
         </div>
     </div>
 </ng-template>
@@ -705,6 +819,60 @@
                 <agm-map [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [zoom]="18" >
                     <agm-marker [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [label]="'M'"></agm-marker>
                 </agm-map>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<ng-template #modalCotizacion let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header {{modalDatos.Clase?modalDatos.Clase:''}}">
+        <!-- Generar Pagos con Cotizacion -->
+        <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label class="label-form">Para: </label>
+                    <input type="text" class="form-control" [(ngModel)]="objCotizacion.Para" placeholder="jesus.ortiz@gmail.com" />
+                </div>
+                <div class="form-group">
+                    <label class="label-form">Asunto: </label>
+                    <input type="text" class="form-control" [(ngModel)]="objCotizacion.Asunto" placeholder="Cotización solicitada" />
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6 ">
+                            <button class="btn btn-defaul" (click)="mostrarPrincipal=false;  activeModal.dismiss(); panelVisualizar = 'Cotizaciones';">
+                                <i class='fa fa-plus-circle text-green'></i> |  Nueva
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <label class="input-group-btn" style="margin:0;">
+                                    <span class="btn btn-warning" >
+                                        <i class="fa fa-upload"> </i> Cargar Cotización
+                                        <input type="file" style="display: none;" disabled (change)="nombreArchivo($event);" required>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <b class="text-info pull-right" *ngIf="objCotizacion.Adjunto">
+                                <i class="fa fa-file-o " ></i> Cotización
+                            </b>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="label-form">Mensaje:</label>
+                    <textarea rows="10" class="form-control" [(ngModel)]="objCotizacion.Mensaje" placeholder="Cuerpo del correo"></textarea>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary form-control" (click)="enviarCorreoCotizacion();"><i class="fa fa-envelope"></i> Enviar</button>
+                </div>
             </div>
         </div>
     </div>

@@ -14,6 +14,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import interactionPlugin from '@fullcalendar/interaction';
 import esLocale from '@fullcalendar/core/locales/es';
+import * as XLSX from  'xlsx';
 @Component({
     selector: 'app-modulo-ventas',
     templateUrl: './Modulo_ventas.component.html',
@@ -42,13 +43,14 @@ export class ModuloVentasComponent implements OnInit {
     clienteDetalles;mantenimientosTodos;datosDetalle;contenidoContrato;
     clientesTodosVista;detallesClienteVista;mensualidadesVista;anualidadesVista;mantenimientoVista;
     IdTerrenoContrato;terrenoDatos;Prospectos = [];nombreProspecto;descripcionProspecto;nuevoProspecto;telefonoProspecto;
-    correoProspecto;xStart;xEnd; datosNuevoCliente;
+    correoProspecto;xStart;xEnd; datosNuevoCliente;prospectoActivo;ProspectosAprobados=[];
     $calendar: any;
     calendarPlugins = [dayGridPlugin,timeGridPlugin,interactionPlugin];
     selectedEvent = null;
-    calendarEvents = [];terrenoActual;activeModal;
+    calendarEvents = [];terrenoActual;activeModal;objCotizacion = {};objInformacion={};modalDatos;
     // reference to the calendar element
     @ViewChild('calendar')calendar: FullCalendarComponent;
+    @ViewChild('modalCotizacion')modalCotizacion;
     constructor(public router: Router,private catalogosService : CatalogosService, private ventasService: VentasService, private modalService: NgbModal) {
         this.mostrarPrincipal = true;
         this.clienteDetalles = {};
@@ -57,22 +59,43 @@ export class ModuloVentasComponent implements OnInit {
         this.datosContrato = false;
        this._obtenerTerrenos();
         this.obtenerClientesActivos();
-        this._obtenerProspectos();
+        this.obtenerProspectos();
         this.datosNuevoCliente = {Terrenos:[{Id:0,Cotizacion:[{IdCotizacion:0}]}]};
     }
     ngOnInit() {}
-    _obtenerProspectos(){
+    obtenerProspectos(tipoPanel = ''){
         let dat_usr = JSON.parse(localStorage.getItem('Datos'));
+        this.calendarEvents = [];
         this.catalogosService.obtenerProspectosVendedor({IdUsuario: dat_usr.Datos.IdUsuario }).then(res=>{
             console.log('res',res);
             if(res['Data']){
-                this.Prospectos = res['Data'];
+                let prospectos = res['Data'];
+                this.Prospectos =  prospectos.filter(p=> p.Apartado == 0);
+                this.ProspectosAprobados =  prospectos.filter(p=> p.Apartado == 1);
                 if(this.Prospectos[0]){
                     this.Prospectos.forEach(p=>{
+                        this.calendarEvents.push({
+                            id: p.IdProspecto,
+                            title: `${p.Nombre_prospecto}`,
+                            start: moment(p.Cita).format('YYYY-MM-DD HH:mm:ss'),
+                            end: moment(p.Cita).add('3','hour').format('YYYY-MM-DD HH:mm:ss'),
+                            backgroundColor: '#0073b7', 
+                            borderColor: '#0073b7',
+                            textColor: '#fff',
+                            className: 'text-center text-bold'
+                        });
+                        if(moment(p.Cita).isValid()){
+                            p.CitaNueva = `${moment(p.Cita).format('YYYY-MM-DDTHH:mm')}`;
+                        }
                         p.Lapso = this._diferenciaDiasFechas(moment(p.Fecha_modificacion),moment());
                     })
+                    if(tipoPanel){
+                        this.panelVisualizar = tipoPanel;
+                    }
+
                 }
             }
+            console.log('this.calendarEve',this.calendarEvents);
             this.totales.Prospectos = this.Prospectos.length
             this.totales.Pros_activos = this.Prospectos.filter(p=>p.Lapso < 24).length;
             this.totales.Pros_alerta = this.Prospectos.filter(p=>p.Lapso >= 24).length;
@@ -100,7 +123,7 @@ export class ModuloVentasComponent implements OnInit {
         this.catalogosService.guardarProspectoVendedor(datosProspecto).then(res=>{
             this.correoProspecto = this.telefonoProspecto = this.nombreProspecto = this.descripcionProspecto = '';
             this.nuevoProspecto = false;
-            this._obtenerProspectos();
+            this.obtenerProspectos();
         }).catch(err=>{console.log('err',err);})
     }
 
@@ -126,23 +149,6 @@ export class ModuloVentasComponent implements OnInit {
     }
     modalDatosCita(event){
         console.log('evento',event);
-    }
-    obtenerCitas(){
-        this.calendarEvents = [];
-        if(this.Prospectos[0]){
-            this.Prospectos.forEach(c=>{
-                this.calendarEvents.push({
-                    id: c.IdProspecto,
-                    title: `${c.Nombre_prospecto}`,
-                    start: moment(c.Cita).format('YYYY-MM-DD HH:mm:ss'),
-                    end: moment(c.Cita).add('3','hour').format('YYYY-MM-DD HH:mm:ss'),
-                    backgroundColor: '#0073b7', 
-                    borderColor: '#0073b7',
-                    textColor: '#fff',
-                    className: 'text-center text-bold'
-                });
-            });
-        }
     }
     createDemoEvents() {
         // Date for the calendar events (dummy data)
@@ -190,12 +196,10 @@ export class ModuloVentasComponent implements OnInit {
         }];
     }
 
-    agendarCita(){
-        swal('Información','Este apartado aun esta en desarrollo','info');
-//        swal('Agendar Cita','Detalles de la cita','info' );
-//        this.modalService.open('modalCita', {windowClass: 'modal-holder', size: 'lg'});
+    agendarCita(content){
+        this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
     }
-    abrirModal(content){
+    abrirModal(content){ 
         this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
     }
     VerMapa(nombre,ter){ 
@@ -203,9 +207,80 @@ export class ModuloVentasComponent implements OnInit {
         console.log('terrenoActual',this.terrenoActual);
         this.modalService.open(nombre, {windowClass: 'modal-holder', size: 'lg'});
     }
-    
+    enviarCotizacionModal(content){
+        let datosUsr = JSON.parse(localStorage.getItem('Datos'));
+        this.objCotizacion = {
+            Para: `${this.prospectoActivo.Correo}`,
+            Mensaje:`Hola, Saludos desde Campestre el retiro.\n Nuestra prioridad es brindar un buen servicio, este correo es para enviarle la cotización solicitada,\n Sin más por el momento me despido,\n\n Soy ${datosUsr.Datos.Nombre} De Campestre el Retiro, Estoy a sus ordenes para cualquier duda.\n\nEsta Cotización tiene una vida util de 72 Horas. `,
+            Asunto: `Cotización Solicitada`,
+            Adjunto: ''
+        };
+        this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
+    }
+    vistaEnviarCotizacion(event){
+        console.log('enviarcot',event);
+        this.panelVisualizar = 'Prospectos';
+        this.modalDatos = {Tipo: 'EnviarCotizacion', Clase: 'bg-warning', Titulo: 'Enviar Cotización a Cliente'};
+        let Adj; let Buf;
+        if(event.Cotizacion_string){
+            Adj = event.Cotizacion_string;
+            Buf = event.Cotizacion_buffer;
+        }
+        console.log('adj',Adj);
+        let datosUsr = JSON.parse(localStorage.getItem('Datos'));
+        this.objCotizacion = {
+            Para: `${this.prospectoActivo.Correo}`,
+            Mensaje:`Hola, Saludos desde Campestre el retiro.\n Nuestra prioridad es brindar un buen servicio, este correo es para enviarle la cotización solicitada,\n Sin más por el momento me despido,\n\n Soy ${datosUsr.Datos.Nombre} De Campestre el Retiro, Estoy a sus ordenes para cualquier duda.\n\nEsta Cotización tiene una vida util de 72 Horas. `,
+            Asunto: `Cotización Solicitada`,
+            Adjunto: Adj,
+            AdjuntoBuffer:Buf 
+        };
+        this.activeModal = this.modalService.open(this.modalCotizacion, {windowClass: 'modal-holder', size: 'lg'});
+    }
+    mandarInformacionModal(content){
+        let datosUsr = JSON.parse(localStorage.getItem('Datos'));
+        this.objInformacion = {
+            Para: `${this.prospectoActivo.Correo}`,
+            Mensaje:`Hola, Saludos desde Campestre el retiro.\n Nuestra prioridad es brindar un buen servicio, este correo es para enviarle información referente a nuestros campestres disponibles,\n\n\n Sin más por el momento me despido,\n\n Soy ${datosUsr.Datos.Nombre} De Campestre el Retiro, Estoy a sus ordenes para cualquier duda. `,
+            Asunto: `Información Solicitada`,
+        };        
+        this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
+    }
+    enviarCorreoInformacion(){
+        console.log('info',this.objInformacion);
+        if(this.objInformacion){
+            this.catalogosService.enviarCorreoCotizacion(this.objInformacion).then(res=>{
+                this.prospectoActivo.Comentarios = `Información enviada`;
+                this.prospectoActivo.Informacion = true;
+                return this.catalogosService.actualizarProspectoVendedor(this.prospectoActivo).then(res=>{
+                    this.nuevoProspecto = false;
+                    this.activeModal.dismiss();
+                    this.prospectoActivo = false;
+                    this.panelVisualizar = '';
+                    this.mostrarPrincipal = true;
+                    this.obtenerProspectos();
+                }).catch(err=>{console.log('err',err);})
+            }).catch(err=>{console.log('err',err);})
+        }
+    }
     marcarLateral(event){
         this.xStart = event.touches[0].clientX;
+    }
+    enviarCorreoCotizacion(){
+        if(this.objCotizacion){
+            this.catalogosService.enviarCorreoCotizacion(this.objCotizacion).then(res=>{
+                this.prospectoActivo.Comentarios = `Cotización enviada`;
+                this.prospectoActivo.Cotizacion = true;
+                this.catalogosService.actualizarProspectoVendedor(this.prospectoActivo).then(res=>{
+                    this.nuevoProspecto = false;
+                    this.activeModal.dismiss();
+                    this.prospectoActivo = false;
+                    this.panelVisualizar = '';
+                    this.mostrarPrincipal = true;
+                    this.obtenerProspectos();
+                }).catch(err=>{console.log('err',err);})
+            }).catch(err=>{console.log('err',err);})
+        }
     }
     menuLateral(event,p){    
         this.xEnd = event.touches[0].clientX;
@@ -516,12 +591,31 @@ export class ModuloVentasComponent implements OnInit {
             p.Activo = 0;
             this.catalogosService.actualizarProspectoVendedor(p).then(res=>{
                 this.nuevoProspecto = false;
-                this._obtenerProspectos();
+                this.obtenerProspectos();
             }).catch(err=>{console.log('err',err);})
         }).catch(err=>{
             console.log('err',err);
         })
         this.Prospectos =  this.Prospectos.filter(pr=>pr != p)
+    }
+    actualizarProspecto(){
+        let tipoPanel = '';
+        if(this.prospectoActivo.CitaNueva){
+            tipoPanel = 'Citas';
+            this.prospectoActivo.CitaNueva =  moment(`${this.prospectoActivo.CitaNueva}`.split('T').join(' ')).format('YYYY-MM-DD HH:mm:ss');
+        }
+//        console.log('pros',this.prospectoActivo);
+        this.catalogosService.actualizarProspectoVendedor(this.prospectoActivo).then(res=>{
+            this.nuevoProspecto = false;
+            this.activeModal.dismiss();
+            this.obtenerProspectos(tipoPanel);
+            this.prospectoActivo = false;
+        }).catch(err=>{console.log('err',err);})
+    }
+    asignarTerreno(p){
+        this.panelVisualizar = 'NuevoCliente'
+        p.Cotizacion=[{IdCotizacion:0}];
+        this.datosNuevoCliente = { Terrenos:[p]};
     }
     apartarTerreno(p){
         this.panelVisualizar = 'NuevoCliente'
