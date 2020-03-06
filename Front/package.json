@@ -67,7 +67,7 @@
     "sweetalert2": "^7.20.7",
     "typeahead": "^0.2.2",
     "xlsx": "^0.15.5",
-    "yarn": "^1.6.0",
+    "yarn": "^1.22.0",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
