@@ -1,0 +1,210 @@
+.btn-info{
+    color:#fff;
+    background-color:#359B83 !important;
+    border-color: #46b8da;
+}
+.btn-primary{
+    color:#fff;
+    background-color: #10798D !important ;
+    border-color: #46b8da;
+}
+.btn-warning{
+    color:#fff;
+    background-color:#2A8901 !important;
+    border-color: #46b8da;
+}
+.btn-danger{
+    color:#fff;
+    background-color:#955006 !important;
+    border-color: #46b8da;
+}
+.btn-secondary{
+    color:#fff;
+    background-color:#232E5C !important;
+    border-color: #46b8da;
+}
+
+
+.btn-info:focus,.btn-info:hover, .btn-info.focus {
+    color:#fff;
+    background-color:#396B57 !important;
+    border-color: #174935;
+}
+.btn-primary:focus,.btn-primary:hover, .btn-primary.focus {
+    color:#fff;
+    background-color: #10798D !important ;
+    border-color: #46b8da;
+}
+.btn-warning:focus,.btn-warning:hover, .btn-warning.focus {
+    color:#fff;
+    background-color:#2D6E00 !important;
+    border-color: #0a2a1c;
+}
+.btn-danger:focus,.btn-danger:hover, .btn-danger.focus {
+    color:#fff;
+    background-color:#7F4700 !important;
+    border-color: #623900;
+}
+.btn-secondary:focus,.btn-secondary:hover, .btn-secondary.focus {
+    color:#fff;
+    background-color:#2D3854 !important;
+    border-color: #0c0d35;
+}
+.bg-info{
+    color:#fff;
+    background-color:#359B83 !important;
+    border-color: #46b8da;
+}
+.bg-primary{
+    color:#fff;
+    background-color: #10798D !important ;
+    border-color: #46b8da;
+}
+.bg-warning{
+    color:#fff;
+    background-color:#2A8901 !important;
+    border-color: #46b8da;
+}
+.bg-danger{
+    color:#fff;
+    background-color:#955006 !important;
+    border-color: #46b8da;
+}
+.bg-secondary{
+    color:#fff;
+    background-color:#232E5C !important;
+    border-color: #46b8da;
+}
+.b, .ba, .bb {
+    border-bottom: 1px solid rgba(0,0,0,.12);
+}
+.b, .ba, .br {
+    border-right: 1px solid rgba(0,0,0,.12);
+}
+.pl-3, .px-3 {
+    padding-left: 1rem!important;
+}
+
+.pr-3, .px-3 {
+    padding-right: 1rem!important;
+}
+/* Place the navbar at the bottom of the page, and make it stick */
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+  
+  /* Style the links inside the navigation bar */
+  .navbar-top{
+    z-index: 102;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    justify-content: space-between;
+    position: relative;
+    display: flex; 
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    width: 100%;
+  }
+  .navbar-top button, .navbar a {
+    float: left;
+    display: block;
+    color: #fff;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    justify-content: space-between;
+    font-size: 17px;
+  }
+  a.w-50:active{
+    -webkit-box-shadow: -1px -1px 8px 2px rgba(105,170,240,0.68);
+    -moz-box-shadow: -1px -1px 8px 2px rgba(105,170,240,0.68);
+    box-shadow: -1px -1px 8px 2px rgba(105,170,240,0.68);
+
+}
+   .navbar a:hover {
+    color: #fff;
+border-bottom: 1px solid #ddd;
+  }
+  .thumb32 {
+    width: 32px!important;
+    height: 32px!important;
+}
+.thumb55{
+    width: 55px!important;
+    height: 55px!important;
+}
+
+.circle {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 500px;
+    margin: 0 .5em;
+    background-color: #ddd;
+    vertical-align: baseline;
+    border: 2px solid transparent;
+}
+.danger-element{
+    z-index: 10;
+    width: 69px;
+    background-color:#dc3545 ;
+    color: #fff;
+    float: left;
+    border-radius: .25rem !important;
+}
+.active {
+    background-color: #cfd8dc;
+    transform: scale(1.1);
+  }
+  .inactive {
+    background-color: #eee;
+    transform: scale(1);
+  }
+
+// @font-face{
+//     font-family:"vhiena-solid-shadow-regular";
+//     src:url("https://fontsme.com/wp-data/v/707/13707/file/Vhiena Solid Shadow.otf") format("woff"),
+//     url("https://fontsme.com/wp-data/v/707/13707/file/Vhiena Solid Shadow.otf") format("opentype"),
+//     url("https://fontsme.com/wp-data/v/707/13707/file/Vhiena Solid Shadow.otf") format("truetype");
+// }
+p,body,html,button,div,ul,.text-menu{font-family:"vhiena-solid-shadow-regular" !important;font-size:16px;}
+.text-menu{
+    text-transform:uppercase; 
+    cursor:pointer;
+}
+a.text-menu:hover{
+    opacity: .7;
+}
+.menuCenter{
+    border: 1px solid #fff;
+    padding: 22px;
+    background: #444;
+    border-radius: 30px;
+}
+.navbarBottom{
+    background-color: #333;
+    overflow: hidden;
+    position: fixed;
+    z-index: 100;
+    bottom: 0;
+    width: 100%;    
+    min-height: 75px;
+    line-height: 4.9;
+    color: #fff;
+}
+.menuPrincipal{
+    vertical-align: middle;
+    margin-top: 17%;
+    line-height: 4;
+}
+
+agm-map {
+    height: 300px;
+  }

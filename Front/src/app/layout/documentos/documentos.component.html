@@ -1,0 +1,139 @@
+<div [@routerTransition]>
+    <app-page-header [heading]="'Control de Documentos'" [icon]="'fa-wrench'"></app-page-header>
+    <hr>
+    <!--Menu principal-->
+    <div class="row">
+        <div class="col-xs-12 col-xl-12 col-lg-12">
+            <button (click)="nuevoDocumento();" class="btn btn-info text--right"><i class="fa fa-plus-"></i> Nuevo Documento</button> &nbsp;&nbsp;|&nbsp;&nbsp; 
+            <button (click)="nuevoApartado();" class="btn btn-success text-right"><i class="fa fa-plus-circle"></i> Apartar documento</button>
+            <br><br>
+        </div>
+        <div class="col-xl-6 col-lg-6">
+            <app-stat [bgClass]="'primary'" [icon]="'fa-address-book'" [label]="'En transito'" (event)="mostrarDocumentos($event);"></app-stat>
+        </div>
+        <div class="col-xl-6 col-lg-6">
+            <app-stat [bgClass]="'danger'" [icon]="'fa-wrench'" [label]="'Excedidos'" (event)="mostrarExedidos($event);"></app-stat>
+        </div>
+    </div>
+    <hr />
+    <div class="row" *ngIf="vistaCentro">
+        <div class="col-xl-12 col-lg-12 col-xs-12">
+            <!--Nuevo Documento-->
+            <div class="row" *ngIf="this.nuevoDocumentoFormulario" [@routerTransition]>
+                <div class="col-xs-12 col-xl-12 col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Nuevo Documento
+                        </div>
+                        <div class="card-body">
+                            <div class="row" >
+                                <div class="col-xs-6 col-lg-6">
+                                    <div class="form-group">
+                                        <label class="label-form"> Nombre Documento </label>
+                                        <input type="text" [(ngModel)]="nombreNuevoDocumento" placeholder="Nombre:" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-lg-6">
+                                    <div class="form-group">
+                                        <label class="label-form"> &nbsp;</label><br>
+                                        <button (click)="guardarNuevoDocumento();"  class="btn btn-primary pull-right">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Apartado Documento-->
+            <div class="row" *ngIf="this.formularioApartado" [@routerTransition]>
+                <div class="col-xs-12 col-xl-12 col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Apartar Documento
+                        </div>
+                        <div class="card-body">
+                            <div class="row" >
+                                <div class="col-xs-6 col-lg-6">
+                                    <div class="form-group">
+                                        <label class="label-form"> Cliente </label>
+                                        <input type="text" class="form-control" autocomplete="off" name="clienteDocumento" (keyup)="filtrarCliente();" [(ngModel)]="clienteDocumento" placeholder="Cliente: " />
+                                        <input type="hidden" value="0" [(ngModel)]="idCliente" />
+                                        <div id="sugerencias"  *ngIf="this.visualizarSugerencias">
+                                            <table>
+                                                <tbody >
+                                                    <tr *ngFor="let cli of this.sugerenciasCliente ">
+                                                    <td><a class="activeLink" (click)="seleccionarCliente(cli);">{{cli.Nombre}}</a></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6 col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label-form"> Usuario </label>
+                                            <input type="text" class="form-control" autocomplete="off" name="usuarioDocumento" (keyup)="filtrarUsuario();" [(ngModel)]="nombreUsuario" placeholder="Usuario: " />
+                                            <input type="hidden" value="0" [(ngModel)]="idUsuario" />
+                                            <div id="sugerencias"  *ngIf="this.visualizarUsuarios">
+                                                <table>
+                                                    <tbody >
+                                                        <tr *ngFor="let usu of this.sugerenciasUsuario ">
+                                                        <td><a class="activeLink" (click)="seleccionarUsuario(usu);">{{usu.Nombre}}</a></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <div class="col-xs-3 col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form">Documento</label>
+                                        <select class="form-control" [(ngModel)]="tipoDocumento" >
+                                            <option value="0">Selecciona el tipo</option>
+                                            <option *ngFor="let tip of this.tiposDocumentos" value="tip.Nombre">{{ tip.Nombre }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-3 col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form"> Fecha apartado </label>
+                                        <input type="date" [(ngModel)]="fApartado" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-3 col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form"> Fecha devolución </label>
+                                        <input type="date" [(ngModel)]="fFin" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-3 col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form"> &nbsp;</label><br>
+                                        <button (click)="guardarApartadoDocumento();"  class="btn btn-primary pull-right">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" *ngIf="this.contenidoReportes">
+        <div class="col-xl-12 col-lg-12 col-xs-12">
+            <!--Ingresos-->
+            <div class="row" *ngIf="this.documentosActivos" [@routerTransition]>
+                <div class="col-xl-12 col-lg-12 col-xs-12" *ngIf="this.documentosActivos">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            {{this.tituloDatatable}}
+                        </div>
+                        <div class="card-body">
+                            <app-datatables-general #datatableDocumentos *ngIf="this.documentosActivos" [datosDatatable]="this.documentosActivos" (delete)="borrarDocumento($event);"></app-datatables-general>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+<div [@routerTransition]>
+    <app-page-header [heading]="'Ventas'" [icon]="'fa-dashboard'"></app-page-header>
+    <!--Menu principal-->
+    <div class="row text-center">
+        <div class="col-lg-2">
+            <div class="form-group">
+                <button (click)="catalogoClientes();" class="btn btn-secondary menu" style="color: #fff;"><i class="fa fa-users"></i> Clientes</button>
+            </div>
+        </div>
+        <div class="col-lg-2">    
+            <div class="form-group">
+                <button (click)="nuevaCotizacion();" class="btn btn-info menu"><i class="fa fa-clipboard"></i> Cotización</button>
+            </div>
+        </div>
+        <div class="col-lg-2">    
+            <div class="form-group">
+                <button (click)="nuevoCliente();" class="btn btn-success menu"><i class="fa fa-address-card"></i> Nuevo Cliente</button>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div *ngIf="vistaCentro">
+        <!--Cotizaciones-->
+        <app-cotizador *ngIf="cotizacionNueva" (vista)="nuevoCliente();" [@routerTransition]></app-cotizador>
+        <!--Clientes-->
+        <app-clientes class="row" *ngIf="clienteNuevo"  (vista)="procesarContratos($event);"  [@routerTransition]></app-clientes>
+        <!--Catalogo Clientes-->
+        <app-catalogo-clientes *ngIf="clientesCatalogos" (vista)="nuevaVentaCliente($event);" (nuevaOperacion)="nueva_operacion($event);" [@routerTransition]></app-catalogo-clientes>
+        <!--Contratos-->
+        <app-contrato class="row" *ngIf="datosContrato" #contratoGenerado  [datosContrato]="datosContrato" (vista)="imprimirPagare($event);" (mensualidades)="imprimirMensualidades($event);" [@routerTransition]></app-contrato>
+    </div> 
+</div>

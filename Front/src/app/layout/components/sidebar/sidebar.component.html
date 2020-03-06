@@ -1,0 +1,85 @@
+<nav class="sidebar" [ngClass]="{sidebarPushRight: isActive}">
+    <div class="list-group">
+        <a *ngIf="datosUsuario.Perfil != 'Vendedor' " routerLink="/Inicio" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-dashboard"></i>&nbsp;{{ 'Inicio' | translate }}
+        </a>
+        <a *ngIf="datosUsuario.Perfil == 'Vendedor' " routerLink="/ModuloVentas" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-bar-chart"></i>&nbsp;{{ 'Modulo Ventas' | translate }}
+        </a>
+        <a *ngIf="datosUsuario.Modulos.Ventas" [routerLink]="['/Ventas']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-bar-chart-o"></i>&nbsp;{{ 'Ventas' | translate }}
+        </a>
+        <a *ngIf="datosUsuario.Modulos.Cobranza" [routerLink]="['/Cobranza']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-briefcase"></i>&nbsp;{{ 'Cobranza' | translate }}
+        </a>
+        <a *ngIf="datosUsuario.Modulos.Finanzas" [routerLink]="['/Finanzas']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-briefcase"></i>&nbsp;{{ 'Finanzas' | translate }}
+        </a>
+        <a *ngIf="datosUsuario.Modulos.Catalogos" [routerLink]="['/Catalogos']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-th-list"></i>&nbsp;{{ 'Catalogos' | translate }}
+        </a>
+        <a *ngIf="datosUsuario.Modulos.Cotizaciones" [routerLink]="['/Cotizaciones']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-address-card"></i>&nbsp;{{ 'Cotizaciones' | translate }}
+        </a>
+        <a *ngIf="datosUsuario.Modulos.Gastos" [routerLink]="['/Egresos']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-table"></i>&nbsp;{{ 'Gastos' | translate }}
+        </a>
+<!--        <a [routerLink]="['/Cuentas']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-credit-card"></i>&nbsp;{{ 'Cuentas' | translate }}
+        </a>-->
+<!--        <a [routerLink]="['/Contratos']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-edit"></i>&nbsp;{{ 'Contratos' | translate }}
+        </a>-->
+        <a *ngIf="datosUsuario.Modulos.Empleados" [routerLink]="['/Empleados']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-desktop"></i>&nbsp;{{ 'Empleados' | translate }}
+        </a>
+        <a *ngIf="datosUsuario.Modulos.Usuarios" [routerLink]="['/Usuarios']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-users"></i>&nbsp;{{ 'Usuarios' | translate }}
+        </a>
+<!--        <a [routerLink]="['/ControlDocumentos']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-wrench"></i>&nbsp;{{ 'Control Documentos' | translate }}
+        </a>-->
+        <a *ngIf="datosUsuario.Modulos.Reportes" [routerLink]="['/Reportes']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-file-o"></i>&nbsp;{{ 'Reportes' | translate }}
+        </a>
+        <a *ngIf="datosUsuario.Modulos.Carga" [routerLink]="['/Carga']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-upload"></i>&nbsp;{{ 'Carga' | translate }}
+        </a>
+        <div class="header-fields">
+            <div class="nested-menu">
+                <a class="list-group-item" (click)="addExpandClass('profile')">
+                    <span><i class="fa fa-user"></i>&nbsp; {{this.datosUsuario.Datos.Nombre}} </span>
+                </a>
+                <li class="nested" [class.expand]="showMenu === 'profile'">
+                    <ul class="submenu">
+                        <li>
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-fw fa-user"></i> {{ this.datosUsuario.Perfil }}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">
+                                Problemas <span class="badge badge-info"> 13</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">
+                                Notificaciones <span class="badge badge-info"> 45</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-fw fa-gear"></i> {{ 'Opciones' | translate }}
+                            </a>
+                        </li>
+                        <li>
+                            <a [routerLink]="['/login']" (click)="onLoggedout()">
+                                <i class="fa fa-fw fa-power-off"></i> {{ 'Cerrar sesión' | translate }}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </div>
+        </div>
+    </div>
+</nav>

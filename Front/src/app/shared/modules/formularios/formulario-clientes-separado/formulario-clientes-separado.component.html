@@ -1,0 +1,661 @@
+<div class="col-xl-12 col-lg-12 col-xs-12">
+    <div class="card mb-3">
+        <div class="card-header bg-success">
+            Editar Datos Generales de Cliente: <b>{{frmCliente.controls['Nombre'].value}} </b>
+            <b class="pull-right">Paso {{pagina}} </b>
+        </div>
+        <div class="card-body">
+            <form [formGroup]="frmCliente" class="form-validate" (keydown.enter)="$event.preventDefault()"
+                novalidate="">
+                <!--                    <input #subirArchivo style="display: none;" accept="text/plain" type="file" (change)="cargarVentas($event)" formControlName="File" />
+                    <input #subirArchivo2 style="display: none;" accept="text/plain" type="file" (change)="cargarInventario($event)" formControlName="File" />-->
+                <div class="row" *ngIf="pagina == 1 ">
+                    <div class="col-lg-12">
+                        <h3 class="text-center text-info ">Datos de Contacto</h3>
+                        <hr>
+                    </div>
+                    <!--                    <div class="col-lg-4" *ngIf="mensualidad"><b>Mensualidad:</b> {{mensualidad}}</div>
+                    <div class="col-lg-4" *ngIf="anualidad"><b>Anualidad:</b> {{anualidad}}</div>
+                    <div class="col-lg-4" *ngIf="numPagos"><b>#Pagos:</b> {{numPagos}}</div>-->
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <b style="color: #C00;"> * </b>
+                            <label class="label-form"> Nombre </label>
+                            <input accept="text/plain" type="text" placeholder="Luis Fernando Cordova Castillo"
+                                formControlName="Nombre" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <!-- <b style="color: #C00;"> * </b> -->
+                            <label class="label-form"> Correo </label>
+                            <input accept="text/plain" type="text" placeholder="luisfer@gmail.com"
+                                formControlName="Correo" class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="label-form"> IFE </label>
+                            <input accept="text/plain" type="text" placeholder="0589119466813" formControlName="NumIfe"
+                                class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="label-form"> Comprobante domicilio </label>
+                            <div class="input-group">
+                                <label class="input-group-btn" style="margin:0;width: 100%;">
+                                    <span class="btn btn-success " style="width: 100%;"> 
+                                        <i class="fa fa-upload"> </i> Cargar comprobante
+                                        <input accept="image/*" style="display: none;" type="file"
+                                            formControlName="Comprobante" class="form-control" required />
+                                    </span>
+                                </label>
+                                <!--                                <input type="text" class="form-control" [(ngModel)]="comprobante">-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="label-form"> Foto IFE </label>
+                            <div class="input-group">
+                                <label class="input-group-btn" style="margin:0;width: 100%;">
+                                    <span class="btn btn-success" style="width: 100%;">
+                                        <i class="fa fa-upload"> </i> Cargar foto IFE
+                                        <!--                                        <input type="file" style="display: none;" accept="image/*" (change)="nombreArchivo($event,'Ife');"  formControlName="FileIFE" required/>-->
+                                        <input accept="image/*" style="display: none;" type="file"
+                                            formControlName="FotoIfe" class="form-control" required />
+                                    </span>
+                                </label>
+                                <!--                                <input type="text" class="form-control" name="nombreArchivo" [(ngModel)]="fotoIfe">-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="label-form"> Origen </label>
+                            <input accept="text/plain" type="text" placeholder="San pedro" formControlName="Origen"
+                                class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="label-form"> Teléfono </label>
+                            <input accept="text/plain" type="text" placeholder="Teléfono" formControlName="Telefono"
+                                class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+
+                            <label class="label-form"> Fecha Nacimiento </label>
+                            <input type="date" placeholder="Fecha Nacimiento" formControlName="Fecha_nacimiento"
+                                class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label class="label-form"> Direccion </label>
+                            <input accept="text/plain" type="textarea" placeholder="Fecha Nacimiento"
+                                formControlName="Direccion" class="form-control" required />
+                            <!--<textarea placeholder="Calle de las flores entre Palacio y Tuxtla numero 197" [(ngModel)]="direccion" class="form-control"> </textarea>-->
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="label-form"> Referencia 1 </label>
+                            <input accept="text/plain" type="text" placeholder="Referencia 1" formControlName="Ref1"
+                                class="form-control" required /><br>
+                            <input accept="text/plain" type="text" placeholder="Telefono 1" formControlName="TelRef_1"
+                                class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="label-form"> Referencia 2 </label>
+                            <input accept="text/plain" type="text" placeholder="Referencia 2" formControlName="Ref2"
+                                class="form-control" required /><br>
+                            <input accept="text/plain" type="text" placeholder="Telefono 2" formControlName="TelRef_2"
+                                class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="label-form"> Referencia 3 </label>
+                            <input accept="text/plain" type="text" placeholder="Referencia 3" formControlName="Ref3"
+                                class="form-control" required /><br>
+                            <input accept="text/plain" type="text" placeholder="Telefono 3" formControlName="TelRef_3"
+                                class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label class="label-form"> Obsercaciones </label>
+                            <textarea type="text" placeholder="Observaciones" formControlName="ObservacionesDatos"
+                                class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <button class="btn btn-primary pull-right" (click)="validarFomulario();">Siguiente <i
+                                class="fa fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </form>
+            <div class="row" *ngIf="pagina == 2 ">
+                <div class="col-lg-12">
+                    <h3 class="text-center text-danger">Datos de Terrenos</h3>
+                    <hr>
+                </div>
+                <div class="col-lg-12">
+                    <button (click)="this.terrenosCliente.push({Cotizacion:[{IdCotizacion : 0}]});"
+                        class="btn btn-success pull-right">
+                        <i class="fa fa-plus-circle"></i> Terreno
+                    </button>
+                    <br><br>
+                </div>
+                <div class="col-lg-12" *ngFor="let ter of terrenosCliente; let t = index;">
+                    <div class="row card">
+                        <div class="card-header" style="color: #000 !important; padding: 0;">
+                            <h3>{{t+1}}.-   Parcela {{ ter.parcela}}, Lote {{ ter.lote}}, Etapa {{ter.etapa}}  <button class="btn btn-danger pull-right" (click)="borrarTerreno(t);"><i class="fa fa-times"></i></button></h3>
+                        </div>
+                        <div class="card-body row">
+                            <div class="col-lg-5">
+                                <div class="form-group">
+                                    <label class="label-form"> Cambiar Terreno </label>
+                                    <input type="hidden" [(ngModel)]="ter.IdTerreno">
+                                    <input 
+                                    title="Remplazar Terreno"
+                                    placeholder="Buscar #parcela , #lote, #etapa" type="text" class="form-control" 
+                                    [ngbTypeahead]="filtrarTerrenosDatoEspecial"
+                                    (selectItem)="seleccionarParcela($event, t)"
+                                    required />
+                                </div>
+                                <!-- <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                                <label class="label-form"> Parcela </label>
+                                            <b style="color: #C00;"> * </b>
+                                            <label class="label-form"> Parcela </label>
+                                            <input type="hidden" [(ngModel)]="ter.IdTerreno">
+                                            <input id="typeahead-format"
+                                                title="Parcela # y propietario: {{ter.Pertenece}}"
+                                                placeholder="Parcela:" type="text" class="form-control"
+                                                [(ngModel)]="ter.parcela" [ngbTypeahead]="filtrarTerrenos"
+                                                (selectItem)="seleccionarParcela($event, t)"
+                                                [resultFormatter]="formatter" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <b style="color: #C00;"> * </b>
+                                            <label class="label-form"> Lote </label>
+                                            <input id="typeahead-format" title="Lote #: " placeholder="Lote:"
+                                                type="text" class="form-control" [(ngModel)]="ter.lote"
+                                                [ngbTypeahead]="filtrarLotes" (selectItem)="seleccionarLote($event)"
+                                                [resultFormatter]="formatter" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <b style="color: #C00;"> * </b>
+                                            <label class="label-form"> Etapa </label>
+                                            <input id="typeahead-format" title="Etapa #: " placeholder="Etapa:"
+                                                type="text" class="form-control" [(ngModel)]="ter.etapa"
+                                                [ngbTypeahead]="filtrarEtapas" (selectItem)="seleccionarEtapa($event)"
+                                                [resultFormatter]="formatter" required />
+                                        </div>
+                                    </div>
+                                </div> -->
+                            </div>
+                            <div class="col-lg-7">
+                                <div class="row">
+                                    <div class="col-lg-1 text-center">      <label class="label-form"> <br> </label><br><b style="border: 1px solid #ddd;"></b></div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="label-form"> <br> </label><br>
+                                            <button class="btn btn-info" style="width: 100%;"
+                                                (click)="abrirModal(modalCotizacion); terrenoCotizacion = ter; modalDatos = {Tipo: 'DatosPropietario', Clase: 'bg-info', Titulo: 'Datos generales del terreno'} "><i
+                                                    class="fa fa-caret-square-o-up"></i> | General </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label class="label-form"> <br> </label><br>
+                                            <button class="btn btn-warning" style="width: 100%;"
+                                                (click)="abrirModal(modalCotizacion); terrenoCotizacion = ter; modalDatos = {Tipo: 'Mensualidades', Clase: 'bg-warning', Titulo: 'Calculo mensualidades'} "><i
+                                                    class="fa fa-caret-square-o-up"></i> | Mensualidades </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label class="label-form"> <br> </label><br>
+                                            <button class="btn btn-secondary" style="width: 100%;"
+                                                (click)="abrirModal(modalCotizacion); terrenoCotizacion = ter; modalDatos = {Tipo: 'Anualidades', Clase: 'bg-secondary', Titulo: 'Calculo Anualidades'} "><i
+                                                    class="fa fa-caret-square-o-up"></i> | Anualidades </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-12">
+                            <div class="row" *ngIf="ter.ContieneMensualidad  && ter.Cotizacion[0].Mensualidad > 0">
+                                <div class="col-sm-12 col-lg-12 text-center  alert alert-danger" role="alert">
+                                    <b> - DETALLES DE PAGO - </b>
+                                </div>
+                                <hr>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <b style="color: #C00;"> * </b>
+                                        <label class="label-form">Enganche</label>
+                                        <input type="number" placeholder="Enganche"
+                                            [(ngModel)]="ter.Cotizacion[0].Enganche_Actual" class="form-control"
+                                            required />
+                                        <!--<input type="number" [(ngModel)]="contratoAgua" placeholder="400"class="form-control">-->
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <b style="color: #C00;"> * </b>
+                                        <label class="label-form"> Mensualidad </label>
+                                        <input type="number" placeholder="Mensualidad"
+                                            [(ngModel)]="ter.Cotizacion[0].Mensualidad" class="form-control" required />
+                                        <!--<input type="number" [(ngModel)]="contratoAgua" placeholder="400"class="form-control">-->
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <b style="color: #C00;"> * </b>
+                                        <label class="label-form">Pagos Originales</label>
+                                        <input type="number" placeholder="Numero Pagos"
+                                            [(ngModel)]="ter.Cotizacion[0].Num_pagos_originales" class="form-control"
+                                            required />
+                                        <!--<input type="number" [(ngModel)]="contratoAgua" placeholder="400"class="form-control">-->
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <b style="color: #C00;"> * </b>
+                                        <label class="label-form">Pagos Restantes</label>
+                                        <input type="number" placeholder="Numero Pagos"
+                                            [(ngModel)]="ter.Cotizacion[0].Num_pagos_Actual" class="form-control"
+                                            required />
+                                        <!--<input type="number" [(ngModel)]="contratoAgua" placeholder="400"class="form-control">-->
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <b style="color: #C00;"> * </b>
+                                        <label class="label-form"> Primer Pago </label>
+                                        <input type="date" placeholder="Fecha Inicio"
+                                            [(ngModel)]="ter.Cotizacion[0].Fecha_inicio" class="form-control"
+                                            required />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="ter.ContieneAnualidad  && ter.Cotizacion[0].Anualidad > 0">
+                            <div class="col-lg-2">
+                                <div class="form-group">
+                                    <b style="color: #C00;"> * </b>
+                                    <label class="label-form"> Anualidad </label>
+                                    <input type="number" placeholder="Anualidad"
+                                        [(ngModel)]="ter.Cotizacion[0].Anualidad" class="form-control" required />
+                                    <!--<input type="number" [(ngModel)]="contratoAgua" placeholder="400"class="form-control">-->
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <b style="color: #C00;"> * </b>
+                                    <label class="label-form">Num Anualidades Originales</label>
+                                    <input type="number" placeholder="Numero de Anualidades Originales"
+                                        [(ngModel)]="ter.Cotizacion[0].Num_anualidades" class="form-control"
+                                        required />
+                                    <!--<input type="number" [(ngModel)]="contratoAgua" placeholder="400"class="form-control">-->
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <b style="color: #C00;"> * </b>
+                                    <label class="label-form">Num Anualidades Restantes</label>
+                                    <input type="number" placeholder="Numero Anualidades restantes"
+                                        [(ngModel)]="ter.Cotizacion[0].Num_pagos_anualidad_Actual" class="form-control"
+                                        required />
+                                    <!--<input type="number" [(ngModel)]="contratoAgua" placeholder="400"class="form-control">-->
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <b style="color: #C00;"> * </b>
+                                    <label class="label-form"> Primera Anualidad </label>
+                                    <input type="date" placeholder="Fecha Inicio Anualidad"
+                                        [(ngModel)]="ter.Cotizacion[0].Fecha_inicio_anualidad" class="form-control"
+                                        required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+                <div class="col-lg-12"> <br></div>
+                <div class="col-lg-12">
+                    <button class="btn btn-primary pull-right" (click)="validarFomulario();">Siguiente <i
+                            class="fa fa-arrow-right"></i></button>
+                    <button class="btn btn-info pull-right" (click)="this.pagina =1 ">Regresar <i
+                            class="fa fa-arrow-left"></i></button>
+                </div>
+            </div>
+            <div class="row" *ngIf="pagina == 3">
+                <div class="col-lg-12">
+                    <h3 class="text-center text-danger">Datos de Mantenimiento</h3>
+                    <hr>
+                </div>
+                <div class="col-lg-12">
+                    <hr>
+                </div>
+                <div class="col-lg-12">
+                    <div class="alert alert-danger" role="alert">
+                        Introduce los mantenimientos segun la tabla de generacion
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <textarea placeholder=" ENE-JUN 2016	JUL-DIC 2016	ENE-JUN 2017	JUL-DIC 2017
+1,500.00 	 1,500.00 	 1,500.00 	 1,500.00" class="form-control" rows="4" style="resize: none;"
+                        [(ngModel)]="filasMantenimiento" (change)="cambiosArea();"></textarea>
+                    <br>
+                </div>
+                <div class="col-lg-12">
+                    <div class="alert alert-danger" role="alert">
+                        Para calcular el mantenimiento por fecha o por monto debes incluir forzosamente el
+                        <b>Monto de mantenimiento</b> , la Fecha del primer cobro del siguiente mantenimiento <b>(Fecha
+                            inicio Mantenimiento )</b>
+                        y el <b>periodo de cobro </b>
+                    </div>
+                </div>
+                <form [formGroup]="frmCliente" class="form-validate row" (keydown.enter)="$event.preventDefault()"
+                    novalidate="">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <b style="color: #C00;"> * </b>
+                            <label class="label-form"> Monto Mantenimiento </label>
+                            <input type="number" placeholder="Monto Mantenimiento"
+                                formControlName="Importe_mantenimiento" class="form-control" required />
+                        </div>
+                    </div>
+                    <!--                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <label class="label-form">  Saldo Mantenimiento </label>
+                                <input type="number" placeholder="Saldo Mantenimiento"  formControlName="Saldo_mantenimiento" class="form-control" required />
+                            </div>
+                        </div>-->
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <b style="color: #C00;"> * </b>
+                            <label class="label-form"> Fecha Proxima de cobro </label>
+                            <input type="date" placeholder="Fecha Inicio" formControlName="Fecha_mantenimiento"
+                                class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <b style="color: #C00;"> * </b>
+                            <label class="label-form"> Periodo de Cobro Mantenimiento </label>
+                            <input type="number" placeholder="Periodo Mantenimiento" formControlName="Periodo_cobro"
+                                class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label class="label-form">Contrato de agua </label>
+                            <input type="number" placeholder="Contrato de Agua" formControlName="Saldo_agua"
+                                class="form-control" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="label-form"> Fecha de adeudo Mantenimiento </label>
+                            <div class="input-group mb-3">
+                                <input type="date" placeholder="Fecha de adeudo Mantenimiento"
+                                    formControlName="Fecha_adeudo_mantenimiento" class="form-control" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" title="Calcular con fecha"
+                                        (click)="calcularMantenimientoPorFecha();" type="button"><i
+                                            class="fa fa-arrow-down"></i> | Calcular </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="label-form"> Adeudo de Mantenimiento </label>
+                            <div class="input-group mb-3">
+                                <input type="number" placeholder="Monto de adeudo Mantenimiento"
+                                    formControlName="Saldo_mantenimiento" class="form-control" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" title="Calcular con Monto"
+                                        (click)="calcularMantenimientoPorMonto();" type="button"><i
+                                            class="fa fa-arrow-down"></i> | Calcular </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <textarea type="text" placeholder="Observaciones" formControlName="ObservacionesMantenimiento"
+                            class="form-control"></textarea>
+                    </div>
+                    <div class="col-lg-12">
+                        <app-datatables-general #datatableMantenimientos *ngIf="datosMantenimientos"
+                            [datosDatatable]="datosMantenimientos"></app-datatables-general>
+                    </div>
+                    <div class="col-lg-12">
+                        <button class="btn btn-primary pull-right" (click)="validarFomulario();">Revisión <i
+                                class="fa fa-arrow-right"></i></button>
+                        <button class="btn btn-info pull-right" (click)="this.pagina =2 ">Regresar <i
+                                class="fa fa-arrow-left"></i></button>
+                    </div>
+                </form>
+            </div>
+            <div class="row" *ngIf="pagina == 4">
+                <div class="col-lg-12">
+                    <h3 class="text-center">Revisión de Datos</h3>
+                    <hr>
+                </div>
+                <div class="col-lg-6">
+                    <b>Nombre: </b> {{dataCli.Nombre}}
+                </div>
+                <div class="col-lg-6">
+                    <b>Correo:</b> {{dataCli.Correo}}
+                </div>
+                <div class="col-xs-12">
+                    <hr>
+                </div>
+                <div class="col-lg-2">
+                    <b>Enganche: </b><br>{{dataCli.Saldo_adeudo}}
+                </div>
+                <div class="col-lg-2">
+                    <b>Mantenimiento : </b><br>{{dataCli.Saldo_mantenimiento}}
+                </div>
+                <div class="col-lg-2">
+                    <b>Credito: </b><br>{{dataCli.Saldo_credito}}
+                </div>
+                <div class="col-lg-2">
+                    <b>Anualidades: </b><br>{{dataCli.Saldo_anualidad}}
+                </div>
+                <div class="col-lg-2">
+                    <b>Contrato Agua: </b><br>{{dataCli.Saldo_agua}}
+                </div>
+                <div class="col-lg-2">
+                    <b>Certificado: </b><br>{{dataCli.Saldo_certificado}}
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-12">
+                        <h3 class="text-center">TERRENOS</h3>
+                        <hr>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <b> Parcela</b>
+                        </div>
+                        <div class="col-lg-2">
+                            <b>Lote</b>
+                        </div>
+                        <div class="col-lg-2">
+                            <b>Etapa</b>
+                        </div>
+                        <div class="col-lg-2">
+                            <b>Superficie</b>
+                        </div>
+                        <div class="col-lg-2">
+                            <b>Estatus</b>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12" *ngFor="let t of terrenosCliente;">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            {{t.parcela}}
+                        </div>
+                        <div class="col-lg-2">
+                            {{t.lote}}
+                        </div>
+                        <div class="col-lg-2">
+                            {{t.etapa}}
+                        </div>
+                        <div class="col-lg-2">
+                            {{t.Superficie}}
+                        </div>
+                        <div class="col-lg-2">
+                            {{t.Estado}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <button class="btn btn-primary pull-right" (click)="validarFomulario();">Guardar <i
+                            class="fa fa-save"></i></button>
+                    <button class="btn btn-info pull-right" (click)="this.pagina = 3 ">Regresar <i
+                            class="fa fa-arrow-left"></i></button>
+                </div>
+            </div>
+            <!--            </form>-->
+        </div>
+    </div>
+    <ng-template #modalCotizacion let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-header {{modalDatos.Clase?modalDatos.Clase:''}}">
+            <!-- Generar Pagos con Cotizacion -->
+            <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+            <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="row" *ngIf="modalDatos.Tipo == 'DatosPropietario'">
+                <div class="col-lg-12">
+                </div>
+                <div class="col-lg-9">
+                    <div class="form-group">
+                        <label class="label-form">Dueño actual </label>
+                        <input type="text" class="form-control" [(ngModel)]="terrenoCotizacion.Pertenece" />
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label class="label-form">Certificado </label>
+                        <input type="number" placeholder="Certificado"
+                            [(ngModel)]="terrenoCotizacion.Cotizacion[0].SaldoCertificado" class="form-control"
+                            required />
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <b style="color: #C00;"> * </b>
+                        <label class="label-form"> Parcela </label>
+                        <input type="hidden" [(ngModel)]="terrenoCotizacion.IdTerreno">
+                        <input  title="Parcela # y propietario: {{terrenoCotizacion.Pertenece}}"
+                            placeholder="Parcela:" type="text" class="form-control"
+                            [(ngModel)]="terrenoCotizacion.parcela" [ngbTypeahead]="filtrarTerrenos"
+                            (selectItem)="seleccionarParcela($event, t)" [resultFormatter]="formatter" required />
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <b style="color: #C00;"> * </b>
+                        <label class="label-form"> Lote </label>
+                        <input  title="Lote #: " placeholder="Lote:" type="text"
+                            class="form-control" [(ngModel)]="terrenoCotizacion.lote" [ngbTypeahead]="filtrarLotes"
+                            (selectItem)="seleccionarLote($event)" [resultFormatter]="formatter" required />
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <b style="color: #C00;"> * </b>
+                        <label class="label-form"> Etapa </label>
+                        <input  title="Etapa #: " placeholder="Etapa:" type="text"
+                            class="form-control" [(ngModel)]="terrenoCotizacion.etapa" [ngbTypeahead]="filtrarEtapas"
+                            (selectItem)="seleccionarEtapa($event)" [resultFormatter]="formatter" required />
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <b style="color: #C00;"> * </b>
+                        <label class="label-form"> Superficie </label>
+                        <input type="text" title="Extension en m2: " placeholder="Superficie:"
+                            [(ngModel)]="terrenoCotizacion.Superficie" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="label-form"> Folio </label>
+                        <input type="text" title="Folio #: " placeholder="Folio:" [(ngModel)]="terrenoCotizacion.folio"
+                            class="form-control" required />
+                    </div>
+                </div>
+                <!-- <b> Parcela :  {{ter.parcela}} </b> -->
+                <div class="col-lg-4">
+                    <label class="label-form"> Estatus </label>
+                    <select class="form-control" [(ngModel)]="terrenoCotizacion.Estado">
+                        <option value="SIN ESTADO"> SIN ESTADO</option>
+                        <option value="ACTIVO"> ACTIVO </option>
+                        <option value="POR CEDER"> POR CEDER </option>
+                        <option value="CEDIDO"> CEDIDO </option>
+                    </select>
+                </div>
+                <div class="col-lg-12">
+                        <textarea type="text" placeholder="Observaciones" ([ngModel])="terrenoCotizacion.Observaciones"
+                            class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="col-lg-12 " *ngIf="modalDatos.Tipo == 'Mensualidades'">
+                <label class="label-form"> Pago Activo </label>
+                <label class="switch">
+                    <input type="checkbox" [(ngModel)]="terrenoCotizacion.ContieneMensualidad">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="col-lg-12" *ngIf="terrenoCotizacion.ContieneMensualidad" style="overflow:auto;">
+                <app-cotizador-mensualidad *ngIf="modalDatos.Tipo == 'Mensualidades'"
+                    [datosCotizacionInput]="terrenoCotizacion"
+                    (vista)="asignarCotizacion($event);"></app-cotizador-mensualidad>
+            </div>
+            <div class="col-lg-12 " *ngIf="modalDatos.Tipo == 'Anualidades'">
+                <label class="label-form"> Anualidad Activo </label>
+                <label class="switch">
+                    <input type="checkbox" [(ngModel)]="terrenoCotizacion.ContieneAnualidad">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="col-lg-12" *ngIf="terrenoCotizacion.ContieneAnualidad" style="overflow:auto;">
+                <app-cotizador-anualidad *ngIf="modalDatos.Tipo == 'Anualidades'"
+                    [datosCotizacionInput]="terrenoCotizacion"
+                    (vista)="asignarCotizacionAnualidad($event);"></app-cotizador-anualidad>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-12">
+                    <button class="btn btn-primary pull-right" (click)="actualizarDatos(); activeModal.dismiss();"> Guardar Cambios | <i
+                            class="fa fa-arrow-down"></i></button>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</div>

@@ -1,0 +1,711 @@
+<div [@routerTransition]>
+    <!-- <app-page-header [heading]="'ModuloVentas'" [icon]="'fa-dashboard'"></app-page-header> -->
+    <!--Menu principal-->
+    <!-- <div class="row text-center">
+        <div class="col-lg-2">
+            <button class="btn btn-success pull-right" >
+                <i class="fa fa-5x fa-plus-circle"></i><br>                
+                Nuevo Registro
+            </button>
+        </div>
+        <br><br>
+    </div> -->
+    <!-- <div class="row" style="min-height: 75px;">
+        <div class="navbar-top">
+            <button class="btn btn-outline-secondary" style="color: #333;" (click)="mostrarPrincipal = true; panelVisualizar = '' "> <i class="fa fa-bars"></i> Menu </button> -->
+            <!-- <a href="#news"><i class="fa fa-map text-danger"></i> Terrenos</a> -->
+            <!-- <button class="btn btn-primary"> <i class="fa fa-save"></i> Guardar</button> -->
+        <!-- </div> 
+    </div> -->
+    <!-- NUEVO CLIENTE -->
+    <div class="row" *ngIf="panelVisualizar == 'NuevoCliente' ">
+        <div class="col-sm-12">
+            <h3 class="text-center">Nuevo Cliente</h3>
+            <div class="row">
+                <app-formulario-clientes-separado [Nuevo]="true" [datosCliente]="datosNuevoCliente" (vista)="this.detalleCliente = false" ></app-formulario-clientes-separado>
+            </div>
+        </div>
+    </div>
+    <!-- EDITAR CLIENTE -->
+    <!-- <div class="row" *ngIf="panelVisualizar == 'EditarCliente' ">
+        <div class="col-sm-12">
+            <h3 class="text-center">Editar Cliente</h3>
+            <div class="row">
+                <app-formulario-clientes-separado [datosCliente]="datosDetalle" (vista)=" this.clienteDetalles = this.datosDetalle = false; obtenerClientesActivos();" ></app-formulario-clientes-separado>
+            </div>
+        </div>
+    </div> -->
+    
+    <!-- CLIENTES -->
+    <div class="row" *ngIf="panelVisualizar == 'Clientes'  && !clienteDetalles.IdCliente">
+        <div class="col-sm-12">
+            <h3 class="text-center">Clientes Activos</h3>
+            <input type="text" class="form-control" placeholder="Buscar clientes relacionados con :" [(ngModel)]="textoBuscar" (keydown)="filtrarClientes();" />
+            <div class="row">
+                <button class="btn btn-default col-sm-6" style="border:none;" *ngFor="let a of clientesTodos | paginate: { itemsPerPage: 6, currentPage: pageRetor, id: 'clientes_r' };" (click)="detalleCliente(a);">
+                    <div class="card mb-3 ">
+                        <div class="card-header bg-{{(a.Color)?a.Color:'default'}}">
+                            <i class="fa fa-user"></i> {{a.Codigo}}
+                        </div>
+                        <div class="card-body">
+                            <span class="text-muted"><i class="fa fa-address-book"></i> {{a.Nombre}}</span>
+                            <br>
+                            <span style="font-size: 15px;"><i class="fa fa-dollar"></i> Mantenimiento : {{a.Monto_mantenimiento}} | <i class="fa fa-dollar"></i>Saldo : {{a.Saldo_total}} </span>
+                            <br/>
+                            <table *ngIf="a.Terrenos[0]" class="table table-striped">
+                                <tr><th>Etapa</th><th>Lote</th><th>Parcela</th><th>Estatus</th></tr>
+                                <tr *ngFor="let t of a.Terrenos" ><td><i class="fa fa-map"></i> {{t.etapa}}</td><td>{{t.lote}}</td><td>{{t.parcela}}</td><td>{{t.Estado}}</td></tr>
+                            </table>
+                            <small class="h4 text-info ">Ver Cliente <i class="fa fa-external-link"></i> </small>
+                        </div>
+                    </div>
+                </button>
+                <div class="text-center">
+                    <pagination-controls (pageChange)="pageRetor = $event" id="clientes_r"></pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- MENU PRINCIPAL -->
+    <div class="row text-center menuPrincipal" *ngIf="mostrarPrincipal ">
+        <div class="col-sm-1"></div>
+        <a (click)="mostrarPrincipal=false; panelVisualizar = 'Prospectos';" class="col-sm-4 text-menu ">
+            <img src="../../../assets/images/App_icons/Prospectos.png" />
+            <br>
+            <b >Prospectos</b>
+        </a> 
+        <div class="col-sm-2"></div>
+        <a (click)="mostrarPrincipal=false; obtenerCitas(); panelVisualizar = 'Citas';" class="col-sm-4 text-menu">
+            <img src="../../../assets/images/App_icons/Citas.png" />
+            <br>
+            <b >Citas</b>
+        </a>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-1"></div>
+        <a (click)="mostrarPrincipal=false; panelVisualizar = 'Cotizaciones';" class="col-sm-4 text-menu">
+            <img src="../../../assets/images/App_icons/Cotizaciones.png" />
+            <br>
+            <b >Cotizaciones</b>
+        </a>
+        <div class="col-sm-2"></div>
+        <a (click)="mostrarPrincipal=false; obtenerTerrenosDisponibles(); panelVisualizar = 'Lotes';" class="col-sm-4 text-menu">
+            <img src="../../../assets/images/App_icons/Lotes_disponibles.png" />
+            <br>
+            <b >Lotes</b>
+        </a>
+        <div class="col-sm-1"></div>
+
+    </div>
+
+    <!-- <div class="row" *ngIf="mostrarPrincipal ">
+        <div class="col-lg-12">
+            <br><br>   
+            <div class="card">
+                <div class="d-flex" >
+                    <a class="w-50 bb br px-3" (click)="mostrarPrincipal=false; panelVisualizar = 'Clientes';">
+                        <div class="d-flex align-items-center" >
+                            <em class="fa fa-users fa-2x text-info"></em>
+                            <div class="ml-auto">
+                                <div class="card-body text-right">
+                                    <h4 class="mt-0">{{totales.Clientes}}</h4>
+                                    <p class="mb-0 text-muted">Clientes Actuales</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a class="w-50 bb br px-3" (click)="mostrarPrincipal=false; panelVisualizar = 'Terrenos';">
+                        <div class="d-flex align-items-center">
+                            <em class="fa fa-inbox fa-2x text-danger"></em>
+                            <div class="ml-auto">
+                                <div class="card-body text-right">
+                                    <h4 class="mt-0">{{totales.Terrenos}}</h4>
+                                    <p class="mb-0 text-muted">Terrenos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="d-flex">
+                    <a class="w-50 br px-3" (click)="mostrarPrincipal=false; panelVisualizar = 'Terrenos';">
+                        <div class="d-flex align-items-center">
+                            <em class="fa fa-map fa-2x text-inverse"></em>
+                            <div class="ml-auto">
+                                <div class="card-body text-right">
+                                    <h4 class="mt-0">{{totales.Lotes}}</h4>
+                                    <p class="mb-0 text-muted">Lotes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a class="w-50 px-3" (click)="mostrarPrincipal=false; panelVisualizar = 'Prospectos';">
+                        <div class="d-flex align-items-center" >
+                            <em class="fa fa-address-book fa-2x text-success"></em>
+                            <div class="ml-auto">
+                                <div class="card-body text-right">
+                                    <h4 class="mt-0">{{totales.Prospectos}}</h4>
+                                    <p class="mb-0 text-muted">Prospectos </p>
+                                    <div class="px-2 mr-2 badge badge-danger">{{totales.Pros_alerta}}</div>
+                                    <div class="px-2 mr-2 badge badge-success">{{totales.Pros_activos}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>    
+            <br><br>   
+        </div>
+    </div> -->
+    <!-- CITAS -->
+    <div class="row"  *ngIf="panelVisualizar == 'Citas' ">
+        <div class="col-lg-12">
+            <br>
+            <full-calendar  #calendar
+            defaultView="dayGridMonth"
+            [plugins]="calendarPlugins"
+            (eventDragStop)="mostrarDrop($event);"
+            (eventClick)="modalDatosCita($event);"
+            [events]="calendarEvents"
+            editable= true
+            locale="esLocale"
+            droppable=true;
+            [header]="{ left: 'prev,next',
+                center: 'title',
+                right: 'today,week'}"
+            [buttonText]= "{
+                today: 'Hoy',
+                month: 'Mes',
+                week: 'Semana',
+                day: 'Dia'
+            }"
+            ></full-calendar>
+        </div>
+    </div>
+    <!-- LOTES -->
+    <div class="row"  *ngIf="panelVisualizar == 'Lotes' ">
+        <div class="col-sm-12">
+            <h3 class="text-center">Terrenos Activos</h3>
+            <input type="text" class="form-control" placeholder="Buscar terrenos relacionados con :" [(ngModel)]="terrenosBuscar" (keydown)="filtrarTerrenos();" />
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-6 text-center" *ngFor="let a of terrenos | paginate: { itemsPerPage: 6, currentPage: pageTerr, id: 'terr_r' };">
+                    <div class="card mb-3">
+                        <div class="card-header bg-{{(a.Color)?a.Color:'default'}}">
+                            <i class="fa fa-user"></i> TER-{{a.IdTerreno}}
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <tr><th>Etapa:{{a.etapa}}</th><th>Lote: {{a.lote}}</th><th>Parcela: {{a.parcela}}</th><th>Estatus: {{a.Estado}}</th></tr>
+                            </table>
+                            <span class="text-muted"><i class="fa fa-address-book"></i> {{a.Pertenece}}</span>
+                            <br>
+                            <span style="font-size: 15px;"><i class="fa fa-chart-area"></i> Superficie : {{a.Superficie}} |  Asignado : <i class="fa fa-{{(!a.Asignado)?'times-circle text-danger':'plus-circle text-success'}}"></i> </span>
+                            <br/>
+                            <br/>
+                            <button (click)="apartarTerreno();" style="margin: 10px;" class="btn btn-info col-xs-6"> Apartar Terreno <i class="fa fa-shopping-cart"></i> </button>
+                            <button class="btn btn-warning col-xs-6 " style="margin: 10px;"  (click)="abrirModal(modalTerrenosLat); terrenoActual = a; modalDatos = {Tipo: 'Modal Terrenos', Clase: 'bg-info', Titulo: 'Mapa del Terreno'};"><i class="fa fa-map"></i> Datos y Ubicación</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <pagination-controls (pageChange)="pageTerr = $event" id="terr_r"></pagination-controls>
+                </div>
+            </div>
+        </div>   
+    </div>
+
+    <!-- EDITAR CLIENTE -->
+    <div class="col-xs-12" *ngIf=" clienteDetalles.IdCliente || datosDetalle">
+        <ngb-tabset>
+            <ngb-tab>
+                <ng-template ngbTabTitle ><b>Datos Cliente</b> </ng-template>
+                <ng-template ngbTabContent>
+                    <div class="row" >
+<!--                                    <div class="col-lg-12">
+                            <button (click)="estadosCuenta();" class="btn btn-success" ><i class="fa fa-credit-card"></i> Detalle Cliente</button>
+                        </div>-->
+                        <div class="col-lg-12" *ngIf="!datosDetalle">
+                            <div class="card-body">
+                                <div class="row" *ngIf="clienteDetalles.IdCliente">
+                                    <div class="col-lg-12">
+                                        <button class="btn btn-warning pull-right" (click)="panelVisualizar = ''; mostrarPrincipal = false; EditarCliente();"><i class="fa fa-pencil"></i> | Editar Cliente</button>
+                                        <br><br>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="card card-default">
+                                            <div class="card-header" style="color:#000 !important; ">
+                                                <h4>Saldos Cliente</h4>
+                                            </div>
+                                             <div class="list-group">
+                                                 <table class="table table-stripped table-bordered">
+                                                     <tr *ngIf="clienteDetalles.Credito_original > 0">
+                                                         <td>
+                                                            <b><i class="fa fa-dollar"></i> Crédito Original:</b>
+                                                         </td>
+                                                         <td>
+                                                            $ {{clienteDetalles.Credito_original | number}}
+                                                         </td>
+                                                    </tr>
+                                                    <tr *ngIf="clienteDetalles.Saldo_adeudo > 0">
+                                                        <td>
+                                                            <b><i class="fa fa-money"></i> Saldo Enganche:</b>
+                                                        </td>
+                                                        <td>
+                                                            $ {{clienteDetalles.Saldo_adeudo | number}}
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="clienteDetalles.Saldo_credito > 0">
+                                                        <td>
+                                                            <b><i class="fa fa-credit-card"></i> Saldo Pendiente:</b>
+                                                        </td>
+                                                        <td>
+                                                            $ {{clienteDetalles.Saldo_credito | number}}
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="clienteDetalles.Saldo_mantenimiento > 0">
+                                                        <td>
+                                                            <b><i class="fa fa-home"></i> Saldo Mantenimiento:</b>
+                                                        </td>
+                                                        <td>
+                                                            $ {{clienteDetalles.Saldo_mantenimiento | number}}
+                                                        </td>
+                                                    </tr>  
+                                                    <tr *ngIf="clienteDetalles.Saldo_agua > 0">
+                                                        <td>
+                                                            <b><i class="fa fa-dollar"></i> Contrato de Agua:</b>
+                                                        </td>
+                                                        <td>
+                                                            $ {{clienteDetalles.Saldo_agua | number}}
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="clienteDetalles.Saldo_certificado > 0">
+                                                        <td>
+                                                            <b><i class="fa fa-address-card"></i> Saldo Certificado:</b>
+                                                        </td>
+                                                        <td>
+                                                            $ {{clienteDetalles.Saldo_certificado | number}}
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="clienteDetalles.Saldo_total > 0">
+                                                        <td>
+                                                            <b><i class="fa fa-dollar"></i> Saldo Total:</b>
+                                                        </td>
+                                                        <td>
+                                                            $ {{clienteDetalles.Saldo_total | number}}
+                                                        </td>
+                                                    </tr>
+                                                    <tr *ngIf="clienteDetalles.Credito_original > 0">
+                                                        <td>
+                                                            <b><i class="fa fa-dollar"></i> Proximo Mantenimiento:</b>
+                                                        </td>
+                                                        <td>
+                                                            2020-01-01 | $ {{clienteDetalles.Monto_mantenimiento | number}}
+                                                        </td>
+                                                    </tr>                                                                    
+                                                 </table>                                                                
+                                             </div>
+                                            <!-- <div class="card-footer"><a class="text-sm" href="#">Load more</a></div> -->
+                                        </div>
+                                        <div class="card-header" style="color:#000 !important; ">
+                                            <h4>Terrenos del cliente  </h4>
+                                        </div>
+                                        <div class="list-group text-left" style="overflow:auto;">
+                                            <table class="table table-stripped table-bordered " *ngIf="clienteDetalles.Terrenos">
+                                                <tr><th>Dueño Original</th><th>Dueño Actual</th><th>Superficie</th><th>Lote</th><th>Etapa</th><th>Parcela</th> <th>Estatus</th></tr>
+                                                <tr  *ngFor="let t of clienteDetalles.Terrenos">
+                                                    <td>
+                                                        {{t.Original}}
+                                                    </td>
+                                                    <td>
+                                                        {{t.Pertenece}}
+                                                    </td>
+                                                    <td>
+                                                        {{t.Superficie}}
+                                                    </td>                                                                        
+                                                    <td>
+                                                        {{t.lote}}
+                                                    </td>
+                                                    <td>
+                                                        {{t.etapa}}
+                                                    </td>
+                                                    <td>
+                                                        {{t.parcela}}
+                                                    </td>                                                                        
+                                                    <td>
+                                                        {{t.Estado}}
+                                                    </td>                                                                        
+                                                </tr>
+                                            </table>
+                                        </div>                                                        
+                                    </div>
+                                    <div class="col-lg-6" >
+                                        <div class="card card-default">
+                                            <div class="card-header" style="color:#000 !important; ">
+                                                <h4>Datos Basicos </h4>
+                                            </div>
+                                            <div class="card-body row text-left">
+                                                <div class="col-lg-4">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> #Cliente:</label>
+                                                        {{ clienteDetalles.Codigo}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-8">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> Nombre : </label>
+                                                        {{ clienteDetalles.Nombre}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> Correo : </label>
+                                                        {{ clienteDetalles.Correo}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> Fecha Nacimiento :</label>
+                                                        {{ clienteDetalles.Fecha_nacimiento}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> IFE :</label>
+                                                        {{ clienteDetalles.Num_ife}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> Origen :</label>
+                                                        {{ clienteDetalles.Origen}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> Teléfono :</label>
+                                                        {{ clienteDetalles.Telefono}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> Direccion :</label>
+                                                        {{ clienteDetalles.Direccion}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> Monto Mantenimiento Actual :</label>
+                                                        {{ clienteDetalles.Monto_mantenimiento | number}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> Periodo de cobro :</label>
+                                                        {{ clienteDetalles.Periodo_cobro}} Meses
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> Referencia :</label>
+                                                        {{ clienteDetalles.Referencia_1}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6">
+                                                    <div class="form-group">
+                                                        <label class="label-form"> Cel Referencia :</label>
+                                                        {{ clienteDetalles.TelRef_1}}
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <label class="label-form"> Observaciones:</label>
+                                                    {{ clienteDetalles.Observaciones}}
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <br>
+                                        <div class="card card-default">
+                                            <div class="card-header" style="color:#000 !important; ">
+                                                <h4>Contratos del cliente</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <!-- <div class="col-lg-12">
+                                                    <b>Parcelas:</b> {{clienteDetalles.Parcela}}
+                                                    <b>Lotes:</b> {{clienteDetalles.Lote}}
+                                                    <b>Etapas:</b> {{clienteDetalles.Etapa}}
+                                                    <b>Estatus:</b> {{clienteDetalles.Estado}}
+                                                </div> -->
+                                                <div class="col-lg-12">
+                                                    <div class="row">
+                                                        <div class="col-lg-12" *ngIf="terrenoDatos" >
+                                                            <div class="row">
+                                                                <div class="col-lg-12"><h5><b>Datos del terreno </b></h5></div>
+                                                                <hr>
+                                                                <div class="col-lg-6">
+                                                                    <div class="form-group">
+                                                                        <label class="label-form"> Dueño Original:</label>
+                                                                        {{terrenoDatos.Pertenece}}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-6">
+                                                                    <div class="form-group">
+                                                                        <label class="label-form"> Superficie :</label>
+                                                                        {{ terrenoDatos.Superficie | number}}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-12">
+                                                                    <div class="form-group">
+                                                                        <label class="label-form"> Datos sección :</label>
+                                                                        Lote: {{terrenoDatos.lote}} - Etapa: {{terrenoDatos.etapa}} - Parcela: {{terrenoDatos.parcela}}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <hr>
+                                                        </div>                                                                        
+                                                        <div class="col-lg-6">
+                                                            <div class="form-group">
+                                                                <label class="label-form"> Selecciona Terreno </label>
+                                                                <select *ngIf="clienteDetalles.Terrenos" class="form-control" (change)="obtenerContratoTerreno();" [(ngModel)]="IdTerrenoContrato" >
+                                                                    <option value="0">Selecciona el terreno</option>
+                                                                    <option  *ngFor=" let ter of clienteDetalles.Terrenos" value="{{ter.IdTerreno}}" > Lote: {{ter.lote}} - Etapa: {{ter.etapa}} - Parcela: {{ter.parcela}}</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-6"><br><button *ngIf="contenidoContrato" class="btn btn-warning" (click)="enviarContratoCorreo();">Enviar contrato por correo</button></div>
+                                                        <div class="col-xl-12 col-lg-12 col-xs-12" *ngIf="contenidoContrato">
+                                                            <div class="card mb-3">
+                                                                <div class="card-header "  style="color: #000 !important;">
+                                                                    Contrato de nuevo cliente
+                                                                </div>
+                                                                <div class="card-body" *ngIf="contenidoContrato" [froalaEditor] [(froalaModel)]="contenidoContrato"></div>
+                                                                <div class="col-lg-12">
+                                                                    <div class="form-group">
+                                                                        <label class="label-form"> &nbsp;</label><br>
+                                                                        <button class="btn btn-primary pull-right" (click)="guardarContrato();">Guardar Contrato</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>                                                                
+                                            </div>
+                                        </div>
+                                    </div>                                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12" *ngIf="datosDetalle">
+                            <br>
+                            <button class="btn btn-warning pull-right" (click)="this.clienteDetalles = datosDetalle; this.datosDetalle = false;"> Regresar </button>
+                            <br>
+                            <br>
+                            <app-formulario-clientes-separado [datosCliente]="datosDetalle" (vista)=" this.clienteDetalles = this.datosDetalle = false; obtenerClientesActivos();" ></app-formulario-clientes-separado>
+                        </div>   
+                    </div>                                 
+                </ng-template>
+            </ngb-tab>
+            <ngb-tab>
+                <ng-template ngbTabTitle><b>Financiamiento</b> </ng-template>
+                <ng-template ngbTabContent>
+                    <div class="row" >
+<!--                                        <div class="col-lg-12">
+                            <button class="btn btn-danger pull-right" (click)="confirmarModificacionCotizacion();">Modificar Cotización</button>
+                            <hr><br>
+                        </div>-->
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="label-form"> Selecciona Terreno </label>
+                                <select *ngIf="clienteDetalles.Terrenos" class="form-control" (change)="filtrarTerrenosMensualidad();" [(ngModel)]="idTerrenoMensualidad" >
+                                    <option value="0">Selecciona el terreno</option>
+                                    <option  *ngFor=" let ter of clienteDetalles.Terrenos" value="{{ter.IdTerreno}}" > Lote: {{ter.lote}} - Etapa: {{ter.etapa}} - Terreno: {{ter.parcela}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6"></div>
+                        <div class="col-lg-6" *ngFor=" let ter of clienteDetalles.Terrenos" > 
+                            <div class="card mb-3" *ngIf="!ter.TerrenoMostrar">
+                                <div class="card-header bg-warning">
+                                    Abonos Lote: {{ter.lote}}, Etapa: {{ter.etapa}}, Parcela: {{ter.parcela}}
+                                </div>
+                                <div class="card-body ">
+                                    <app-datatables-general  *ngIf="ter.Mensualidades" [datosDatatable]="ter.Mensualidades" ></app-datatables-general>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="anualidadesVista">
+                        <div class="col-lg-6" *ngFor=" let ter of clienteDetalles.Terrenos"> 
+                            <div class="card mb-3">
+                                <div class="card-header bg-info">
+                                    Abonos Lote: {{ter.lote}}, Etapa: {{ter.etapa}}, Parcela: {{ter.parcela}}
+                                </div>
+                                <div class="card-body ">
+                                    <app-datatables-general  *ngIf="ter.Anualidades" [datosDatatable]="ter.Anualidades" ></app-datatables-general>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                                    
+                </ng-template>
+            </ngb-tab>
+            <ngb-tab>
+                <ng-template ngbTabTitle><b>Mantenimientos</b> </ng-template>
+                <ng-template ngbTabContent>
+                    <div class="row" >
+<!--                                        <div class="col-lg-12"><h3 class="text-center"> Actualizar Datos Mantenimiento </h3><hr></div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label class="label-form"> Selecciona Terreno </label>
+                                <select *ngIf="clienteDetalles.Terrenos" class="form-control" (change)="cambiarTazasMantenimiento();" [(ngModel)]="IdTerrenoMantenimiento" >
+                                    <option value="0">Selecciona el terreno</option>
+                                    <option  *ngFor=" let ter of clienteDetalles.Terrenos" value="{{ter.IdTerreno}}" > Lote: {{ter.lote}} - Etapa: {{ter.etapa}} - Terreno: {{ter.parcela}}</option>
+                                </select>
+                            </div>
+                        </div>-->
+                        <div class="col-lg-12">
+                            <div class="col-lg-12"><h3 class="text-center"> Mantenimientos abonados </h3><hr></div>
+                        </div>
+                        <div class="col-lg-6" > 
+                            <div class="card mb-3">
+                                <div class="card-header bg-danger">
+                                    Mantenimientos Detalle
+                                </div>
+                                <div class="card-body ">
+                                    <app-datatables-general  *ngIf="mantenimientosTodos" [datosDatatable]="mantenimientosTodos" ></app-datatables-general>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                                    
+                </ng-template>
+            </ngb-tab>
+<!--                            <ngb-tab>
+                <ng-template ngbTabTitle><b>Adeudos</b> </ng-template>
+                <ng-template ngbTabContent>
+                </ng-template>
+            </ngb-tab>                            -->
+        </ngb-tabset>    
+    </div>
+    <!-- COTIZADOR -->
+    <div class="row" *ngIf="panelVisualizar == 'Cotizaciones' ">
+        <div class="col-sm-12">
+            <h3 class="text-center">Nueva Cotización</h3>
+            <div class="row">
+                <app-cotizador></app-cotizador>
+            </div>
+        </div>
+    </div>
+    <!-- DETALLES PROSPECTOS -->
+    <div class="row" *ngIf="panelVisualizar == 'Prospectos' ">
+        <div class="col-sm-12">
+            <div class="card-header bg-transparent">
+                <h3>
+                    <div class="px-2 float-right badge" style="margin-top:-5px;">
+                        <button class="btn button-default" (click)="nuevoProspecto = !nuevoProspecto"><i class="fa fa-2x fa-{{(!nuevoProspecto)?'plus-circle text-success':'minus-circle text-danger'}}"></i></button>
+                    </div>
+                    Prospectos
+                    <div class="px-2 mr-2 badge badge-danger">{{totales.Pros_alerta}}</div>
+                    <div class="px-2 mr-2  badge badge-success">{{totales.Pros_activos}}</div>
+                    <br>
+                </h3>
+            </div>
+            <div class="card-body" style=" max-height: 500px; overflow:auto;" > 
+                <hr>
+                <div class="col-xs-12"  *ngIf="nuevoProspecto" >
+                    <div class="form-group">
+                        <input type="text" class="form-control" [(ngModel)]="nombreProspecto" placeholder="Nombre del prospecto" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" [(ngModel)]="telefonoProspecto" placeholder="Cel: 6621232222" />
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-control" [(ngModel)]="correoProspecto" placeholder="Email: jesus.ortiz@gmail.com" />
+                    </div>
+                    <div class="form-group">
+                        <textarea  class="form-control" [(ngModel)]="descripcionProspecto" placeholder="Descripción leve de las necesidades del cliente"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary form-control" (click)="guardarNuevoProspecto();"><i class="fa fa-save"></i> Guardar</button>
+                    </div>
+                </div>
+                <div class="list-group" *ngIf="!nuevoProspecto && Prospectos[0]">
+                    <div class="list-group-item list-group-item-action " *ngFor="let p of Prospectos"  (touchstart)="marcarLateral($event);"  (touchmove)="menuLateral($event,p)"  >
+                    <a (click)="confirmarEliminarUsuario(p);" style="cursor:pointer;"><div *ngIf="p.Lateral" [@flyInOut]="'in'"  class="danger-element list-group-item list-group-item-action"> <i class="fa fa-2x fa-times-circle"></i></div></a>
+                        <div class="media" (click)="p.Atender = !p.Atender;">
+                            <div class="align-self-start mx-2 circle thumb55" >
+                                <i class="fa fa-user fa-3x" style="margin-left:8px;"></i> 
+                            </div>
+                            <div class="media-body text-truncate">
+                                <p class="mb-1">
+                                    <strong class="text-primary">
+                                        <span class="circle bg-success circle-lg text-left"></span>
+                                        <span>{{p.Nombre_prospecto}}</span>
+                                    </strong>
+                                </p>
+                                <p class="mb-1 text-sm">{{p.Descripcion}}</p>
+                            </div>
+                            <div class="ml-auto">
+                                <small class="text-muted ml-2">{{p.Lapso}}h</small>
+                            </div>
+                        </div>
+                        <div class="media-body list-group" *ngIf="p.Atender">
+                            <br>
+                            <a href="tel:{{p.Telefono}}"><div class="list-group-item list-group" ><i class="fa fa-phone-square"></i> Llamar </div></a>
+                            <a href="https://mail.google.com/mail/?view=cm&fs=1&tf=1&to={{p.Correo}}" target="_blank"><div class="list-group-item list-group" ><i class="fa fa-envelope"></i> Mandar Información </div></a>
+                            <a href="https://mail.google.com/mail/?view=cm&fs=1&tf=1&to={{p.Correo}}" target="_blank"><div class="list-group-item list-group" ><i class="fa fa-envelope"></i> Enviar Cotización </div></a>
+                            <a style="cursor:pointer; color: #007bff;" (click)="agendarCita(); modalDatos = {Tipo: 'AgendarCita', Clase: 'bg-info', Titulo: 'Agendar Cita al retiro'} "><div class="list-group-item list-group" ><i class="fa fa-calendar"></i> Agendar Visita </div></a>
+                            <button class="btn btn-primary" (click)="apartarTerreno(p);">Apartar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row text-center navbarBottom">
+    <div class="col-sm-4">
+        <a  (click)="mostrarPrincipal=false; panelVisualizar = 'NuevoCliente';" > <i class="fa fa-plus-circle text-success"></i> Nuevo</a>
+    </div>
+    <div class="col-sm-4">
+        <a  class="menuCenter" (click)="mostrarPrincipal = true; panelVisualizar = '' "> <i class="fa fa-bars"></i>  </a>
+    </div>
+    <div class="col-sm-4">
+        <a  (click)="mostrarPrincipal=false; panelVisualizar = 'Cotizaciones';" > <i class="fa fa-clipboard text-warning"></i> Cotizaciones</a>
+    </div>          
+    <!-- <a  (click)="mostrarPrincipal=false; panelVisualizar = 'Terrenos';" ><i class="fa fa-map text-danger"></i> Terrenos</a>  -->  
+</div>
+<ng-template #modalCita let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header modal-lg">
+        <!-- Generar Pagos con Cotizacion -->
+        <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="modalCita.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="form-group"> 
+                    <label class="label-form">Fecha</label><br>
+                    <input type="date" class="form-control" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+</ng-template>
+<ng-template #modalTerrenosLat let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header {{modalDatos.Clase?modalDatos.Clase:''}}">
+        <!-- Generar Pagos con Cotizacion -->
+        <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-12" *ngIf="terrenoActual.Latitud && terrenoActual.Longitud">
+                <agm-map [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [zoom]="18" >
+                    <agm-marker [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [label]="'M'"></agm-marker>
+                </agm-map>
+            </div>
+        </div>
+    </div>
+</ng-template>

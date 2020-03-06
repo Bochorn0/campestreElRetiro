@@ -1,0 +1,170 @@
+<div [@routerTransition]>
+    <app-page-header [heading]="'Empleados'" [icon]="'fa-desktop'"></app-page-header>
+    <!--Menu principal-->
+    <div class="row">
+        <div class="col-xs-12 col-xl-12 col-lg-12">
+            <button (click)="nuevoEmpleado();" class="btn btn-success"><i class="fa fa-plus-circle"></i> Nuevo Empleado</button>
+            <br><br>
+        </div>
+        <div class="col-xl-6 col-lg-6">
+            <app-stat [bgClass]="'primary'" [icon]="'fa-address-book'" [label]="'Empleados Activos'" (event)="mostrarEmpleados($event);"></app-stat>
+        </div>
+        <div class="col-xl-6 col-lg-6">
+            <app-stat [bgClass]="'warning'" [icon]="'fa-wrench'" [label]="'Nomina'" (event)="mostrarCalcularNomina($event);" ></app-stat>
+        </div>
+    </div>
+    <hr />
+    <div class="row" *ngIf="this.vistaCentro">
+        <div class="col-xl-12 col-lg-12 col-xs-12">
+            <!--Empleados Activos-->
+            <div class="row" *ngIf="this.empladosActivos" [@routerTransition]>
+                <div class="col-xl-12 col-lg-12 col-xs-12" *ngIf="this.empladosActivos">
+                    <div class="card mb-3">
+                        <div class="card-header bg-primary">
+                            Empleados Activos
+                        </div>
+                        <div class="card-body">
+                            <app-datatables-general *ngIf="this.empladosActivos" [datosDatatable]="this.empladosActivos"></app-datatables-general>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Calcular Nominas-->
+            <div class="row" *ngIf="this.mostrarNomina" [@routerTransition]>
+                <div class="col-xl-12 col-lg-12 col-xs-12" >
+                    <div class="card mb-3">
+                        <div class="card-header bg-warning">
+                            Calcular Nomina
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Empleado </label>
+                                        <input autofocus id="typeahead-format" placeholder="Nombre del empleado:" type="text" class="form-control" [(ngModel)]="catalogoEmpleados.Nombre" [ngbTypeahead]="filtrarEmpleado" (selectItem)="seleccionarEmpleado($event)" [resultFormatter]="formatter" />
+                                        <input type="hidden" value="0" *ngIf="datosEmpleado" [(ngModel)]="datosEmpleado.IdEmpleado" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"> Sueldo  </label>
+                                        <input type="number"  [(ngModel)]="sueldoEmpleado" class="form-control"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"> Horas  </label>
+                                        <input type="number"  [(ngModel)]="horasLaboradas" class="form-control"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"> Descuentos  </label>
+                                        <input type="number"  [(ngModel)]="descuentos" class="form-control"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"> Bonos  </label>
+                                        <input type="number"  [(ngModel)]="bonos" class="form-control"/>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="col-lg-12" *ngIf="datosEmpleado">
+                                    <h4 class="text-danger text-center">Ventas Acumuladas</h4>
+                                    <table class="table table-hover table-stripped">
+                                        <tr>
+                                            <th>Folio</th>
+                                            <th>Tipo</th>
+                                            <th>Terreno</th>
+                                            <th>Fecha venta</th>
+                                            <th>Monto</th>
+                                            <th>Comision</th>
+                                        </tr>
+                                        <tr *ngFor="let ven of datosEmpleado.Ventas">
+                                            <td>{{ven.Folio_venta}}-{{ven.IdVenta}}</td>
+                                            <td>{{ven.Tipo_venta}}</td>
+                                            <td>Parcela:{{ven.DatosTerreno.parcela}} - Lote: {{ven.DatosTerreno.lote}} - Etapa: {{ven.DatosTerreno.etapa}}</td>
+                                            <td>{{ven.Fecha_venta.split('T')[0]}}</td>
+                                            <td>{{ven.Importe|number}}</td>
+                                            <td><input style="width: 150px;" class="form-control" type="number" placeholder="Comision: %" [(ngModel)]="ven.Comision" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-lg-12 pull-right"><button class="btn btn-info pull-right" (click)="calcularNominaEmpleado();">Calcular</button></div>
+                                <div class="col-lg-12" *ngIf="nominaCalculada">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-info">
+                                            Nomina de {{datosEmpleado.Nombre}}
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-stripped table-hover">
+                                                <tr><th>Horas Laboradas</th><th>Comisiones</th><th>Sueldo</th><th>Bonos</th><th>Descuentos</th><th>Total</th></tr>
+                                                <tr><td>{{datosEmpleado.Horas}}</td><td>{{datosEmpleado.Comisiones}}</td><td>{{datosEmpleado.Sueldo}}</td><td>{{datosEmpleado.Bonos}}</td><td>-{{datosEmpleado.Descuentos_totales}}</td><td>$ {{totalNomina}}</td></tr>
+                                            </table>
+                                            <button class="btn btn-success pull-right" (click)="guardarNomina();">Guardar Nomina</button>
+                                        </div>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--Nuevo Empleado-->
+            <div class="row" *ngIf="this.altaEmpleado" [@routerTransition]>
+                <div class="col-xs-12 col-xl-12 col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Nuevo Empleado
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Nombre</label>
+                                        <input type="text" class="form-control" placeholder="Nombre empleado: " [(ngModel)]="nombre" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Correo </label>
+                                        <input type="text" class="form-control" placeholder="Correo:"  [(ngModel)]="correo"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Puesto </label>
+                                        <select class="form-control" [(ngModel)]="puesto" >
+                                            <option value="0">Selecciona el puesto</option>
+                                            <option *ngFor="let pue of catalogoPuestos" value="pue.Nombre_perfil">{{pue.Nombre_perfil}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Sueldo </label>
+                                        <input type="text" class="form-control" placeholder="10000" [(ngModel)]="sueldo" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Fecha nacimiento </label>
+                                        <input type="date" class="form-control" [(ngModel)]="fNacimiento" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> &nbsp;</label><br>
+                                        <button (click)="guardarEmpleadoNuevo();"  class="btn btn-primary pull-right">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

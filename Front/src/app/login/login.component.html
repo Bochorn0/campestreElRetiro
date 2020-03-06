@@ -1,0 +1,19 @@
+<div class="login-page" [@routerTransition]>
+    <div class="row justify-content-md-center">
+        <div class="col-md-4">
+            <form>
+                <img src="assets/images/logo.png" width="150px" class="user-avatar" />
+                <h1>Campestre el Retiro</h1>
+                    <div class="form-group">
+                        <input type="text"  class="form-control input-underline" name="correo" [(ngModel)]="correo"  placeholder="Correo">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control input-underline" name="password" [(ngModel)]="password" placeholder="Password">
+                    </div><!--[routerLink]="['/Inicio']"-->                    
+                <input type="submit" class="btn rounded-btn" [routerLink]="['/Inicio']" (click)="onLoggedin()" value="Entrar" />
+                &nbsp;
+<!--                <a class="btn rounded-btn" [routerLink]="['/signup']">Register</a>-->
+            </form>
+        </div>
+    </div>
+</div>

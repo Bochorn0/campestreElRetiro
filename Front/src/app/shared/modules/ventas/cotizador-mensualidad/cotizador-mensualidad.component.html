@@ -1,0 +1,135 @@
+<div class="row">
+    <div class="col-lg-12 text-center  alert alert-danger" role="alert">
+        <label class="label-form" > 
+            <b *ngIf="costoTotal">Costo Total del Terreno : $ {{costoTotal | number}}</b>
+            <b *ngIf="totalFinal">&nbsp;&nbsp;|&nbsp;&nbsp; Total Final Con Intereses : $ {{totalFinal | number}}</b>
+        </label>
+    </div>
+    <div class="col-lg-12">
+        <div id="cotizacion" class="row">
+<!--                    <div class="col-lg-3">
+                <img src="../../../../../../assets/images/logo_recibo.png" />
+            </div>
+            <div class="col-lg-9"></div>-->
+            <div class="col-lg-3">
+                <div class="form-group">
+                    <label class="label-form"> Superficie </label>
+                    <input type="number" [(ngModel)]="superficie" (change)="calcularAmortizacion();" placeholder="1500" class="form-control">
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    <label class="label-form"> $ Metro </label>
+                    <input type="number" [(ngModel)]="precioMetro" (change)="calcularAmortizacion();" placeholder="140" class="form-control">
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    <label class="label-form"> Enganche </label>
+                    <input type="number" [(ngModel)]="enganche" (change)="calcularAmortizacion(true);" placeholder="10000" class="form-control">
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    <label class="label-form"> Interes </label>
+                    <input type="number" [(ngModel)]="interesAnual" (change)="calcularAmortizacion();" placeholder="18%" class="form-control">
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    <label class="label-form"> # Pagos </label>
+                    <input type="number" [(ngModel)]="pagosMensuales" (change)="calcularAmortizacion();" placeholder="72" class="form-control">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    <label class="label-form"> Primer Pago </label>
+                    <input type="date" [(ngModel)]="fPrimeraMensualidad" (change)="calcularAmortizacion();" class="form-control">
+                </div>
+            </div>
+<!--                    <div class="col-lg-3"  *ngIf="costoTotal">
+                <div class="form-group">
+                    <label class="label-form"> Costo Total </label><br>
+                    <label class="label-form text-danger" *ngIf="costoTotal">{{costoTotal}}</label>
+                    <input type="number" [(ngModel)]="costoTotal" (change)="calcularAmortizacion();" placeholder="140" class="form-control">
+                </div>
+            </div>-->
+            <div class="col-lg-3" >
+                <div class="form-group">
+                    <label class="label-form"> Mensualidad </label>
+                    <input type="number" [(ngModel)]="totalMensual" (change)="calcularAmortizacion();" placeholder="0" class="form-control" >
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group pull-right">
+                    <label class="label-form"> <br> </label><br>
+                    <button class="btn btn-info"  (click)="calcularAmortizacion(true);"> <i class="fa fa-calculator"> </i> Mensualidad </button>
+                </div>
+            </div>
+            <div class="col-lg-12"><br></div>
+            <div class="col-lg-12 " *ngIf="cotizacionMensualidades">
+                <div class="card mb-3">
+                    <div class="card-header bg-info">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                Mensualidades 
+                            </div>
+                            <div class="col-lg-3">
+                                <select class="form-control" name="paginacion_Datos" [(ngModel)]="paginadoDatos" >
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="1000000000000000000000">Todos</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3">
+                                <b class="pull-right">Total: $ {{acumuladoMen | number}}</b>     
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="card-body " id='IdCotizacion' style="overflow:auto;">
+                        <table class="table table-stripped" *ngIf="cotizacionMensualidades">
+                            <tr>
+                                <th> <input type="checkbox" [(ngModel)]='todosChkMensualidades' (change)="cambiarTodosChk();" />  # Pago </th>
+                                <th> Fecha </th>
+                                <th> Interes </th>
+                                <th> A Capital </th>
+                                <th> Total </th>
+                                <th> Saldo </th>
+                            </tr>
+                            <tr *ngFor="let p of cotizacionMensualidades.Datos  | paginate: { itemsPerPage: paginadoDatos,currentPage: page_promociones, id: 'IdCotizacion' };" [ngClass]="{'bg-gray':p.Pagado }">
+                                <td> <input type="checkbox" (change)="cambioChk();" [(ngModel)]="p.Pagado" /> {{p.Pago}}</td>
+                                <td> {{p.Fecha}}</td>
+                                <td> {{p.Interes}}</td>
+                                <td>$ {{p.Capital | number}}</td>
+                                <td *ngIf="totalMensual == p.Total">$ {{ p.Total | number}}</td>
+                                <td *ngIf="totalMensual < p.Total">$ {{ totalMensual | number}} <b  class="text-danger"> + ($ {{ (p.Total-totalMensual)  | number}})</b> </td>
+                                <td>$ {{p.Saldo | number}}</td> s
+                            </tr>
+                        </table>
+                        <!-- <app-datatables-general #datatableMensualidades *ngIf="this.cotizacionMensualidades" [datosDatatable]="this.cotizacionMensualidades" ></app-datatables-general> -->
+                        <div class="text-center">
+                                <pagination-controls (pageChange)="page_promociones = $event" id="IdCotizacion"></pagination-controls>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="col-lg-6 " *ngIf="cotizacionAnualidades">
+                <div class="card mb-3">
+                    <div class="card-header bg-info">
+                        2 Opcion con Anualidades
+                    </div>
+                    <div class="card-body ">
+                        <app-datatables-general #datatableAnualidades *ngIf="this.cotizacionAnualidades" [datosDatatable]="this.cotizacionAnualidades" ></app-datatables-general>
+                    </div>
+                </div>
+            </div> -->
+            <div class="col-lg-12"><br></div>
+            <!-- <div class="col-lg-12"><br>
+                <button *ngIf="cotizacionMensualidades" class="btn btn-primary pull-right" (click)="guardarCotizacion();">Guardar cotización</button> 
+                <button *ngIf="cotizacionMensualidades" class="btn btn-warning pull-right" (click)="bajarCotizacion();"><i class="fa fa-arrow-down"></i> Agregar Cotización</button>
+            </div> -->
+        </div>
+    </div>
+</div>

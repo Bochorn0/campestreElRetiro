@@ -1,0 +1,61 @@
+<div class="row" style="overflow-x: auto;" *ngIf="this.datosDatatable">
+    <div class="col-xs-6">
+      <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon"><i class="fa fa-search"></i></div>
+            <input type="text" class="form-control" (keyup)="buscarEn();" placeholder="Buscar en tabla" [(ngModel)]="this.textoBuscar">
+          </div>      
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <select class="form-control" name="paginacion_Datos" [(ngModel)]="this.paginadoDatos" >
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="{{this.movimientos?.length}}">Todos</option>
+        </select>
+    </div>
+    <div class="col-xs-3">
+      <b style="cursor:pointer;" (click)="cambiarCampos();"> <i class="fa fa-eye pull-right boton-ver"></i> </b>
+      <div class="campos" *ngIf="this.visualizarCampos && this.columnasTodas " >
+        <div *ngFor="let cols of this.columnasTodas">
+          <input type="checkbox"  [(ngModel)]="cols.Activa" (change)="columnasVisualizables();"/> {{cols.Nombre}}
+        </div>
+      </div>
+  <!--    <a type="button" class="pull-right text-green  boton-excel" (click)="generarExcel()" title="Guardar como excel"><i class="fa fa-file-excel-o"></i></a>-->
+    </div>
+    <div class="col-xs-12">
+      <hr style="padding: 0; margin:0;">
+      <table class="table table-hover table-striped">
+        <thead *ngIf="this.datosDatatable.Columnas">
+          <tr>
+            <th *ngIf="this.permiteSeleccionar"><input type="checkbox" (change)="seleccionarTodos();" [(ngModel)]="this.todosChk"></th>
+            <th  *ngFor="let col of this.datosDatatable.Columnas">
+              <b style="cursor:pointer;" (click)="cambiarOrden(col)">{{col}}
+                <i *ngIf="col ==  this.columnaOrden" class="fa fa-caret-{{this.orden}}"></i>
+              </b>
+            </th>
+            <th *ngIf="permiteEliminar || permiteDesactivar || permiteEditar || permiteActivar || permiteVerDetalle" > <b style="font-size: 16px; color: #666;"><i class="fa fa-gear"></i></b></th>
+            
+          </tr>
+        </thead>
+        <tbody id="{{this.rand_id}}">
+            <tr *ngFor="let movs of this.movimientos | paginate: { itemsPerPage: this.paginadoDatos, currentPage: this.datosPage, id:this.rand_id }" >
+              <td *ngIf="this.permiteSeleccionar" style="width: 20px;"><input type="checkbox" [(ngModel)]="movs['chk']" (change)="enviarChecks();"> </td>
+              <td *ngFor="let col of this.datosDatatable.Columnas"> <input *ngIf="movs['Obj'].Editar" type="text" [(ngModel)]="movs[col]" class="form-control" /> <p *ngIf="!movs['Obj'].Editar">{{movs[col]}}</p></td>
+              <td *ngIf="permiteEliminar || permiteDesactivar || permiteEditar || permiteActivar || permiteVerDetalle" style="width: 50px; font-size: 12px;">
+                <b style="cursor:pointer;margin-right: 2px;" *ngIf="this.permiteActivar" (click)="activarObj(movs['Obj']);" title="Activar elemento"><i class="fa fa-check-circle text-success"></i></b> 
+                <b style="cursor:pointer;margin-right: 2px;" *ngIf="this.permiteDesactivar" (click)="desactivarObj(movs['Obj']);" title="Desactivar elemento"><i class="fa fa-ban text-secondary"></i></b>
+                <b style="cursor:pointer;margin-right: 2px;" *ngIf="this.permiteEditar" (click)="editarObj(movs['Obj']);" title="Editar elemento"><i class="fa fa-edit text-warning"></i></b>
+                <b style="cursor:pointer;margin-right: 2px;" *ngIf="this.permiteEliminar" (click)="eliminarObj(movs['Obj']);" title="Borrar elemento"><i class="fa fa-times text-danger"></i></b>
+                <b style="cursor:pointer;margin-right: 2px;" *ngIf="this.permiteVerDetalle" (click)="emitirDetalle(movs['Obj']);" title="Ver mas"> ...</b>
+                <b style="cursor:pointer;margin-right: 2px;"*ngIf="movs['Obj'].Editar" (click)="guardarEditar(movs);" title="Guardar modificaciones "><i class="fa fa-save text-primary"></i></b>
+              </td>
+            </tr>
+        </tbody>
+      </table>
+      <div class="text-right" *ngIf="this.movimientos?.length > 20  && this.paginadoDatos != this.movimientos?.length ">
+          <pagination-controls (pageChange)="this.datosPage = $event" id="{{this.rand_id}}"></pagination-controls>
+      </div>
+    </div>  
+  </div>

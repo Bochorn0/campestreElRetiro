@@ -1,0 +1,142 @@
+<div [@routerTransition]>
+    <app-page-header [heading]="'Egresos'" [icon]="'fa-table'"></app-page-header>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-xl-12 col-lg-12">
+            <button (click)="nuevoUsuario();" class="btn btn-info text--right"><i class="fa fa-plus-"></i> Nuevo Usuario</button> &nbsp;&nbsp;|&nbsp;&nbsp; 
+            <button (click)="nuevoPuesto();" class="btn btn-success text--right"><i class="fa fa-plus-"></i> Nuevo Puesto</button>
+            <br><br>
+        </div>
+        <div class="col-xl-4 col-lg-4">
+            <app-stat [bgClass]="'primary'" [icon]="'fa-user'" [label]="'Usuarios'" (event)="obtenerUsuarios($event);"  ></app-stat>
+        </div>
+        <div class="col-xl-4 col-lg-4">
+            <app-stat [bgClass]="'danger'" [icon]="'fa-building'" [label]="'Puestos'" (event)="obtenerPuestos($event);" ></app-stat>
+        </div>
+    </div>
+    <hr />
+    <div class="row" *ngIf="vistaCentro">
+        <div class="col-xl-12 col-lg-12 col-xs-12">
+            <!--Nuevo Usuario-->
+            <div class="row" *ngIf="this.altaNuevoUsuario" [@routerTransition]>
+                <div class="col-xs-12 col-xl-12 col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-info">
+                            Nuevo Usuario
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!--Empleado-->
+                                <div class="col-xs-7 col-lg-7 col-xl-7">
+                                    <div class="form-group">
+                                        <label class="label-form"> Empleado </label>
+                                        <input autofocus id="typeahead-format" placeholder="Nombre del empleado:" type="text" class="form-control" [(ngModel)]="catalogoEmpleados.Nombre" [ngbTypeahead]="filtrarEmpleado" (selectItem)="seleccionarEmpleado($event)" [resultFormatter]="formatter" />
+                                        <input type="hidden" value="0" *ngIf="datosEmpleado" [(ngModel)]="datosEmpleado.IdEmpleado" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-2 col-lg-2 col-xl-2"></div>
+                                <!--Perfiles-->
+                                <div class="col-xs-3 col-lg-3 col-xl-3">
+                                    <div class="form-group">
+                                        <label class="label-form"> Perfil </label>
+                                        <select class="form-control" [(ngModel)]="this.uIdPerfil" >
+                                            <option value="0">Selecciona el puesto</option>
+                                            <option *ngFor="let per of catalogoPuestos" value="{{per.IdPerfil}}">{{per.Nombre_perfil}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4 col-xl-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Nombre </label>
+                                        <input type="text" class="form-control" placeholder="Nombre" [(ngModel)]="uNombre" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4 col-xl-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Correo </label>
+                                        <input type="text" class="form-control" placeholder="Correo:"  [(ngModel)]="uCorreo"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4 col-xl-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Password </label>
+                                        <input type="text" class="form-control"  [(ngModel)]="uPassword"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-lg-12 col-xl-12">
+                                    <div class="form-group">
+                                        <label class="label-form"> &nbsp;</label><br>
+                                        <button (click)="guardarNuevoUsuario();"  class="btn btn-primary pull-right">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Nuevo Puesto-->
+            <div class="row" *ngIf="altaNuevoPuesto" [@routerTransition]>
+                <div class="col-xs-12 col-xl-12 col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-success">
+                            Nuevo Puesto
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="label-form"> Nombre perfil </label>
+                                        <input type="text" class="form-control" placeholder="Perfil" [(ngModel)]="pNombre" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-lg-12 col-xl-12">
+                                    <div class="form-group">
+                                        <label class="label-form"> Permisos </label> &nbsp;&nbsp;&nbsp;<input type="checkbox" name="" [(ngModel)]="Todos" (change)="seleccionarTodos();"> Todos<br>
+                                        <input type="checkbox" name="" [(ngModel)]="Clientes"> Clientes &nbsp;&nbsp;
+                                        <input type="checkbox" name="" [(ngModel)]="Abonos"> Abonos &nbsp;&nbsp;
+                                        <input type="checkbox" name="" [(ngModel)]="Mantenimientos"> Mantenimientos &nbsp;&nbsp;
+                                        <input type="checkbox" name="" [(ngModel)]="Cotizaciones"> Cotizaciones &nbsp;&nbsp;
+                                        <input type="checkbox" name="" [(ngModel)]="Altas"> Altas &nbsp;&nbsp;
+                                        <input type="checkbox" name="" [(ngModel)]="Egresos"> Egresos &nbsp;&nbsp;
+                                        <input type="checkbox" name="" [(ngModel)]="Empleados"> Empleados &nbsp;&nbsp;
+                                        <input type="checkbox" name="" [(ngModel)]="Nomina"> Nomina &nbsp;&nbsp;
+                                        <input type="checkbox" name="" [(ngModel)]="Usuarios"> Usuarios &nbsp;&nbsp;
+                                        <input type="checkbox" name="" [(ngModel)]="Catalogos"> Catalogos &nbsp;&nbsp;
+                                        <input type="checkbox" name="" [(ngModel)]="Reportes"> Reportes &nbsp;&nbsp;
+                                        <input type="checkbox" name="" [(ngModel)]="Carga"> Carga 
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-lg-12 col-xl-12">
+                                    <div class="form-group">
+                                        <label class="label-form"> &nbsp;</label><br>
+                                        <button (click)="guardarNuevoPerfil();"  class="btn btn-primary pull-right">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="this.datosUsuarios" [@routerTransition]>
+                <div class="col-xs-12 col-lg-12 col-xl-12">
+                    <div class="card-header bg-primary">
+                        Usuarios
+                    </div>
+                    <div class="card-body table-responsive">
+                    <app-datatables-general *ngIf="this.datosUsuarios" [datosDatatable]="this.datosUsuarios" (edit)="editarUsuario($event);" (delete)="borrarUsuario($event);"></app-datatables-general>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="this.datosPuestos" [@routerTransition]>
+                    <div class="col-xs-12 col-lg-12 col-xl-12">
+                        <div class="card-header bg-danger">
+                            Puestos
+                        </div>
+                        <div class="card-body table-responsive">
+                        <app-datatables-general *ngIf="this.datosPuestos" [datosDatatable]="this.datosPuestos" (edit)="editarPuestos($event);"  (delete)="borrarPuesto($event);"></app-datatables-general>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>

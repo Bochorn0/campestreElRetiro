@@ -1,0 +1,27 @@
+<div [@routerTransition]>
+    <app-page-header [heading]="'Contratos'" [icon]="'fa-file'"></app-page-header>
+    <hr>
+    <div class="row">
+        <div class="col-xl-6 col-lg-6">
+            <app-stat [bgClass]="'primary'" [icon]="'fa-file'" [label]="'Formatos'" (event)="obtenerContratosActivos($event);"></app-stat>
+        </div>
+    </div>
+    <hr />
+    <div class="row" *ngIf="this.contenidoReportes">
+        <div class="col-xl-12 col-lg-12 col-xs-12">
+            <!--Ingresos-->
+            <div class="row" *ngIf="this.contratosActivos" [@routerTransition]>
+                <div class="col-xl-12 col-lg-12 col-xs-12" *ngIf="this.contratosActivos">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Contratos Activos
+                        </div>
+                        <div class="card-body">
+                            <app-datatables-general *ngIf="this.contratosActivos" [datosDatatable]="this.contratosActivos"></app-datatables-general>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+<div [@routerTransition]>
+    <app-page-header [heading]="'Carga'" [icon]="'fa-file'"></app-page-header>
+    <hr>
+    <div class="row">
+        <div class="col-lg-6">
+<!--            <app-stat [bgClass]="'primary'" [icon]="'fa-file'" label]="''" (event)="obtenerContratosActivos($event);"></app-stat>-->
+        </div>
+    </div>
+    <hr />
+    <div class="row" >
+        <div class="col-lg-6">
+            <div class="card mb-3">
+                <div class="card-header bg-warning">
+                    Carga de datos
+                </div>
+                <div class="card-body">
+                <form (ngSubmit)="subirArchivoServidor()" #frmBancos="ngForm" (keydown.enter)="$event.preventDefault()">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label class="input-group-btn">
+                                <span class="btn btn-primary">
+                                    Selecciona un archivo 
+                                    <input type="file" style="display: none;" 
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                    (change)="fileDatos($event);">
+                                </span>
+                            </label>
+                            <input type="text" class="form-control" name="archivoNombre" [(ngModel)]="archivoNombre">
+                        </div>
+                        <span class="help-block">
+                            Carga el documento para alimentar la base de datos aqui
+                        </span>
+                    </div>
+                    <input type="checkbox" name="check" [(ngModel)]="borrarAnteriores" />Borrar Anteriores
+                    <button type="submit" class="btn btn-primary pull-right">Subir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6"></div>
+        <div class="col-lg-12"><button type="button" class="btn btn-info pull-right" (click)="verDatosCargados();">Ver Campos Actuales</button></div>
+        <div class="col-lg-12" *ngIf="datosDataTable"> 
+                <div class="card mb-3">
+                    <div class="card-header bg-info">
+                        Datos Por Procesar
+                        <button class="btn btn-primary pull-right" (click)="afectarSaldos();" > Afectar Saldos </button>
+                        &nbsp;&nbsp;
+                        <button class="btn btn-danger pull-right" (click)="procesarBaseDatos();" > Guardar Catalogos</button>
+                    </div>
+                    <div class="card-body ">
+                        <app-datatables-general #datatableSubidos *ngIf="datosDataTable" [datosDatatable]="datosDataTable" ></app-datatables-general>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>

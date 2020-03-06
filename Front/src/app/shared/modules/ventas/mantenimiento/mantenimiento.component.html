@@ -1,0 +1,159 @@
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card mb-3">
+            <div class="card-header bg-danger">
+                Nuevo Mantenimiento
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xs-12 col-lg-12 col-xl-12" style="padding:50px;">
+                        <div class="row">
+                            <div class="col-xs-3 col-lg-3 text-center" style="border:5px solid #c00; color: #c00; border-radius: 5px; padding:2px;"><h3>Folio: {{folIngreso}} </h3> </div>
+                            <div class="col-xs-9 col-lg-9"></div>
+                            <div class="col-xs-4 col-lg-4">
+                                <img src="http://134.209.238.227/assets/images/logo_recibo.png" />
+                            </div>
+                            <div class="col-xs-5 col-lg-5 text-center text-danger"><br><br><h2>RECIBO No. {{folRecibo}} </h2> </div>
+                            <div class="col-xs-3 col-lg-3 text-right">
+                                <table class="table">
+                                    <tr><th><h3>Fecha</h3> </th></tr>
+                                    <tr><td><b>{{today}}</b></td></tr>
+                                </table>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row" *ngIf="datosCliente.IdCliente">
+                            <div class="col-lg-6 text-center">
+                                <b class="text-info"> Contrato de Agua: <b> $ {{datosCliente.Saldo_agua | number}}</b></b>
+                            </div>
+                            <div class="col-lg-6 text-center">
+                                <b class="text-danger"> Saldo de mantenimiento: <b> $ {{datosCliente.Saldo_mantenimiento | number}}</b></b>
+                            </div>
+                            <div class="col-lg-12"><hr></div>
+                            <div class="col-lg-6 text-center">
+                                <b>Crédito Original: <b> $ {{datosCliente.Credito_original | number}} </b></b> 
+                            </div>
+                            <div class="col-lg-6 text-center">
+                                <b>Saldo TOTAL: <b> $ {{(datosCliente.Saldo_credito + datosCliente.Saldo_adeudo + datosCliente.Saldo_agua + datosCliente.Saldo_mantenimiento +  datosCliente.Saldo_anualidad + datosCliente.Saldo_certificado) | number}} </b></b>
+                            </div>
+                            <div class="col-lg-12"><hr></div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-lg-5">
+                                <div class="form-group">
+                                    <input autofocus id="typeahead-format" placeholder="Nombre del cliente:" type="text" class="form-control" [(ngModel)]="datosCliente.Nombre" [ngbTypeahead]="filtrarCliente" (selectItem)="seleccionarCliente($event)" [resultFormatter]="formatter" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <select class="form-control" (change)="seleccionarTerreno();" [(ngModel)]="idTerreno">
+                                        <option value="0">Selecciona terreno</option>
+                                        <option *ngFor="let ter of datosCliente.Terrenos" value="{{ter.IdTerreno}}" > Lote: {{ter.lote}} - Etapa: {{ter.etapa}} - Parcela: {{ter.parcela}}  </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group" *ngIf="datosCliente.IdCliente">
+                                    <label class="label-form">
+                                        Cliente: <b class="text-success">{{datosCliente.Codigo}}</b>&nbsp;&nbsp;
+                                        Etapa: <b class="text-success">{{datosCliente.Etapa}}</b>&nbsp;
+                                        #Lote: <b class="text-success"> {{datosCliente.Lote}}</b> &nbsp;
+                                        #Parcela: <b class="text-success">{{datosCliente.Parcela}}</b>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group" *ngIf="datosCliente.IdCliente">
+                                    <label class="label-form"> Tipo de venta </label>
+                                    <select class="form-control" (change)="actualizarFolioMov();" [(ngModel)]="tipoIngreso">
+                                        <option value="0">Selecciona tipo de venta</option>
+                                        <option *ngFor="let tipVen of catalogoVentas"  value="{{tipVen.Codigo}}">{{tipVen.Descripcion}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group" *ngIf="tipoIngreso">
+                                    <label class="label-form"> Concepto </label>
+                                    <input class="form-control" type="text" [(ngModel)]="conceptoVenta" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group" *ngIf="tipoIngreso">
+                                    <label class="label-form"> Importe </label>
+                                    <input class="form-control" type="number" [(ngModel)]="total_abono" />
+                                </div>
+                            </div>
+                            <div class="col-xs-2 col-lg-2">
+                                <div class="form-group" *ngIf="datosCliente.IdCliente && total_abono != '0' ">
+                                    <label class="label-form"> <br> </label><br>
+                                    <button class="btn btn-success" (click)="agregarMantenimiento();"><i class="fa fa-plus-circle" ></i> Agregar</button>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-12 text-center" ><h3>Conceptos</h3><hr></div>
+                            <div class="col-lg-12" *ngIf="conceptosAPagar[0]">
+                                <div class="row">
+                                    <div class="col-lg-5"><b>Concepto</b></div>
+                                    <div class="col-lg-5"><b>Importe</b></div>
+                                    <div class="col-lg-2"><i class="fa fa-gear"></i></div>
+                                </div>
+                                <div class="row" *ngFor="let con of conceptosAPagar">
+                                    <div class="col-lg-5"><b>{{con.Concepto}}</b></div>
+                                    <div class="col-lg-5"><b>{{con.Importe}}</b></div>
+                                    <div class="col-lg-2"><button class="btn btn-danger" (click)="borrarConcepto(con);" title="Borrar Concepto"><i class="fa fa-times"></i></button></div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5"></div>
+                            <div class="col-lg-4">
+                                <div class="form-group" *ngIf="datosCliente.IdCliente && tipoIngreso != '0' ">
+                                    <label class="label-form"> Forma de Pago </label>
+                                    <div class="form-group">
+                                        <!--<input autofocus id="typeahead-format" placeholder="Fuente del gasto:" type="text" class="form-control" [(ngModel)]="fuenteGasto" [ngbTypeahead]="filtrarFuentes" [resultFormatter]="formatter" />-->
+                                        <select [(ngModel)]="formaPago" class="form-control">
+                                            <option value="0">Selecciona el tipo de pago</option>
+                                            <option *ngFor="let f of formasDePago" value="{{f.IdCuenta}}">{{f.Nombre}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!--
+                                <div class="form-group" *ngIf="datosCliente.IdCliente && tipoIngreso != '0' ">
+                                    <label class="label-form"> Forma de pago </label>
+                                    <select class="form-control" [(ngModel)]="formaPago" (change)="cambiarFormaPago();">
+                                        <option value="0">Selecciona el tipo de pago</option>
+                                        <option value="Efectivo">Efectivo</option>
+                                        <option value="Tarjeta">Tarjeta</option>
+                                        <option value="Transferencia">Transferencia</option>
+                                    </select>
+                                    <select *ngIf="mostrarCuentas" [(ngModel)]="cuentaDestino" class="form-control">
+                                        <option value="0">Selecciona una cuenta</option>
+                                        <option *ngFor="let c of cuentasDeposito" value="{{c}}">{{c}}</option>
+                                    </select>
+                                </div>-->
+                            </div>
+                            <div class="col-lg-3 pull-right" *ngIf="totalVenta">
+                                <b>Total :</b> <input type="number" placeholder="10,000" name="contacto" [(ngModel)]="totalVenta" class="form-control"/>
+                            </div>
+                            <div class="col-lg-12">
+                                <br>
+                            </div>
+                            <div class="col-lg-12">
+                                <textarea class="form-control" placeholder="Concepto venta:" [(ngModel)]="conceptoIngreso" style="min-height: 100px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-lg-12">
+                                <div class="form-group">
+                                    <label class="label-form"> &nbsp;</label><br>
+                                    <button class="btn btn-primary pull-right" (click)="guardarNuevoIngreso();" print-btn>Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

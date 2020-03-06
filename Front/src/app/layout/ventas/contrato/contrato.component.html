@@ -1,0 +1,15 @@
+<div class="col-xl-12 col-lg-12 col-xs-12">
+    <div class="card mb-3">
+        <div class="card-header " >
+            Contrato de nuevo cliente
+        </div>
+        <div class="card-body" [froalaEditor] [(froalaModel)]="contenidoContrato"></div>
+        <div class="col-lg-12">
+            <div class="form-group">
+                    <label class="label-form"> &nbsp;</label><br>
+                <button class="btn btn-primary pull-right" (click)="guardarContrato();">Guardar Contrato</button>
+                <button class="btn btn-danger pull-right" (click)="omitirContrato();">Omitir Contrato</button>
+            </div>
+        </div>
+    </div>
+</div>

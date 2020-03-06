@@ -1,0 +1,101 @@
+<div [@routerTransition]>
+    <app-page-header [heading]="'Reportes'" [icon]="'fa-th-list'"></app-page-header>
+    <div class="row">
+        <div class="col-xs-12 col-lg-12 col-xl-12">
+            <div class="row">
+                <!--Tipos de reportes-->
+                <div class="col-xs-4 col-lg-4 col-xl-4">
+                    <div class="form-group">
+                        <label>Reportes disponibles</label>
+                        <select class="form-control" id="select-bancos" [(ngModel)]="idReporte">
+                            <option value="0">Selecciona un reporte</option>
+                            <option value="1">Reporte de Ventas</option>
+                            <option value="2">Reporte de Gastos</option>
+                            <option value="3">Reporte de nomina</option>
+                            <option value="4">Reporte de documentos</option>
+                        </select>
+                    </div>
+                </div>
+                <!--fecha inicio-->
+                <div class="col-xs-3 col-lg-3 col-xl-3">
+                    <div class="form-group">
+                        <label>Fecha Inicio</label>
+                        <input type="date" [(ngModel)]="fInicio" class="form-control" />
+                    </div>
+                </div>
+                <!--fecha fin-->
+                <div class="col-xs-3 col-lg-3 col-xl-3">
+                    <div class="form-group">
+                        <label>Fecha Fin</label>
+                        <input type="date" [(ngModel)]="fFin" class="form-control" />
+                        <span class="text-danger" *ngIf="errorFecha">Fecha Fin no puede ser menor a Fecha Inicio</span>
+                    </div>
+                </div>
+                <!--Buscar reporte-->
+                <div class="col-xs-2 col-lg-2 col-xl-2">
+                    <div class="form-group">
+                        <label><br></label><br>
+                        <button type="submit" class="btn btn-labeled btn-primary pull-right buscar-mov" (click)="generarReporte()">
+                            <span class="btn-label btn-label-left "><i class="fa fa-search "></i></span> | Generar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Resultado de reportes-->
+    <div class="row" *ngIf="this.resultadoReporte">
+        <div class="col-xs-12 col-lg-12 col-xl-12">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Resultado
+                </div>
+                <div class="card-body">
+                        <app-datatables-general #datatableReportes *ngIf="this.resultadoReporte" [datosDatatable]="this.resultadoReporte"></app-datatables-general>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="this.resultadoReporte">
+            <div class="col-xs-12 col-lg-12 col-xl-12">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Avance nuevos
+                    </div>
+                    <div class="card-body">
+                        <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions" [legend]="barChartLegend" [chartType]="barChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)">
+                        </canvas>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-info btn-sm" (click)="randomize()">Update</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-sm-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Mantenimientos cobranza
+                    </div>
+                    <div class="card-body">
+                        <canvas baseChart height="180px" [data]="doughnutChartData" [labels]="doughnutChartLabels" [chartType]="doughnutChartType" (chartHover)="chartHovered($event)" (chartClick)="chartClicked($event)">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!--    <app-modal></app-modal>
+    <app-alert></app-alert>
+    <app-buttons></app-buttons>
+    <app-collapse></app-collapse>
+    <app-date-picker></app-date-picker>
+    <app-dropdown></app-dropdown>
+    <app-pagination></app-pagination>
+    <app-pop-over></app-pop-over>
+    <app-progressbar></app-progressbar>
+    <app-tabs></app-tabs>
+    <app-tooltip></app-tooltip>
+    <app-timepicker></app-timepicker>
+    <app-rating></app-rating>-->
+    
+</div>

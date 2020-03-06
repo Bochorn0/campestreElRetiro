@@ -1,0 +1,20 @@
+<div [@routerTransition]>
+        <app-page-header [heading]="'Finanzas'" [icon]="'fa-dashboard'"></app-page-header>
+        <!--Menu principal-->
+        <div class="row text-center">
+            <div class="col-lg-4">
+                <app-stat [bgClass]="'secondary'" [icon]="'fa-users'" [label]="'Estados Financieros'" (event)="estadosFinancieros($event);"  ></app-stat>
+            </div>
+            <div class="col-lg-4">    
+                    <app-stat [bgClass]="'success'" [icon]="'fa-address-card'" [label]="'Catalogo de cuentas'" (event)="catalogoCuentas($event);"  ></app-stat>
+            </div>
+        </div>
+        <hr />
+        <div *ngIf="vistaCentro">
+            <!--Cotizaciones-->
+            <app-estado-financiero class="row" *ngIf="verEstadoFinanciero" [@routerTransition]></app-estado-financiero>
+            <!--Clientes-->
+            <app-catalogo-cuentas class="row" *ngIf="verCatalogoCuentas" [@routerTransition]></app-catalogo-cuentas>
+        </div> 
+    </div>
+    

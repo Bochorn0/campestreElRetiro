@@ -1,0 +1,34 @@
+{
+  "name": "api_el_retiro",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "luis cordova",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "exceljs": "^1.6.1",
+    "express": "^4.16.3",
+    "fs-extra": "^6.0.1",
+    "moment": "^2.22.1",
+    "mysql": "github:mysqljs/mysql",
+    "node-cron": "^2.0.3",
+    "node-xlsx": "^0.12.1",
+    "nodemailer": "^4.6.8",
+    "nodemon": "^1.17.4",
+    "pdfkit": "^0.8.3",
+    "unstream": "^2.0.0",
+    "utf8": "^3.0.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "AdminElRetiro"
+  },
+  "keywords": [
+    "kei"
+  ],
+  "description": "proyecto admin el retiro"
+}

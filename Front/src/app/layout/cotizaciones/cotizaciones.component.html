@@ -1,0 +1,125 @@
+<div [@routerTransition]>
+    <app-page-header [heading]="'Ingresos'" [icon]="'fa-dashboard'"></app-page-header>
+    <!--Menu principal-->
+    <div class="row">
+        <div class="col-xs-12 col-xl-12 col-lg-12">
+<!--            <button (click)="nuevoCliente();" class="btn btn-success text-right"><i class="fa fa-plus-circle"></i> Nuevo Cliente</button>
+            <br><br>-->
+        </div>
+        <div class="col-xl-6 col-lg-6">
+            <app-stat [bgClass]="'primary'" [icon]="'fa-address-book'"[label]="'Cotizaciones activas'" (event)="obtenerCotizacionesActivas($event);" ></app-stat>
+        </div>
+        <div class="col-xl-6 col-lg-6">
+            <app-stat [bgClass]="'danger'" [icon]="'fa-wrench'"[label]="'Cotizaciones no Activas'" (event)="obtenerCotizacionesAntiguas($event);" ></app-stat>
+        </div>
+    </div>
+    <hr />
+    <div class="row" *ngIf="vistaCentro">
+        <div class="col-xl-12 col-lg-12 col-xs-12">
+            <!--Clientes Activos-->
+            <div class="row" *ngIf="this.cotizacionesActivas" [@routerTransition]>
+                <div class="col-xs-12 col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-primary">
+                            Cotizaciones Activas
+                        </div>
+                        <div class="card-body">
+                            <app-datatables-general *ngIf="this.cotizacionesActivas" (checks)="modificarCotizacion($event);" [datosDatatable]="this.cotizacionesActivas" (delete)="desasignarCotizacion($event);"></app-datatables-general>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="this.cotizacionesNoActivas" [@routerTransition]>
+                <div class="col-xs-12 col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-danger">
+                            Cotizaciones Desabilitadas
+                        </div>
+                        <div class="card-body">
+                            <app-datatables-general *ngIf="this.cotizacionesNoActivas" [datosDatatable]="this.cotizacionesNoActivas" (delete)="activarCotizacion($event);"></app-datatables-general>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+        </div>
+    </div>
+    <div id="cotizacion" class="row" *ngIf="datosCotizacion">
+        <div class="col-lg-3">
+            <div class="form-group">
+                <label class="label-form"> Superficie </label>
+                <input type="number" [(ngModel)]="datosCotizacion.Superficie" (change)="calcularAmortizacion();" placeholder="1500" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="form-group">
+                <label class="label-form"> $ Metro </label>
+                <input type="number" [(ngModel)]="datosCotizacion.Precio_metro" (change)="calcularAmortizacion();" placeholder="140" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="form-group">
+                <label class="label-form"> Enganche </label>
+                <input type="number" [(ngModel)]="datosCotizacion.Enganche" (change)="calcularAmortizacion();" placeholder="10000" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="form-group">
+                <label class="label-form"> Interes </label>
+                <input type="number" [(ngModel)]="datosCotizacion.Tasa" (change)="calcularAmortizacion();" placeholder="18%" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-2">
+            <div class="form-group">
+                <label class="label-form"> Num. Pagos </label>
+                <input type="number" [(ngModel)]="datosCotizacion.Num_pagos" (change)="calcularAmortizacion();" placeholder="72" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="form-group">
+                <label class="label-form"> Primer Pago </label>
+                <input type="date" [(ngModel)]="datosCotizacion.Fecha_inicio.split('T')[0]" (change)="calcularAmortizacion();" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-3" >
+            <div class="form-group">
+                <label class="label-form"> Mensualidad </label>
+                <input type="number" [(ngModel)]="datosCotizacion.Mensualidad" (change)="calcularAmortizacion();" placeholder="0" class="form-control" >
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="form-group" *ngIf="cotizacionAnualidades">
+                <label class="label-form"> Primer Anualidad </label>
+                <input type="date" [(ngModel)]="datosCotizacion.Fecha_inicio_anualidad.split('T')[0]" (change)="calcularAmortizacion();" class="form-control">
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="form-group pull-right">
+                <label class="label-form"> <br> </label><br>
+                <button class="btn btn-info"  (click)="calcularAmortizacion(true);"> <i class="fa fa-calculator"> </i> Mensualidad </button>
+            </div>
+        </div>
+        <div class="col-lg-12"><br></div>
+        <div class="col-lg-6 " *ngIf="datosCotizacion.datatableMensualidades">
+            <div class="card mb-3">
+                <div class="card-header bg-info">
+                    1 Opcion con Mensualidades <b class="pull-right">Total: {{acumuladoMen | number}}</b>
+                </div>
+                <div class="card-body ">
+                    <app-datatables-general #datatableMensualidades *ngIf="this.datosCotizacion.datatableMensualidades" [datosDatatable]="this.datosCotizacion.datatableMensualidades" ></app-datatables-general>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 " *ngIf="cotizacionAnualidades">
+            <div class="card mb-3">
+                <div class="card-header bg-info">
+                    2 Opcion con Anualidades
+                </div>
+                <div class="card-body ">
+                    <app-datatables-general #datatableAnualidades *ngIf="this.datosCotizacion.datatableAnualidades" [datosDatatable]="this.datosCotizacion.datatableAnualidades" ></app-datatables-general>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12"><br></div>
+        <div class="col-lg-12"><br><button *ngIf="cotizacionMensualidades" class="btn btn-primary pull-right" (click)="guardarCotizacion();">Actualizar cotización</button></div>
+    </div>
+</div>

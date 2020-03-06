@@ -1,0 +1,264 @@
+<div [@routerTransition]>
+    <app-page-header [heading]="'Gastos nuevos'" [icon]="'fa-table'"></app-page-header>
+    <hr>
+    <div class="row">
+        <div class="col-xs-12 col-xl-12 col-lg-12">
+            <button (click)="nuevoGasto();" class="btn btn-info text--right"><i class="fa fa-plus"></i> Nuevo Gasto</button>
+            <button (click)="subirArchivo.click();" class="btn btn-danger pull-right"><i class="fa fa-upload"></i> <i class="fa fa-file-excel"></i> Cargar Excel</button>
+            <button (click)="obtenerPlantillaGastos();" class="btn btn-warning pull-right"><i class="fa fa-download"></i> <i class="fa fa-file-excel"></i> Exportar Plantilla </button>
+            <button *ngIf="this.chksGastos.length > 0" (click)="borrarMultiplesGastos();" class="btn btn-danger-clasic pull-right"><i class="fa fa-times"></i> Borrar Multiples </button>
+<!--            <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)" />-->
+            <br><br>
+        </div>
+        <div class="col-lg-6">
+            <app-stat [bgClass]="'primary'" [icon]="'fa-money'" [label]="'Ver Gastos'" (event)="obtenerGastos($event);"  ></app-stat>
+        </div>
+        <div class="col-lg-6">
+            <app-stat [bgClass]="'warning'" [icon]="'fa-building'" [label]="'Catalogo de categorias'" (event)="verCatalogoCategorias($event);" ></app-stat>
+        </div>
+<!--        <div class="col-xl-4 col-lg-4">
+            <app-stat [bgClass]="'info'" [icon]="'fa-briefcase'" [label]="'Reportes'" ></app-stat>
+        </div>-->
+    </div>
+    <hr />
+    <form [formGroup]="frmSolicitud" class="form-validate" (keydown.enter)="$event.preventDefault()" novalidate="">
+        <!--,application/vnd.ms-excel-->
+            <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)"  formControlName="File" />
+            <br><br>
+    </form>
+    <div class="row" *ngIf="vistaCentro">
+        <div class="col-xl-12 col-lg-12 col-xs-12">
+            <div class="row" *ngIf="this.altaNuevoGasto" [@routerTransition]>
+                <div class="col-xs-12 col-xl-12 col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-info">
+                            Nuevo Gasto UN
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"> Folio </label>
+                                        <input type="text" class="form-control" value="GAS-0001" [(ngModel)]="folGasto" disabled />
+                                    </div>
+                                </div>
+<!--                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form"> Tipo de gasto </label>
+                                        <div class="form-group">
+                                            <input autofocus id="typeahead-format" placeholder="Tipo de gasto:" type="text" class="form-control" [(ngModel)]="tipoGasto" [ngbTypeahead]="filtrarGastos" (selectItem)="seleccionarGasto($event)" [resultFormatter]="formatter" />
+                                        </div>
+                                    </div>
+                                </div>-->
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"> Categoria </label>
+                                        <select class="form-control" [(ngModel)]="categoriaGasto" (change)="seleccionarCategoria();">
+                                            <option value="0">Selecciona</option>
+                                            <option *ngFor="let c of this.catalogoCategorias.Categorias" value="{{c.Categoria}}">{{c.Categoria}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3" *ngIf="subcategorias.length > 0">
+                                    <div class="form-group">
+                                        <label class="label-form"> Subcategoria </label>
+                                        <select class="form-control" [(ngModel)]="subcategoriaGasto">
+                                            <option value="0">Selecciona</option>
+                                            <option *ngFor="let c of this.subcategorias" value="{{c.Subcategoria}}">{{c.Subcategoria}}</option>
+                                        </select>
+                                    </div>
+                                </div>                                
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"> Importe </label>
+                                        <input type="number" class="form-control" placeholder="10000" [(ngModel)]="totalGasto" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form"> Forma de Pago </label>
+                                        <div class="form-group">
+                                            <!--<input autofocus id="typeahead-format" placeholder="Fuente del gasto:" type="text" class="form-control" [(ngModel)]="fuenteGasto" [ngbTypeahead]="filtrarFuentes" [resultFormatter]="formatter" />-->
+                                            <select [(ngModel)]="fuenteGasto" class="form-control">
+                                                <option value="0">Selecciona una fuente</option>
+                                                <option *ngFor="let f of formaDePago" value="{{f.IdCuenta}}">{{f.Nombre}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-8 col-lg-8">
+                                    <div class="form-group">
+                                        <label class="label-form"> Concepto Gasto </label>
+                                        <textarea class="form-control" placeholder="Concepto:" [(ngModel)]="conceptoGasto" style="min-height: 115px;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Adjuntos </label>
+                                        <div class="input-group">
+                                            <label class="input-group-btn" style="margin:0;">
+                                                <span class="btn btn-success" >
+                                                    <i class="fa fa-upload"> </i> Cargar adjunto
+                                                    <input type="file" style="display: none;" accept="image/*" (change)="nombreArchivo($event);" required>
+                                                </span>
+                                            </label>
+                                            <input type="text" class="form-control" [(ngModel)]="egresoAdjuntoNombre">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="label-form"> Responsable </label>
+                                        <select  class="form-control" [(ngModel)]="responsable">
+                                            <option value="0">Selecciona un empleado</option>
+                                            <option *ngFor="let f of nombresEmpleados" value="{{f}}">{{f}}</option>
+                                        </select>
+<!--                                        <input placeholder="Nombre del responsable:" type="text" class="form-control" [(ngModel)]="responsable" [ngbTypeahead]="filtrarResponsables" (selectItem)="this.responsable = $event.item" [resultFormatter]="formatter" />-->
+                                    </div>
+                                    <br>
+                                </div>
+                                <div class="col-lg-7">
+                                    <div class="form-group">
+                                        <label class="label-form"> Nota: </label>
+                                        <input type="text" class="form-control" placeholder="Nota:" [(ngModel)]="notaGasto"  />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="label-form"> Fecha Manual: </label>
+<!--                                            <input type="date" class="form-control" placeholder="Nota:" [(ngModel)]="notaGasto"  />-->
+                                            <input type="date" [(ngModel)]="fechaGasto" class="form-control" >
+                                        </div>
+                                    </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"><br></label><br>
+                                        <button (click)="guardarNuevoGasto();"  class="btn btn-primary pull-right">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" *ngIf="this.datosGastos" [@routerTransition]>
+                <div class="col-xs-12 col-lg-12 col-xl-12">
+                    <div class="card-header bg-primary">
+                        Gastos <b class="pull-right" style="color: #fff;">$ {{this.totalGastoAcumulado | number}}</b>
+                    </div>
+                    <div class="card-body table-responsive">
+                        <div class="row">
+<!--                            <div class="col-lg-4" *ngIf="catalogoGastos && datosGastos.Datos.length > 0">
+                                <div class="form-group">
+                                    <label class="label-form"> Por Tipo de Gasto </label>
+                                    <select class="form-control" (change)="filtrarGastosPorTipo();" [(ngModel)]="tipoGastoFiltro" >
+                                        <option value="0">Selecciona el tipo</option>
+                                        <option *ngFor="let gas of catalogoGastos" value="{{gas.Tipo}}">{{gas.Tipo}}</option>
+                                    </select>
+                                </div>
+                            </div>-->
+                            <!--&& datosGastos.Datos.length > 0-->
+                            <div class="col-lg-3" *ngIf="categoriasFiltro">
+                                <div class="form-group">
+                                    <label class="label-form"> Por Categoria </label>
+<!--                                    <select class="form-control" (change)="filtrarGastosPorTipo();" [(ngModel)]="tipoGastoFiltro" >
+                                        <option value="0">Selecciona el tipo</option>
+                                        <option *ngFor="let gas of catalogoGastos" value="{{gas.Tipo}}">{{gas.Tipo}}</option>
+                                    </select>-->
+                                    <select type="text" (change)="filtrarGastosPorTipo(); " [(ngModel)]="categoria_"  class="form-control" >
+                                        <option value="0">Todas</option>
+                                        <option *ngFor="let c of categoriasFiltro" value="{{c.Categoria}}">{{c.Categoria}}</option>
+                                    </select>
+                                </div>
+                            </div><!--&& datosGastos.Datos.length > 0-->
+                            <div class="col-lg-3" *ngIf="subcategoriasFiltro ">
+                                    <div class="form-group">
+                                        <label class="label-form"> Por Subcategoria </label>
+                                        <select type="text" (change)="filtrarGastosPorTipo();" [(ngModel)]="subcategoria_"  class="form-control" >
+                                            <option value="0">Todas</option>
+                                            <option *ngFor="let c of subcategoriasFiltro" value="{{c.Subcategoria}}">{{c.Subcategoria}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            <div class="col-lg-3" *ngIf="datosGastos.Datos.length > 0">
+                                <div class="form-group">
+                                    <label class="label-form"> Fecha inicio </label>
+                                    <input type="date" [(ngModel)]="fInicio" (change)="filtrarGastosPorTipo();" class="form-control" >
+                                </div>
+                            </div>
+                            <div class="col-lg-3" *ngIf="datosGastos.Datos.length > 0">
+                                <div class="form-group">
+                                    <label class="label-form"> Fecha fin </label>
+                                    <input type="date" [(ngModel)]="fFin" (change)="filtrarGastosPorTipo();" class="form-control" >
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <app-datatables-general #datatableGastos *ngIf="this.datosGastos" [datosDatatable]="this.datosGastos" (delete)="borrarGasto($event);" (checks)="this.chksGastos = $event"></app-datatables-general>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Catalogo de categorias-->
+            <div class="row" *ngIf="formularioCatalogoCategorias" [@routerTransition]>
+                <div class="col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-warning">
+                            Catalogo de categorias
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <button class="btn btn-green" (click)="nuevaCategoria();"> <i class="fa fa-plus-circle"></i> Categoria </button>
+                                    <div class="row" *ngIf="categoriaAlta">
+                                        <div class="col-lg-8">
+                                            <div class="form-group">
+                                                <label class="label-form"> Nombre categoria </label>
+                                                <input type="text" [(ngModel)]="nombreCategoria"  class="form-control" >
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label class="label-form"> <br> </label><br>
+                                                <button class="btn btn-primary" (click)="guardarCategoriaNueva();" >Guardar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12"><br><hr></div>
+                                    <app-datatables-general #datatableCategorias *ngIf="datosCategorias" [datosDatatable]="datosCategorias" (edit)="editarCategoria($event);" (delete)="borrarCategoria($event);"></app-datatables-general>
+                                </div>
+                                <div class="col-lg-6">
+                                    <button class="btn btn-green" (click)="nuevaSubcategoria();"> <i class="fa fa-plus-circle"></i> Subcategoria </button>
+                                    <div class="row" *ngIf="subcategoriaAlta">
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label class="label-form"> Categoria </label>
+                                                    <select type="text" [(ngModel)]="idCategoriaPadre"  class="form-control" >
+                                                        <option value="0">Selecciona</option>
+                                                        <option *ngFor="let c of this.catalogoCategorias.TodasPadres" value="{{c.IdCategoria}}">{{c.Categoria}}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label class="label-form"> Subcategoria </label>
+                                                    <input type="text" [(ngModel)]="nombreCategoria"  class="form-control" >
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <div class="form-group">
+                                                    <label class="label-form"> <br> </label><br>
+                                                    <button class="btn btn-primary " (click)="guardarCategoriaNueva();" >Guardar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <div class="col-lg-12"><br><hr></div>
+                                    <app-datatables-general #datatableSubcategorias *ngIf="datosSubcategorias" [datosDatatable]="datosSubcategorias" (edit)="editarSubcategoria($event);" (delete)="borrarSubcategoria($event);"></app-datatables-general>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

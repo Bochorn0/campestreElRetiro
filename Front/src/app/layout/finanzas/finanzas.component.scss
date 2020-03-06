@@ -1,0 +1,145 @@
+.btn-info{
+    color:#fff;
+    background-color:#359B83 !important;
+    border-color: #46b8da;
+}
+.btn-primary{
+    color:#fff;
+    background-color: #10798D !important ;
+    border-color: #46b8da;
+}
+.btn-success{
+    color:#fff;
+}
+.btn-warning{
+    color:#fff;
+    background-color:#2A8901 !important;
+    border-color: #46b8da;
+}
+.btn-danger{
+    color:#fff;
+    background-color:#955006 !important;
+    border-color: #46b8da;
+}
+.btn-secondary{
+    color:#fff;
+    background-color:#232E5C !important;
+    border-color: #46b8da;
+}
+
+
+.btn-info:focus,.btn-info:hover, .btn-info.focus {
+    color:#fff;
+    background-color:#396B57 !important;
+    border-color: #174935;
+}
+.btn-primary:focus,.btn-primary:hover, .btn-primary.focus {
+    color:#fff;
+    background-color: #10798D !important ;
+    border-color: #46b8da;
+}
+.btn-warning:focus,.btn-warning:hover, .btn-warning.focus {
+    color:#fff;
+    background-color:#2D6E00 !important;
+    border-color: #0a2a1c;
+}
+.btn-danger:focus,.btn-danger:hover, .btn-danger.focus {
+    color:#fff;
+    background-color:#7F4700 !important;
+    border-color: #623900;
+}
+.btn-secondary:focus,.btn-secondary:hover, .btn-secondary.focus {
+    color:#fff;
+    background-color:#2D3854 !important;
+    border-color: #0c0d35;
+}
+.bg-info{
+    color:#fff;
+    background-color:#359B83 !important;
+    border-color: #46b8da;
+}
+.bg-primary{
+    color:#fff;
+    background-color: #10798D !important ;
+    border-color: #46b8da;
+}
+.bg-success{
+    color:#fff;
+}
+.bg-warning{
+    color:#fff;
+    background-color:#2A8901 !important;
+    border-color: #46b8da;
+}
+.bg-danger{
+    color:#fff;
+    background-color:#955006 !important;
+    border-color: #46b8da;
+}
+.bg-secondary{
+    color:#fff;
+    background-color:#232E5C !important;
+    border-color: #46b8da;
+}
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: #2196F3;
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }

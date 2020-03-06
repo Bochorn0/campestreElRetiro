@@ -1,0 +1,386 @@
+<div class="col-lg-12">
+    <div class="row">
+        <div class="col-xs-12 col-lg-12 col-xl-12">
+            <div class="row">
+                <!--Tipos de reportes-->
+<!--                <div class="col-xs-4 col-lg-4 col-xl-4">
+                    <div class="form-group">
+                        <label>Reportes disponibles</label>
+                        <select class="form-control" id="select-bancos" [(ngModel)]="idReporte">
+                            <option value="0">Selecciona un reporte</option>
+                            <option value="1">Reporte de Ventas</option>
+                            <option value="2">Reporte de Gastos</option>
+                            <option value="3">Reporte de nomina</option>
+                            <option value="4">Reporte de documentos</option>
+                        </select>
+                    </div>
+                </div>-->
+                <!--fecha inicio-->
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Fecha Inicio</label>
+                        <input type="date" [(ngModel)]="fInicio" class="form-control" />
+                    </div>
+                </div>
+                <!--fecha fin-->
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Fecha Fin</label>
+                        <input type="date" [(ngModel)]="fFin" class="form-control" />
+                        <span class="text-danger" *ngIf="errorFecha">Fecha Fin no puede ser menor a Fecha Inicio</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 pull-right">
+                    <div class="form-group">
+                        <label><br></label><br>
+                        <button type="submit" class="btn btn-labeled btn-primary pull-right buscar-mov" (click)="generarReporte()">
+                            <span class="btn-label btn-label-left "><i class="fa fa-search "></i></span> | Generar
+                        </button>
+                    </div>
+                </div>
+                <!--Cuentas-->
+ <!--               <div class="col-lg-3" *ngIf="this.resultadoReporte">
+                    <div class="form-group">
+                        <label>Cuentas</label>
+                        <select [(ngModel)]="cuenta" class="form-control" (change)="filtrarVentas();">
+                            <option value="0">Filtrar por cuenta</option>
+                            <option *ngFor="let cue of cuentas" value="{{cue.IdCuenta}}">{{cue.Nombre}}</option>
+                        </select>
+                    </div>
+                </div>-->
+                <!--Usuarios-->
+<!--                <div class="col-lg-3" *ngIf="this.resultadoReporte">
+                    <div class="form-group">
+                        <label>Usuarios</label>
+                        <select [(ngModel)]="usuario" class="form-control" (change)="filtrarVentas();">
+                            <option value="0">Filtrar por usuario</option>
+                            <option *ngFor="let usu of catalogoUsuarios" value="{{usu.IdUsuario}}">{{usu.Nombre}}</option>
+                        </select>
+                    </div>
+                </div>-->
+                <!--Buscar reporte-->
+<!--                <div class="col-lg-10"></div>
+                <div class="col-lg-2 pull-right">
+                    <div class="form-group">
+                        <label><br></label><br>
+                        <button type="submit" class="btn btn-labeled btn-primary pull-right buscar-mov" (click)="generarReporte()">
+                            <span class="btn-label btn-label-left "><i class="fa fa-search "></i></span> | Generar
+                        </button>
+                    </div>
+                </div>-->
+            </div>
+        </div>
+    </div>
+    <!--<div class="row">
+        <div class="col-lg-3">
+            <label> Filtro 1</label><br>
+            <label class="switch">
+                <input type="checkbox" [(ngModel)]="">
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>-->
+    <!--Filtros extra-->
+    <div class="row" *ngIf="this.resultadosIngresos">
+        <div class="col-lg-12"><h4>Mostrar desglose por </h4></div>
+        <div class="col-lg-2">
+            <label>Conceptos</label><br>
+            <label class="switch">
+                <input type="checkbox" [(ngModel)]="filtroConceptos">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="col-lg-2">
+            <label>Forma de Pago </label><br>
+            <label class="switch">
+                <input type="checkbox" [(ngModel)]="filtroFormas">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="col-lg-2">
+            <label>Estado Resultados </label><br>
+            <label class="switch">
+                <input type="checkbox" (change)="recalcularResultados();" [(ngModel)]="filtroEstadoResultado">
+                <span class="slider round"></span>
+            </label>
+        </div>
+<!--        <div class="col-lg-2">
+            <label>cuentas</label><br>
+            <label class="switch">
+                <input type="checkbox" (change)="mostrarDetalles();" [(ngModel)]="filtroCuentas">
+                <span class="slider round"></span>
+            </label>
+        </div>-->
+        <div class="col-lg-2">
+            <label>Datos en tabla</label><br>
+            <label class="switch">
+                <input type="checkbox"  [(ngModel)]="filtroDatosTabla">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="col-lg-12"><br><br></div>
+    </div>    
+    <!--Estado de resultados -->
+    <div class="row" *ngIf="this.resultadosIngresos && filtroEstadoResultado">
+        <div class="col-lg-12">
+            <div class="card mb-3">
+                <div class="card-header bg-warning">
+                        <button class="btn btn-primary pull-right" (click)="confirmarGuardarEstadoResultados();"><i class="fa fa-save"></i> | Guardar </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <h4>Cuentas </h4>
+                            <ul>
+                                <li class="tg-list-item" *ngFor="let c of cuentas;let i = index">
+                                    <b>{{c.Nombre}} : $ {{c.Saldo | number}}</b>
+                                    <input class="tgl tgl-flat" id="IND-{{i}}" type="checkbox" (change)="recalcularResultados();" [(ngModel)]="c.Active" />
+                                    <label class="tgl-btn" for="IND-{{i}}"></label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-9" >
+                            <h4> Detalles </h4>
+                            <div class="card mb-3">
+                                <div class="card-header bg-info">
+                                    Resultado 
+                                </div> 
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-3 text-primary"> Saldo Cuentas: $ {{ saldoTotalCuentas | number}} </div>
+                                        <div class="col-lg-3 text-success"> + Ingresos: $ {{ totalIngresos | number}} </div>
+                                        <div class="col-lg-3 text-danger"> - Gastos: $ {{ totalGastos | number}} </div>
+                                        <div class="col-lg-3 text-info"> Saldo Final: $ {{saldoTotalCuentas+totalIngresos-totalGastos  | number}}</div>
+                                        <div class="col-lg-12">
+                                            <table class="table table-stripped table-hover">
+                                                <tr><th>Saldo Cuentas</th><th>Ingresos</th> <th>Egresos</th> <th>Restante</th> </tr>
+                                                <tr><td>$ {{saldoTotalCuentas | number}} </td> <td>Todos: {{this.totalIngresos | number}}</td><td> Todos: {{this.totalGastos | number}} </td><td>Resultado : {{this.totalIngresos-this.totalGastos | number}}</td></tr>
+<!--                                                <tr><td></td> 
+                                                    <td>
+                                                        <ul>
+                                                            <li class="tg-list-item">
+                                                                Ver detalle
+                                                                <input class="tgl tgl-flat" id="verIngresos" type="checkbox" [(ngModel)]="verDetalleIngresos" />
+                                                                <label class="tgl-btn" for="verIngresos"></label>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                    <td>
+                                                        <ul>
+                                                            Ver detalle
+                                                            <li class="tg-list-item">
+                                                                <input class="tgl tgl-flat" id="verGastos" type="checkbox" [(ngModel)]="verDetalleGastos" />
+                                                                <label class="tgl-btn" for="verGastos"></label>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>-->
+                                                <!--<tr><td>Todos Por {{this.labelIngresos }}: {{this.totalIngresosDetalle | number}}</td><td> Todos: {{this.labelGastos}} {{this.totalGastosDetalle | number}} </td><td>Resultado Por Tipo : {{this.totalIngresosDetalle -this.totalGastosDetalle | number}}</td></tr>-->
+                                                <!--<tr *ngIf="totalIngresosDetalle2 && totalGastosDetalle2"><td>Todos Por {{this.labelIngresos2 }}: {{this.totalIngresosDetalle2 | number}}</td><td> Todos: {{this.labelGastos2}} {{this.totalGastosDetalle2 | number}} </td><td>Resultado Por Pago : {{this.totalIngresosDetalle2 -this.totalGastosDetalle2 | number}}</td></tr>-->
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>        
+    <!--Resultado de reportes-->
+    <div class="row" *ngIf="this.resultadosIngresos && filtroDatosTabla ">
+        <div class="col-lg-6">
+            <div class="card mb-3">
+                <div class="card-header bg-success">
+                    Ingresos  <b>Total Ingresos ${{totalIngresos | number}}</b>
+                </div>
+                <div class="card-body">
+                    <app-datatables-general #datatableIngresos *ngIf="this.resultadosIngresos" [datosDatatable]="this.resultadosIngresos"></app-datatables-general>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card mb-3">
+                <div class="card-header bg-danger">
+                    Gastos  <b>Total Gastos $ {{totalGastos | number}}</b>
+                </div>
+                <div class="card-body">
+                    <app-datatables-general #datatableGastos *ngIf="this.resultadosGastos" [datosDatatable]="this.resultadosGastos"></app-datatables-general>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!--Reportes Utilidad-->
+<!--        <div class="row"  *ngIf="this.resultadosIngresos && filtroEstadoResultado">
+            <div class="col-xs-12">
+                <div class="row" >
+                    <div class="col-xs-8"> 
+                        <div class="panel panel-primary">
+                            <div class="panel-heading"><h4>Desglose por cuentas</h4></div>
+                            <div class="panel-body">
+                                <table class="table table-striped table-hover">
+                                    <tr><th>Folio de promocion</th><th>Marca</th><th># Partidas</th><th>Monto Acumumulado</th><th>Detalles</th><th>Calcular Utilidad</th></tr>
+                                    <tr *ngFor="let d of datosUtilidad.Datos">
+                                        <td>{{d.Folio}}</td>
+                                        <td>{{d.Marca}}</td>
+                                        <td>{{d.Partidas.length}}</td>
+                                        <td>{{d.TotalAcumulado</td>
+                                        <td><button class="btn btn-warning" (click)="detallePromocion(d);"><i class="fa fa-info-circle"></i></button></td>
+                                        <td><button class="btn btn-success" (click)="verResultadosUtilidad(d);"><i class="fa fa-arrow-circle-right"></i></button></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>      
+                    </div>
+                    <div class="col-xs-4">
+                        <p class="text-center">
+                            <strong>Resumen de ventas</strong>
+                        </p>
+                        <div class="progress-group" *ngFor="let c of cuentas">
+                            <span class="progress-text">Saldo de {{c.Nombre}} con </span>
+                            <span class="progress-number"> {{c.Saldo}}</span>
+                            <div class="progress sm">
+                            <div class="progress-bar progress-bar-red" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Total Precio Venta</span>
+                            <span class="progress-number"><b>0</b>{{totalPrecioProm}}}</span>
+                            <div class="progress sm">
+                                <div class="progress-bar progress-bar-aqua" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Total de Apoyos Marca</span>
+                            <span class="progress-number"><b>0</b>{{totalApoyosProm}}}</span>
+                            <div class="progress sm">
+                                <div class="progress-bar progress-bar-yellow" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Utilidad Aprox</span>
+                            <span class="progress-number"><b>0</b>{{totalUtilidadBruta}}}</span>
+                            <div class="progress sm">
+                                <div class="progress-bar progress-bar-green" style="width: 80%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>       --> 
+    <!--Ingresos Por Concepto [@routerTransition]-->
+    <div class="row" *ngIf="this.resultadosIngresos && filtroConceptos" >
+        <div class="col-lg-12"><h4>Detalles de ingresos</h4></div>
+        <div class="col-lg-6" >
+            <div class="card mb-3">
+                <div class="card-header bg-success">
+                    {{this.ingresosChart.Nombre}}
+                </div>
+                <div class="card-body">
+                    <canvas baseChart height="150px" [data]="ingresosChart.DatosContenido" 
+                    [labels]="ingresosChart.DatosEtiqueta" [chartType]="ingresosChart.Tipo" 
+                    (chartHover)="chartHovered($event,ingresosChart.Datos)" 
+                    (chartClick)="chartIngresosClicked($event)">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6" *ngIf="this.resultadosIngresosDetalle">
+            <div class="card mb-3">
+                <div class="card-header bg-success">
+                    Datos {{this.ingresosChart.Nombre}} {{(labelIngresos)?labelIngresos:'Todos'}} Total: $ {{this.totalIngresosDetalle | number}}
+                </div>
+                <div class="card-body">
+                    <app-datatables-general #datatableIngresosDetalle *ngIf="this.resultadosIngresosDetalle" [datosDatatable]="this.resultadosIngresosDetalle"></app-datatables-general>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Gastos Por Concepto-->
+    <div class="row" *ngIf="this.resultadosGastos && filtroConceptos" >
+        <div class="col-lg-12"><h4>Detalles de Gastos</h4></div>
+        <div class="col-lg-6" >
+            <div class="card mb-3">
+                <div class="card-header bg-danger">
+                    {{this.gastosChart.Nombre}}
+                </div>
+                <div class="card-body">
+                    <canvas baseChart height="150px" [data]="gastosChart.DatosContenido" 
+                    [labels]="gastosChart.DatosEtiqueta" [chartType]="gastosChart.Tipo" 
+                    (chartHover)="chartHovered($event,gastosChart.Datos)" 
+                    (chartClick)="chartGastosClicked($event)">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6" *ngIf="this.resultadosGastosDetalle">
+            <div class="card mb-3">
+                <div class="card-header bg-danger">
+                    Datos {{this.gastosChart.Nombre}} {{(labelGastos)?labelGastos:'Todos'}} Total: $ {{this.totalGastosDetalle | number}}
+                </div>
+                <div class="card-body">
+                    <app-datatables-general #datatableGastosDetalle *ngIf="this.resultadosGastosDetalle" [datosDatatable]="this.resultadosGastosDetalle"></app-datatables-general>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Ingresos Por Forma de pago-->
+    <div class="row" *ngIf="this.resultadosIngresos && filtroFormas" >
+            <div class="col-lg-12"><h4>Detalles de ingresos</h4></div>
+            <div class="col-lg-6" >
+                <div class="card mb-3">
+                    <div class="card-header bg-success">
+                        {{this.ingresosChart2.Nombre}}
+                    </div>
+                    <div class="card-body">
+                        <canvas baseChart height="150px" [data]="ingresosChart2.DatosContenido" 
+                        [labels]="ingresosChart2.DatosEtiqueta" [chartType]="ingresosChart2.Tipo" 
+                        (chartHover)="chartHovered($event,ingresosChart2.Datos)" 
+                        (chartClick)="chartIngresosClicked2($event)">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" *ngIf="this.resultadosIngresosDetalle2">
+                <div class="card mb-3">
+                    <div class="card-header bg-success">
+                        Datos {{this.ingresosChart2.Nombre}} {{(labelIngresos2)?labelIngresos2:'Todos'}} Total: $ {{this.totalIngresosDetalle2 | number}}
+                    </div>
+                    <div class="card-body">
+                        <app-datatables-general #datatableIngresosDetalle2 *ngIf="this.resultadosIngresosDetalle2" [datosDatatable]="this.resultadosIngresosDetalle2"></app-datatables-general>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Gastos Por Concepto-->
+        <div class="row" *ngIf="this.resultadosGastos && filtroFormas" >
+            <div class="col-lg-12"><h4>Detalles de Gastos</h4></div>
+            <div class="col-lg-6" >
+                <div class="card mb-3">
+                    <div class="card-header bg-danger">
+                        {{this.gastosChart2.Nombre}}
+                    </div>
+                    <div class="card-body">
+                        <canvas baseChart height="150px" [data]="gastosChart2.DatosContenido" 
+                        [labels]="gastosChart2.DatosEtiqueta" [chartType]="gastosChart2.Tipo" 
+                        (chartHover)="chartHovered($event,gastosChart2.Datos)" 
+                        (chartClick)="chartGastosClicked2($event)">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" *ngIf="this.resultadosGastosDetalle2">
+                <div class="card mb-3">
+                    <div class="card-header bg-danger">
+                        Datos {{this.gastosChart2.Nombre}} {{(labelGastos2)?labelGastos2:'Todos'}} Total: $ {{this.totalGastosDetalle2 | number}}
+                    </div>
+                    <div class="card-body">
+                        <app-datatables-general #datatableGastosDetalle2 *ngIf="this.resultadosGastosDetalle2" [datosDatatable]="this.resultadosGastosDetalle2"></app-datatables-general>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>

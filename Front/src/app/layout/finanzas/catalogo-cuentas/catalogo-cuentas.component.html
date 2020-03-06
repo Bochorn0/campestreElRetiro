@@ -1,0 +1,72 @@
+<div class="col-lg-12">
+    <div class="row">
+        <div class="col-lg-4">
+            <button (click)="obtenerCuentasActivas();" class="btn btn-primary"><i clas="fa fa-address-card"></i> Cuentas Activas</button>
+        </div>
+        <div class="col-lg-4">
+            <button (click)="obtenerCuentasInactivas();" class="btn btn-danger"><i clas="fa fa-credit-card"></i>  Cuentas Inactivas</button>
+        </div>
+        <div class="col-lg-4">
+            <button (click)="nuevaCuenta();" class="btn btn-success"><i class="fa fa-plus-circle"></i> Nueva Cuenta</button>
+        </div>
+    </div>
+    <hr />
+    <div class="row" *ngIf="vistaCentro">
+        <div class="col-xl-12 col-lg-12 col-xs-12">
+            <div class="row" *ngIf="datosCuentasEspeciales">
+                <div class="col-xl-12 col-lg-12 col-xs-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-secondary" >
+                            Cuentas Especiales
+                        </div>
+                        <div class="card-body">
+                            <div class="row" *ngIf="datosCuentasEspeciales">
+                                <div class="col-lg-12">
+                                    <app-datatables-general #datatableCuentas *ngIf="this.datosCuentasEspeciales" [datosDatatable]="datosCuentasEspeciales" (deactivate)="desactivarCuentaEspecial($event);" (edit)="editarElemento($event);" (activate)="activarCuentaEspecial($event);" (delete)="borrarCuentaEspecial($event);" ></app-datatables-general>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Formulario Cuentas -->
+            <div class="row" *ngIf="vistaNuevaCuenta">
+                <div class="col-xl-12 col-lg-12 col-xs-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-secondary" >
+                            Agregar Cuenta Nueva
+                        </div>
+                        <div class="card-body">
+                            <div class="row" >
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Nombre Cuenta </label>
+                                        <input type="text" placeholder="CUENTA A NOMBRE DE: " [(ngModel)]="nombreCuenta" class="form-control" required />
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Numero Cuenta </label>
+                                        <input type="text" placeholder="Numero de cuenta: " [(ngModel)]="numeroCuenta" class="form-control" required />
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Saldo </label>
+                                        <input type="number" placeholder="Saldo de la cuenta: " [(ngModel)]="saldoCuenta" class="form-control" required />
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="label-form"> <br></label><br>
+                                        <button class="btn btn-primary" (click)="agregarNuevaCuenta();">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,10 @@
+back/node_modules
+back/shared/uploads
+back/shared/config/*
+Front/node_modules
+Front/node_modules.zip
+Front/src/environments/*
+Front/dist
+Publicar.sh
+Respaldos
+.htaccess

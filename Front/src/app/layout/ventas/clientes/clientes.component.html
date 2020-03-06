@@ -1,0 +1,203 @@
+<div class="col-xl-12 col-lg-12 col-xs-12">
+    <div class="card mb-3">
+        <div class="card-header bg-success" >
+            Nuevo Cliente
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12"><h3 class="text-center text-info ">Datos de Contacto</h3><hr></div>
+                <div class="col-lg-4" *ngIf="mensualidad"><b>Mensualidad:</b> {{mensualidad}}</div>
+                <div class="col-lg-4" *ngIf="anualidad"><b>Anualidad:</b> {{anualidad}}</div>
+                <div class="col-lg-4" *ngIf="numPagos"><b>#Pagos:</b> {{numPagos}}</div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="label-form"> Nombre </label>
+                        <input type="text" placeholder="Luis Fernando Cordova Castillo" [(ngModel)]="nombre" class="form-control" required/>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="label-form"> Correo </label>
+                        <input type="text" placeholder="luisfer@gmail.com" name="correo" [(ngModel)]="correo" class="form-control" required/>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="label-form"> IFE </label>
+                        <input type="text" placeholder="0589119466813" [(ngModel)]="numIfe" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="label-form"> Comprobante domicilio </label>
+                        <div class="input-group">
+                            <label class="input-group-btn" style="margin:0;">
+                                <span class="btn btn-success" >
+                                    <i class="fa fa-upload"> </i> Cargar comprobante
+                                    <input type="file" style="display: none;" accept="image/*" (change)="nombreArchivo($event,'Domicilio');" required>
+                                </span>
+                            </label>
+                            <input type="text" class="form-control" [(ngModel)]="comprobante">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="label-form"> Foto IFE </label>
+                        <div class="input-group">
+                            <label class="input-group-btn" style="margin:0;">
+                                <span class="btn btn-success">
+                                    <i class="fa fa-upload"> </i> Cargar foto IFE
+                                    <input type="file" style="display: none;" accept="image/*" (change)="nombreArchivo($event,'Ife');" required >
+                                </span>
+                            </label>
+                            <input type="text" class="form-control" name="nombreArchivo" [(ngModel)]="fotoIfe">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="label-form"> Origen </label>
+                        <input type="text" placeholder="San pedro" [(ngModel)]="origen" class="form-control" required/>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="label-form"> Teléfono </label>
+                        <input type="text" placeholder="6621691999" [(ngModel)]="telefono" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="label-form"> Fecha Nacimiento </label>
+                        <input type="date" [(ngModel)]="fNacimiento" class="form-control" required/>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label class="label-form"> Direccion </label>
+                        <textarea placeholder="Calle de las flores entre Palacio y Tuxtla numero 197" [(ngModel)]="direccion" class="form-control"> </textarea>
+                    </div>
+                </div>
+                <div class="col-lg-12"><br><h3 class="text-center text-warning">Datos de Referencias</h3><hr></div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="label-form"> Referencia 1 </label>
+                        <input type="text" placeholder="Nombre:" [(ngModel)]="referencia1" class="form-control"/>
+                        <br>
+                        <input type="text" placeholder="Telefono:" [(ngModel)]="celReferencia1" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="label-form"> Referencia 2 </label>
+                        <input type="text" placeholder="Nombre:" [(ngModel)]="referencia2" class="form-control"/><br>
+                        <input type="text" placeholder="Telefono:" [(ngModel)]="celReferencia2" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label class="label-form"> Referencia 3 </label>
+                        <input type="text" placeholder="Nombre:" [(ngModel)]="referencia3" class="form-control"/>
+                        <br>
+                        <input type="text" placeholder="Telefono:" [(ngModel)]="celReferencia3" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-lg-12"><br><h3 class="text-center text-danger">Datos de Terreno</h3><hr></div>
+                <div class="col-lg-12">
+                    <button (click)="this.terrenosCliente.push({IdCotizacion : 0});" class="btn btn-success pull-right">
+                        <i class="fa fa-plus-circle"></i> Terreno
+                    </button>
+                    <br><br>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label class="label-form">Contrato de agua </label>
+                        <input type="number" [(ngModel)]="contratoAgua" placeholder="400"class="form-control">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label class="label-form">Mantenimiento mensual</label>
+                        <input type="number" [(ngModel)]="importeMantenimiento" placeholder="1500"class="form-control" >
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label class="label-form"> Primer Mantenimiento </label>
+                        <input type="date" [(ngModel)]="fechaPrimerMantenimiento" class="form-control" >
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label class="label-form"> Periodo de cobro </label>
+                        <select [(ngModel)]="fechaParaCobro" class="form-control ">
+                            <option value="0">Selecciona cada cuantos meses </option>
+                            <option value="1">1 Mes</option>
+                            <option value="2">2 Meses</option>
+                            <option value="3">3 Meses</option>
+                            <option value="4">4 Meses</option>
+                            <option value="5">5 Meses</option>
+                            <option value="6">6 Meses</option>
+                            <option value="7">7 Meses</option>
+                            <option value="8">8 Meses</option>
+                            <option value="9">9 Meses</option>
+                            <option value="10">10 Meses</option>
+                            <option value="11">11 Meses</option>
+                            <option value="12">12 Meses</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-12" *ngFor="let ter of terrenosCliente; let t = index;">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                <input type="hidden"[(ngModel)]="ter.IdTerreno">
+                                <input id="typeahead-format" title="Parcela # y propietario: {{ter.Pertenece}}" placeholder="Parcela:" type="text" class="form-control" [(ngModel)]="ter.parcela" [ngbTypeahead]="filtrarTerrenos" (selectItem)="seleccionarParcela($event, t)" [resultFormatter]="formatter" required/>
+                            </div>
+                        </div>
+                        <div class="col-lg-1">
+                            <div class="form-group">
+                                <input id="typeahead-format" title="Lote #: " placeholder="Lote:" type="text" class="form-control" [(ngModel)]="ter.lote" [ngbTypeahead]="filtrarLotes" (selectItem)="seleccionarLote($event)" [resultFormatter]="formatter" required/>
+                            </div>                            
+                        </div>
+                        <div class="col-lg-1">
+                            <div class="form-group">
+                                <input id="typeahead-format" title="Etapa #: " placeholder="Etapa:" type="text" class="form-control" [(ngModel)]="ter.etapa" [ngbTypeahead]="filtrarEtapas" (selectItem)="seleccionarEtapa($event)" [resultFormatter]="formatter" required/>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                <input type="text"  title="Extension en m2: " placeholder="Superficie:" [(ngModel)]="ter.Superficie" class="form-control" required/> 
+                            </div>
+                        </div>                        
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                <input type="text"  title="Folio #: " placeholder="Folio:" [(ngModel)]="ter.folio" class="form-control" required/> 
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                <select class="form-control"  [(ngModel)]="ter.IdCotizacion" required>
+                                    <option value="0">Cotización</option>
+                                    <option *ngFor="let cot of cotizaciones" value="{{cot.IdCotizacion}}">{{cot.Nombre}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-1">
+                            <div class="form-group">
+                                <button class="btn btn-danger" (click)="borrarTerreno(t);"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="form-group">
+                            <label class="label-form"> &nbsp;</label><br>
+                        <button class="btn btn-primary pull-right" (click)="guardarNuevoCliente();">Guardar Cliente</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

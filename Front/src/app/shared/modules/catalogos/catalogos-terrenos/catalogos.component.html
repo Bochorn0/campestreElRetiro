@@ -1,0 +1,175 @@
+<div class="row" *ngIf="vistaCentro" >
+    <div class="col-lg-12">
+        <!--Ingresos-->
+        <div class="row" *ngIf="datosTerrenos">
+            <div class="col-xs-12 col-xl-12 col-lg-12">
+                <button (click)="subirArchivo.click();" class="btn btn-danger pull-right"><i class="fa fa-upload"></i> <i class="fa fa-file-excel"></i> Cargar Excel</button>
+                <button (click)="obtenerPlantillaTerrenos();" class="btn btn-warning pull-right"><i class="fa fa-download"></i> <i class="fa fa-file-excel"></i> Exportar Plantilla </button>
+                <button *ngIf="this.chksTerrenos.length > 0" (click)="borrarMultiplesTerrenos();" class="btn btn-danger-clasic pull-right"><i class="fa fa-times"></i> Borrar Multiples </button>
+                <form [formGroup]="frmSolicitud" class="form-validate" (keydown.enter)="$event.preventDefault()" novalidate="">
+                    <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)"  formControlName="File" />
+                </form>
+                <br><br>
+            </div>
+            <div class="col-lg-12" >
+                <div class="card mb-3">
+                    <div class="card-header">
+                        Terrenos Activos
+                    </div>
+                    <div class="card-body" >
+                        <div class="row" *ngIf="!detalleTerrenos">
+                            <div class="col-lg-3">
+                                <h4> Parcela </h4>
+                                <input  (keyup)="filtrarTerrenos();"   placeholder="Parcela:" type="text" class="form-control" [(ngModel)]="parcelaFiltro" [ngbTypeahead]="filtrarParcelas" (selectItem)="parcelaFiltro = $event.item; filtrarTerrenos();" [resultFormatter]="formatter" />
+                                <!-- <select  class="form-control" [(ngModel)]="parcelaFiltro" (change)="filtrarTerrenos();" >
+                                    <option value="0">Todas</option>
+                                    <option  *ngFor="let e of parcelas;" value="{{e.parcela}}">{{e.parcela}}</option>
+                                </select> -->
+                            </div>
+                            <div class="col-lg-3">
+                                <h4> Lote </h4>
+                                <input  (keyup)="filtrarTerrenos();"  placeholder="Lote:" type="text" class="form-control" [(ngModel)]="loteFiltro" [ngbTypeahead]="filtrarLotes" (selectItem)="loteFiltro = $event.item; filtrarTerrenos();"  [resultFormatter]="formatter" />
+                                <!-- <select  class="form-control" [(ngModel)]="loteFiltro" (change)="filtrarTerrenos();" >
+                                    <option value="0">Todos</option>
+                                    <option  *ngFor="let e of lotes;" value="{{e.lote}}">{{e.lote}}</option>
+                                </select> -->
+                            </div>
+                            <div class="col-lg-3"> 
+                                <h4> Estapa </h4>
+                                <input  (keyup)="filtrarTerrenos();"  placeholder="Etapa:" type="text" class="form-control" [(ngModel)]="etapaFiltro" [ngbTypeahead]="filtrarEtapas" (selectItem)="etapaFiltro = $event.item; filtrarTerrenos();" [resultFormatter]="formatter" />
+                                <!-- <select  class="form-control" [(ngModel)]="etapaFiltro" (change)="filtrarTerrenos();" >
+                                    <option value="0">Todas</option>
+                                    <option  *ngFor="let e of etapas;" value="{{e.etapa}}">{{e.etapa}}</option>
+                                </select> -->
+                            </div>
+                            <div class="col-lg-3">
+                                <h4> Estatus </h4>
+                                <select  class="form-control" [(ngModel)]="estatusFiltro" (change)="filtrarTerrenos();" >
+                                    <option value="0">Todos</option>
+                                    <option  *ngFor="let e of estatusTodos;" value="{{e.Estatus}}">{{e.Estatus}}</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-12">
+                                <br>
+                                <div class="form-group"> 
+                                    <input (keyup)="filtrarTerrenos();"  placeholder="Buscar en Terrenos:" type="text" class="form-control" [(ngModel)]="textoTerreno" />
+                                </div>
+                                <br>
+                            </div>
+                            <div class="col-lg-12">
+                                <br>
+                            </div>  
+                        </div>      
+                        <div class="col-lg-12">
+                            <div class="row" *ngIf="!detalleTerrenos">
+                                <div class="col-lg-12">
+                                    <table class="table table-hover table-stripped" *ngIf="datosTerrenos">
+                                        <thead>
+                                            <tr>
+                                                <th>Codigo</th>
+                                                <th>Etapa</th>
+                                                <th>Lote</th>                                                
+                                                <th>Parcela</th>
+                                                <th>Superficie</th>
+                                                <th>Dueño original</th>
+                                                <th>Dueño Actual</th>
+                                                <th>Estado</th>
+                                                <th>Asignado</th>
+                                                <th>Activo</th>
+                                                <th class="text-center"><i class="fa fa-gear"></i></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody >
+                                            <tr *ngFor="let ter of datosTerrenos | paginate: { itemsPerPage: 20, currentPage: this.datosPage }" >
+                                                <td>TER-{{ter.IdTerreno}}</td>
+                                                <td>{{ter.Etapa}}</td>
+                                                <td>{{ter.Lote}}</td>
+                                                <td>{{ter.Parcela}}</td>
+                                                <td>{{ter.Superficie}}</td>
+                                                <td >{{ter.Original}}</td>
+                                                <td >{{ter.Pertenece}}</td>
+                                                <td >{{ter.Estado}}</td>
+                                                <td ><i class="fa fa-{{(ter.Asignado)?'check-circle text-success':'times-circle text-danger'}}"></i></td>
+                                                <td >{{ter.Activo}}</td>
+                                                <td class="text-center">
+                                                    <!-- <button class="btn btn-success" (click)="nuevaVenta(cli)" title="Abono Terreno"><i class="fa fa-plus-circle"></i></button> &nbsp;
+                                                    <button class="btn btn-danger" (click)="nuevoMantenimiento(cli)" title="Abono Mantenimiento"><i class="fa fa-plus-circle"></i></button>&nbsp;
+                                                    <button class="btn btn-info" (click)="nuevaVenta(cli)" title="Abono Cerfiticado"><i class="fa fa-plus-circle"></i></button>&nbsp;-->
+                                                    <button class="btn btn-primary" (click)="detalleTerreno(ter)"><i class="fa fa-pencil"></i> </button>&nbsp; 
+                                                    <button class="btn btn-danger" style="background: #c00 !important; " (click)="confirmarBorrarTerreno(ter)" title="Borrar Cliente"><i class="fa fa-times"></i></button>&nbsp;
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="text-right" >
+                                        <pagination-controls (pageChange)="this.datosPage = $event" ></pagination-controls>
+                                    </div>
+                                </div>
+                            </div>                            
+                            <div class="row" *ngIf="detalleTerrenos">
+                                <div class="col-lg-12"> 
+                                    <button (click)="this.detalleTerrenos = false;" class="btn btn-dark "><i class="fa fa-map"></i> Ver Todos  </button>
+                                    <br>
+                                    <br>
+                                    <div class="card card-default">
+                                        <div class="card-header" style="color:#000 !important; ">
+                                            Editar Terreno
+                                            <button class="btn btn-primary pull-right" (click)="guardarCambiosTerreno();"><i class="fa fa-save"></i> | Guardar</button>
+                                        </div>
+                                        <div class="card-body row">
+                                            <div class="form-group col-lg-3">
+                                                <label class="label-form">Etapa</label><br>
+                                                <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.Etapa" />
+                                            </div>
+                                            <div class="form-group col-lg-3">
+                                                <label class="label-form"><b>Lote</b></label><br>
+                                                <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.Lote" />
+                                            </div>
+                                            <div class="form-group col-lg-3">
+                                                <label class="label-form"><b>Parcela</b></label><br>
+                                                <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.Parcela" />
+                                            </div>
+                                            <div class="form-group col-lg-3">
+                                                <label class="label-form"><b>Superficie</b></label><br>
+                                                <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.Superficie" />
+                                            </div>
+                                            <div class="form-group col-lg-6">
+                                                <label class="label-form"><b>Dueño Actual</b></label>
+                                                <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.Pertenece" />
+                                            </div>
+                                            <!-- <div class="form-group col-lg-6">
+                                                <label class="label-form"><b>Dueño Actual</b></label>
+                                                <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.Actual" />
+                                            </div> -->
+                                            <div class="form-group col-lg-2">
+                                                <label class="label-form"><b>Estatus</b></label><br>
+                                                <select  class="form-control" [(ngModel)]="detalleTerrenos.Estado" >
+                                                    <option  *ngFor="let e of estatusTodos;" value="{{e.Estatus}}">{{e.Estatus}}</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-lg-2">
+                                                <label class="label-form"><b>Asignado</b></label><br>
+                                                <label class="switch">
+                                                    <input type="checkbox" [(ngModel)]="detalleTerrenos.Asignado">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                            <div class="form-group col-lg-2">
+                                                <label class="label-form"><b>Activo</b></label><br>
+                                                <label class="switch">
+                                                    <input type="checkbox" [(ngModel)]="detalleTerrenos.Activo">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>        
+                        <!-- <app-datatables-general #datatableTerrenos *ngIf="datosTerrenos" [datosDatatable]="datosTerrenos" (delete)="borrarTerreno($event);" (edit)="editarTerreno($event);" (checks)="this.chksTerrenos = $event"></app-datatables-general> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,150 @@
+<div [@routerTransition]>
+<!--    <h2 class="text-muted"> Bienvenido  <small></small></h2>-->
+<!--    <div class="row">
+        <div class="col-md-12">
+            <ngb-carousel>
+                <ng-template ngbSlide *ngFor="let slider of sliders">
+                    <img class="img-fluid mx-auto d-block" [src]="slider.imagePath" alt="Random first slide" width="100%">
+                    <div class="carousel-caption">
+                        <h3>{{slider.label}}</h3>
+                        <p>{{slider.text}}</p>
+                    </div>
+                </ng-template>
+            </ngb-carousel>
+        </div>
+    </div>
+    <hr>-->
+<!--    <ngb-alert type="warning" *ngIf="closeAlert != false" (close)="closeAlert= false" >En este panel encontraras el resumen de los temas mas imporntantes en forma de sintesis</ngb-alert>-->
+    <div class="row">
+        <div class="col-xl-3 col-lg-6">
+            <app-stat [routerLink]="['/Cobranza']" [routerLinkActive]="['router-link-active']" [bgClass]="'primary'" [icon]="'fa-pie-chart'" [label]="'Ingresos'"></app-stat>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+            <app-stat [routerLink]="['/Egresos']" [routerLinkActive]="['router-link-active']" [bgClass]="'warning'" [icon]="'fa-tasks'" [label]="'Gastos'" ></app-stat>
+        </div>
+        <!-- <div class="col-xl-3 col-lg-6">
+            <app-stat [routerLink]="['/Cotizaciones']" [routerLinkActive]="['router-link-active']" [bgClass]="'info'" [icon]="'fa-shopping-cart'" [label]="'Cotizaciones'"></app-stat>
+        </div> -->
+        <div class="col-xl-3 col-lg-6">
+            <app-stat [routerLink]="['/Catalogos']" [routerLinkActive]="['router-link-active']" [bgClass]="'secondary'" [icon]="'fa-support'"  [label]="'Catalogos'"></app-stat>
+        </div>
+    </div>
+    <hr />
+    <div class="row" *ngIf="this.datosDashboard">
+        <div class="col-xl-12 col-lg-12">
+            <app-datatables-general *ngIf="this.datosDashboard" [datosDatatable]="this.datosDashboard"></app-datatables-general>
+        </div>
+    </div>
+    <div class="row" *ngIf="this.reporteActivo">
+        <div class="col-xl-12 col-lg-12 col-xs-12">
+            <!--Ingresos-->
+            <div class="row" *ngIf="this.reportesIngresos" [@routerTransition]>
+                <div class="col-xl-6 col-lg-6 col-xs-12">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            {{this.ingresosChart.Nombre}}
+                        </div>
+                        <div class="card-body">
+                            <canvas baseChart height="150px" [data]="ingresosChart.DatosContenido" 
+                            [labels]="ingresosChart.DatosEtiqueta" [chartType]="ingresosChart.Tipo" 
+                            (chartHover)="chartHovered($event,ingresosChart.Datos)" 
+                            (chartClick)="chartIngresosClicked($event)">
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-xs-12" *ngIf="this.ingresosChart.Tabla">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Datos {{this.ingresosChart.Nombre}}
+                        </div>
+                        <div class="card-body">
+                            <app-datatables-general #datatableIngresos *ngIf="this.ingresosChart.Tabla" [datosDatatable]="this.ingresosChart.Tabla"></app-datatables-general>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Gastos A la fecha-->
+            <div class="row" *ngIf="this.reportesGastos" [@routerTransition]>
+                <div class="col-xl-6 col-lg-6 col-xs-12" >
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            {{this.gastosChart.Nombre}}
+                        </div>
+                        <div class="card-body">
+                            <canvas baseChart height="150px" [data]="gastosChart.DatosContenido" 
+                            [labels]="gastosChart.DatosEtiqueta" [chartType]="gastosChart.Tipo" 
+                            (chartHover)="chartHovered($event,gastosChart.Datos)" 
+                            (chartClick)="chartGastosClicked($event)">
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-xs-12" *ngIf="this.gastosChart.Tabla">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Datos {{this.gastosChart.Nombre}}
+                        </div>
+                        <div class="card-body">
+                            <app-datatables-general #datatableGastos *ngIf="this.gastosChart.Tabla" [datosDatatable]="this.gastosChart.Tabla"></app-datatables-general>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Cartera Vencida-->
+            <div class="row" *ngIf="this.reportesCartera" [@routerTransition]>
+                <div class="col-xl-6 col-lg-6 col-xs-12">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            {{this.carteraChart.Nombre}}
+                        </div>
+                        <div class="card-body">
+                            <canvas baseChart height="150px" [data]="carteraChart.DatosContenido" 
+                            [labels]="carteraChart.DatosEtiqueta" [chartType]="carteraChart.Tipo" 
+                            (chartHover)="chartHovered($event,carteraChart.Datos)" 
+                            (chartClick)="chartCarteraClicked($event)">
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-xs-12" *ngIf="this.carteraChart.Tabla">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Datos {{this.carteraChart.Nombre}}
+                        </div>
+                        <div class="card-body">
+                            <app-datatables-general #datatableCartera *ngIf="this.carteraChart.Tabla" [datosDatatable]="this.carteraChart.Tabla"></app-datatables-general>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Clientes contacto-->
+            <div class="row" *ngIf="reportesClientes" [@routerTransition]>
+                <div class="col-xl-6 col-lg-6 col-xs-12">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            {{this.clientesChart.Nombre}}
+                        </div>
+                        <div class="card-body">
+                            <canvas baseChart height="150px" [data]="clientesChart.DatosContenido" 
+                            [labels]="clientesChart.DatosEtiqueta" [chartType]="clientesChart.Tipo" 
+                            (chartHover)="chartHovered($event,clientesChart.Datos)" 
+                            (chartClick)="chartClientesClicked($event)">
+                            </canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-xs-12" *ngIf="this.clientesChart.Tabla">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            Datos {{this.clientesChart.Nombre}}
+                        </div>
+                        <div class="card-body">
+                            <app-datatables-general #datatableClientes *ngIf="this.clientesChart.Tabla" [datosDatatable]="this.clientesChart.Tabla"></app-datatables-general>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
