@@ -49,6 +49,7 @@ module.exports = class Usuarios {
         modulos.Ventas = (datos.Ventas == 1)?{Permisos:permisos}:false;
         modulos.Cobranza = (datos.Cobranza == 1)?{Permisos:permisos}:false;
         modulos.Finanzas = (datos.Finanzas == 1)?{Permisos:permisos}:false;
+        modulos.Pagina = (datos.Pagina == 1)?{Permisos:permisos}:false;
         modulos.Cotizaciones = (datos.Cotizaciones == 1)?{Permisos:permisos}:false;
         modulos.Gastos = (datos.Gastos == 1)?{Permisos:permisos}:false;
         modulos.Empleados = (datos.Empleados == 1)?{Permisos:permisos}:false;

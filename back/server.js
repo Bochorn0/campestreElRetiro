@@ -5,6 +5,7 @@ const api_gastos = require('./api/api_gastos/app');
 const api_usuarios = require('./api/api_usuarios/app');
 const api_reportes =  require('./api/api_reportes/app');
 const api_ventas = require('./api/api_ventas/app');
+const api_website = require('./api/api_website/app');
 var cors = require('cors');
 const bodyParser = require('body-parser');
 const config = require('./shared/config/config.json');
@@ -18,6 +19,7 @@ app.use('/gastos', api_gastos);
 app.use('/usuarios', api_usuarios);
 app.use('/reportes', api_reportes);
 app.use('/ingresos', api_ventas);
+app.use('/website', api_website);
 /* Error routes invalid */
 /*app.get('/', function (req, res) {
     res.send('Hello World')

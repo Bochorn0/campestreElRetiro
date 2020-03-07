@@ -3,6 +3,9 @@
         <a *ngIf="datosUsuario.Perfil != 'Vendedor' " routerLink="/Inicio" [routerLinkActive]="['router-link-active']" class="list-group-item">
             <i class="fa fa-fw fa-dashboard"></i>&nbsp;{{ 'Inicio' | translate }}
         </a>
+        <a *ngIf="datosUsuario.Modulos.Pagina" [routerLink]="['/Pagina']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+            <i class="fa fa-fw fa-sitemap"></i>&nbsp;{{ 'Pagina web' | translate }}
+        </a>        
         <a *ngIf="datosUsuario.Perfil == 'Vendedor' " routerLink="/ModuloVentas" [routerLinkActive]="['router-link-active']" class="list-group-item">
             <i class="fa fa-fw fa-bar-chart"></i>&nbsp;{{ 'Modulo Ventas' | translate }}
         </a>
