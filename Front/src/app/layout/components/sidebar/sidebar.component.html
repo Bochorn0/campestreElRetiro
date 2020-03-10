@@ -45,9 +45,9 @@
         <a *ngIf="datosUsuario.Modulos.Reportes" [routerLink]="['/Reportes']" [routerLinkActive]="['router-link-active']" class="list-group-item">
             <i class="fa fa-fw fa-file-o"></i>&nbsp;{{ 'Reportes' | translate }}
         </a>
-        <a *ngIf="datosUsuario.Modulos.Carga" [routerLink]="['/Carga']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+        <!-- <a *ngIf="datosUsuario.Modulos.Carga" [routerLink]="['/Carga']" [routerLinkActive]="['router-link-active']" class="list-group-item">
             <i class="fa fa-fw fa-upload"></i>&nbsp;{{ 'Carga' | translate }}
-        </a>
+        </a> -->
         <div class="header-fields">
             <div class="nested-menu">
                 <a class="list-group-item" (click)="addExpandClass('profile')">

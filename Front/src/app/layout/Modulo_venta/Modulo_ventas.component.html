@@ -68,93 +68,29 @@
     </div>
     <!-- MENU PRINCIPAL -->
     <div class="row text-center menuPrincipal" *ngIf="mostrarPrincipal ">
-        <div class="col-1 col-sm-1"></div>
-        <a (click)="mostrarPrincipal=false; obtenerProspectos('Prospectos'); " class="col-4 col-sm-4 text-menu ">
-            <img src="../../../assets/images/App_icons/Prospectos.png" class="img-fluid" />
+        <a (click)="mostrarPrincipal=false; obtenerProspectos('Prospectos'); " class="col-6 text-menu ">
+            <img src="http://134.209.238.227/assets/images/App_icons/Prospectos.png" class="img-fluid" />
             <br> 
             <b >Prospectos</b>
         </a> 
-        <div class="col-2 col-sm-2"></div>
-        <a (click)="mostrarPrincipal=false; obtenerProspectos('Citas');" class="col-4 col-sm-4 text-menu">
-            <img src="../../../assets/images/App_icons/Citas.png" class="img-fluid"  />
+        <a (click)="mostrarPrincipal=false; obtenerProspectos('Citas');" class="col-6 text-menu">
+            <img src="http://134.209.238.227/assets/images/App_icons/Citas.png" class="img-fluid"  />
             <br>
             <b >Citas</b>
         </a> 
-        <div class="col-1 col-sm-1"></div>
-        <div class="col-1 col-sm-1"></div>
-        <a (click)="mostrarPrincipal=false; panelVisualizar = 'Cotizaciones';" class="col-4 col-sm-4 text-menu">
-            <img src="../../../assets/images/App_icons/Cotizaciones.png" class="img-fluid"  />
+    </div>
+    <div class="row text-center menuPrincipal" *ngIf="mostrarPrincipal ">
+        <a (click)="mostrarPrincipal=false; panelVisualizar = 'Cotizaciones';" class="col-6 text-menu ">
+            <img src="http://134.209.238.227/assets/images/App_icons/Cotizaciones.png" class="img-fluid"  />
             <br>
             <b >Cotizaciones</b>
         </a>
-        <div class="col-2 col-sm-2"></div>
-        <a (click)="mostrarPrincipal=false; obtenerTerrenosDisponibles(); panelVisualizar = 'Lotes';" class="col-4 col-sm-4 text-menu">
-            <img src="../../../assets/images/App_icons/Lotes_disponibles.png" class="img-fluid"  />
+        <a (click)="mostrarPrincipal=false; obtenerTerrenosDisponibles(); panelVisualizar = 'Lotes';" class="col-6 text-menu ">
+            <img src="http://134.209.238.227/assets/images/App_icons/Lotes_disponibles.png" class="img-fluid"  />
             <br>
             <b >Lotes</b>
         </a>
-        <div class="col-1 col-sm-1"></div>
-
     </div>
-
-    <!-- <div class="row" *ngIf="mostrarPrincipal ">
-        <div class="col-lg-12">
-            <br><br>   
-            <div class="card">
-                <div class="d-flex" >
-                    <a class="w-50 bb br px-3" (click)="mostrarPrincipal=false; panelVisualizar = 'Clientes';">
-                        <div class="d-flex align-items-center" >
-                            <em class="fa fa-users fa-2x text-info"></em>
-                            <div class="ml-auto">
-                                <div class="card-body text-right">
-                                    <h4 class="mt-0">{{totales.Clientes}}</h4>
-                                    <p class="mb-0 text-muted">Clientes Actuales</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <a class="w-50 bb br px-3" (click)="mostrarPrincipal=false; panelVisualizar = 'Terrenos';">
-                        <div class="d-flex align-items-center">
-                            <em class="fa fa-inbox fa-2x text-danger"></em>
-                            <div class="ml-auto">
-                                <div class="card-body text-right">
-                                    <h4 class="mt-0">{{totales.Terrenos}}</h4>
-                                    <p class="mb-0 text-muted">Terrenos</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="d-flex">
-                    <a class="w-50 br px-3" (click)="mostrarPrincipal=false; panelVisualizar = 'Terrenos';">
-                        <div class="d-flex align-items-center">
-                            <em class="fa fa-map fa-2x text-inverse"></em>
-                            <div class="ml-auto">
-                                <div class="card-body text-right">
-                                    <h4 class="mt-0">{{totales.Lotes}}</h4>
-                                    <p class="mb-0 text-muted">Lotes</p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <a class="w-50 px-3" (click)="mostrarPrincipal=false; panelVisualizar = 'Prospectos';">
-                        <div class="d-flex align-items-center" >
-                            <em class="fa fa-address-book fa-2x text-success"></em>
-                            <div class="ml-auto">
-                                <div class="card-body text-right">
-                                    <h4 class="mt-0">{{totales.Prospectos}}</h4>
-                                    <p class="mb-0 text-muted">Prospectos </p>
-                                    <div class="px-2 mr-2 badge badge-danger">{{totales.Pros_alerta}}</div>
-                                    <div class="px-2 mr-2 badge badge-success">{{totales.Pros_activos}}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            </div>    
-            <br><br>   
-        </div>
-    </div> -->
     <!-- CITAS -->
     <div class="row"  *ngIf="panelVisualizar == 'Citas' ">
         <div class="col-lg-12">
@@ -711,17 +647,16 @@
         </div>
     </div>
 </div>
-<div class="row text-center navbarBottom">
-    <div class="col-4 col-sm-4 col-md-4">
+<div class="row text-center navbarBottom" >
+    <div class="col-5">
         <a  (click)="mostrarPrincipal=false; panelVisualizar = 'NuevoCliente';" > <i class="fa fa-plus-circle text-success"></i> Nuevo</a>
     </div>
-    <div class="col-4 col-sm-4 col-md-4">
+    <div class="col-2 ">
         <a  class="menuCenter" (click)="mostrarPrincipal = true; panelVisualizar = '' "> <i class="fa fa-bars"></i>  </a>
     </div>
-    <div class="col-4 col-sm-4 col-md-4">
+    <div class="col-5 ">
         <a  (click)="mostrarPrincipal=false; obtenerProspectos('Aprobados'); " > <i class="fa fa-clipboard text-warning"></i> Aprobados </a>
     </div>          
-    <!-- <a  (click)="mostrarPrincipal=false; panelVisualizar = 'Terrenos';" ><i class="fa fa-map text-danger"></i> Terrenos</a>  -->  
 </div>
 
 <ng-template #modalApartado let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
