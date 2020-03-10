@@ -39,6 +39,18 @@ export class PaginaComponent implements OnInit {
             console.log('err',err);
         });
     }
+    guardarCambiosInicio(){ 
+      let guardar = `CONTENIDO NUEVO`;
+      let datosModificar = {Tipo: 'Inicio',Contenido:guardar};
+      this.websiteService.guardarModificacionesWebsite(datosModificar).then(res=>{
+        let result = JSON.parse(JSON.stringify(res));
+        if(result[0]){
+            console.log('result',result);
+        }
+      }).catch(err=>{
+          console.log('err',err);
+      });
+    }
     _confirmarModal(datosAlert){
         return new Promise ((resolve,reject)=>{
           swal({ title: datosAlert.Titulo,

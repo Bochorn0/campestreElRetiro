@@ -16,4 +16,9 @@ export class WebsiteService {
         return Promise.resolve(response);
       }).catch(err => { return Promise.reject(err); });
   }
+  guardarModificacionesWebsite(datos){
+    return this.api.post(`/website/guardarModificacionesWeb`,datos).then(response => { 
+      return Promise.resolve(response);
+    }).catch(err => { return Promise.reject(err); });
+  }
 }
