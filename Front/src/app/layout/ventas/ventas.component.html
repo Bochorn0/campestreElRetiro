@@ -2,21 +2,25 @@
     <app-page-header [heading]="'Ventas'" [icon]="'fa-dashboard'"></app-page-header>
     <!--Menu principal-->
     <div class="row text-center">
-        <div class="col-lg-2">
+        <div class="col-6 col-lg-3">
             <div class="form-group">
-                <button (click)="catalogoClientes();" class="btn btn-secondary menu" style="color: #fff;"><i class="fa fa-users"></i> Clientes</button>
+                <button (click)="catalogoClientes();" class="btn btn-secondary menu w-100" style="color: #fff;"><i class="fa fa-users"></i> Clientes</button>
             </div>
         </div>
-        <div class="col-lg-2">    
+        <div class="col-6 col-lg-3">
             <div class="form-group">
-                <button (click)="nuevaCotizacion();" class="btn btn-info menu"><i class="fa fa-clipboard"></i> Cotización</button>
+                <button (click)="nuevaCotizacion();" class="btn btn-info menu w-100"><i class="fa fa-clipboard"></i> Cotización</button>
             </div>
         </div>
-        <div class="col-lg-2">    
+        <div class="col-6 col-lg-3">
+            <div class="form-group">
+                <button (click)="obtnerProspectos();" class="btn btn-primary menu w-100"><i class="fa fa-envelope"></i> Prospectos</button>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
             <div class="form-group">
                 <!-- <button (click)="nuevoCliente();" class="btn btn-success menu"><i class="fa fa-address-card"></i> Nuevo Cliente</button> -->
-                <button (click)="generarNuevoCliente();" class="btn btn-success menu"><i class="fa fa-address-card"></i> Nuevo Cliente</button>
-                
+                <button (click)="generarNuevoCliente();" class="btn btn-success menu w-100"><i class="fa fa-address-card"></i> Nuevo Cliente</button>
             </div>
         </div>
     </div>

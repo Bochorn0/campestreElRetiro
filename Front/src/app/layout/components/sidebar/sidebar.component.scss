@@ -1,7 +1,7 @@
 .force-close{
     left: -235px !important;
 }
-$topnav-background-color: #904E05;
+$topnav-background-color: #fff;
 .sidebar {
     border-radius: 0;
     position: fixed;
@@ -28,7 +28,8 @@ $topnav-background-color: #904E05;
             background: $topnav-background-color;
             border: 0;
             border-radius: 0;
-            color: #fff;
+            //color: #fff;
+            color: #333;
             text-decoration: none;
             .fa {
                 margin-right: 10px;
@@ -36,11 +37,11 @@ $topnav-background-color: #904E05;
         }
         a:hover {
             background: darken($topnav-background-color, 5%);
-            color: #999;
+            color: #666;
         }
         a.router-link-active {
             background: darken($topnav-background-color, 5%);
-            color: #999;
+            color: #666;
         }
         .header-fields {
             padding-top: 10px;
@@ -73,7 +74,7 @@ $topnav-background-color: #904E05;
             }
             a:hover,
             a:focus {
-                color: #999;
+                color: #666;
                 outline: none;
                 outline-offset: -2px;
             }
@@ -93,7 +94,7 @@ $topnav-background-color: #904E05;
                         color: #fff;
                     }
                     a:hover {
-                        color: #999;
+                        color: #666;
                     }
                 }
                 .list-group-item:hover {

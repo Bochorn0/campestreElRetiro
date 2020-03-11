@@ -2,14 +2,21 @@
     <app-page-header [heading]="'Gastos nuevos'" [icon]="'fa-table'"></app-page-header>
     <hr>
     <div class="row">
-        <div class="col-xs-12 col-xl-12 col-lg-12">
+        <div class="col-4">
             <button (click)="nuevoGasto();" class="btn btn-info text--right"><i class="fa fa-plus"></i> Nuevo Gasto</button>
-            <button (click)="subirArchivo.click();" class="btn btn-danger pull-right"><i class="fa fa-upload"></i> <i class="fa fa-file-excel"></i> Cargar Excel</button>
-            <button (click)="obtenerPlantillaGastos();" class="btn btn-warning pull-right"><i class="fa fa-download"></i> <i class="fa fa-file-excel"></i> Exportar Plantilla </button>
-            <button *ngIf="this.chksGastos.length > 0" (click)="borrarMultiplesGastos();" class="btn btn-danger-clasic pull-right"><i class="fa fa-times"></i> Borrar Multiples </button>
-<!--            <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)" />-->
-            <br><br>
         </div>
+        <div class="col-4">
+            <button (click)="subirArchivo.click();" class="btn btn-danger pull-right"><i class="fa fa-upload"></i> <i class="fa fa-file-excel"></i> Cargar Excel</button>                    
+        </div>
+        <div class="col-4">
+            <button (click)="obtenerPlantillaGastos();" class="btn btn-warning pull-right"><i class="fa fa-download"></i> <i class="fa fa-file-excel"></i> Exportar Plantilla </button>                    
+        </div>
+        <div class="col-4">
+            <button *ngIf="this.chksGastos.length > 0" (click)="borrarMultiplesGastos();" class="btn btn-danger-clasic pull-right"><i class="fa fa-times"></i> Borrar Multiples </button>
+        </div>
+            <!--<input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)" />-->
+    </div>
+    <div class="row">
         <div class="col-lg-6">
             <app-stat [bgClass]="'primary'" [icon]="'fa-money'" [label]="'Ver Gastos'" (event)="obtenerGastos($event);"  ></app-stat>
         </div>

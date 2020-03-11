@@ -23,7 +23,7 @@
                     <div class="col-lg-12">
                         <b>Buscar por filtros de terreno en los clientes, (El terreno del cliente contiene los datos: )</b>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-6 col-lg-3">
                         <h4> Parcela </h4>
                         <input  (keyup)="filtrarTerrenos();"   placeholder="Parcela:" type="text" class="form-control" [(ngModel)]="parcelaFiltro" [ngbTypeahead]="filtrarParcelas" (selectItem)="parcelaFiltro = $event.item; filtrarTerrenos();" [resultFormatter]="formatter" />
                         <!-- <select  class="form-control" [(ngModel)]="parcelaFiltro" (change)="filtrarTerrenos();" >
@@ -31,7 +31,7 @@
                             <option  *ngFor="let e of parcelas;" value="{{e.parcela}}">{{e.parcela}}</option>
                         </select> -->
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-6 col-lg-3">
                         <h4> Lote </h4>
                         <input  (keyup)="filtrarTerrenos();"  placeholder="Lote:" type="text" class="form-control" [(ngModel)]="loteFiltro" [ngbTypeahead]="filtrarLotes" (selectItem)="loteFiltro = $event.item; filtrarTerrenos();"  [resultFormatter]="formatter" />
                         <!-- <select  class="form-control" [(ngModel)]="loteFiltro" (change)="filtrarTerrenos();" >
@@ -39,7 +39,7 @@
                             <option  *ngFor="let e of lotes;" value="{{e.lote}}">{{e.lote}}</option>
                         </select> -->
                     </div>
-                    <div class="col-lg-3"> 
+                    <div class="col-6 col-lg-3"> 
                         <h4> Estapa </h4>
                         <input (keyup)="filtrarTerrenos();"  placeholder="Etapa:" type="text" class="form-control" [(ngModel)]="etapaFiltro" [ngbTypeahead]="filtrarEtapas" (selectItem)="etapaFiltro = $event.item; filtrarTerrenos();" [resultFormatter]="formatter" />
                         <!-- <select  class="form-control" [(ngModel)]="etapaFiltro" (change)="filtrarTerrenos();" >
@@ -68,7 +68,7 @@
                             <option  *ngFor="let e of etapas;" value="{{e.etapa}}">{{e.etapa}}</option>
                         </select>
                     </div> -->
-                    <div class="col-lg-3"> 
+                    <div class="col-6 col-lg-3"> 
                         <h4> Estatus </h4>
                         <select  class="form-control" [(ngModel)]="estatusFiltro" (change)="filtrarTerrenos();" >
                             <option value="0">Todos</option>
@@ -80,19 +80,19 @@
                     </div>
                 </div>
                 <div class="row text-center" *ngIf="terrenos">
-                    <div class="col-lg-2">
+                    <div class="col-4 col-lg-2">
                         <div class="form-group">
-                            <button (click)="obtenerClientesActivos();" class="btn btn-dark"><i class="fa fa-users"></i> Ver Todos  </button>
+                            <button (click)="obtenerClientesActivos();" class="btn btn-dark w-100"><i class="fa fa-users"></i> Ver Todos  </button>
                         </div>
                     </div>
-                    <div class="col-lg-10">
+                    <div class="col-8 col-lg-10">
                         <div class="form-group"> 
-                            <input type="text" [(ngModel)]="textoCliente" (keyup)="filtrarTerrenos();"  class="form-control" />
+                            <input type="text" [(ngModel)]="textoCliente" placeholder="Buscar por texto" (keyup)="filtrarTerrenos();"  class="form-control" />
                             <!-- <input id="typeahead-format" (keyup)="campoNombre();"  placeholder="Encontrar por nombre del cliente:" type="text" class="form-control" [(ngModel)]="nombreCliente" [ngbTypeahead]="filtrarCliente" (selectItem)="detalleCliente($event.item);" [resultFormatter]="formatter" /> -->
                         </div>
                         <br>
                     </div>
-                    <div class="col-lg-12" *ngIf="clienteDetalles.IdCliente || datosDetalle">
+                    <div class="col-12 col-lg-12" *ngIf="clienteDetalles.IdCliente || datosDetalle">
                         <ngb-tabset>
                             <ngb-tab>
                                 <ng-template ngbTabTitle ><b>Datos Cliente</b> </ng-template>
@@ -499,7 +499,7 @@
                     </div>
                 </div>
                 <div class="row" *ngIf="clientesTodos && !clienteDetalles.IdCliente">
-                    <div class="col-lg-12">
+                    <div class="col-12 col-lg-12" style="overflow: auto;">
                         <table class="table table-hover table-stripped" *ngIf="clientesTodos">
                             <thead>
                                 <tr>

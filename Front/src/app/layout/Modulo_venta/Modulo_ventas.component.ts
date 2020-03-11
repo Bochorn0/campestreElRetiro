@@ -67,7 +67,7 @@ export class ModuloVentasComponent implements OnInit {
         let dat_usr = JSON.parse(localStorage.getItem('Datos'));
         this.calendarEvents = [];
         this.catalogosService.obtenerProspectosVendedor({IdUsuario: dat_usr.Datos.IdUsuario }).then(res=>{
-            console.log('res',res);
+            //console.log('res',res);
             if(res['Data']){
                 let prospectos = res['Data'];
                 this.Prospectos =  prospectos.filter(p=> p.Apartado == 0);
@@ -95,7 +95,7 @@ export class ModuloVentasComponent implements OnInit {
 
                 }
             }
-            console.log('this.calendarEve',this.calendarEvents);
+            //console.log('this.calendarEve',this.calendarEvents);
             this.totales.Prospectos = this.Prospectos.length
             this.totales.Pros_activos = this.Prospectos.filter(p=>p.Lapso < 24).length;
             this.totales.Pros_alerta = this.Prospectos.filter(p=>p.Lapso >= 24).length;
@@ -111,7 +111,7 @@ export class ModuloVentasComponent implements OnInit {
     }
     guardarNuevoProspecto(){
         let dat_usr = JSON.parse(localStorage.getItem('Datos'));
-        console.log('dat_usr',dat_usr);
+        //console.log('dat_usr',dat_usr);
         let datosProspecto = {
             Nombre_prospecto: (this.nombreProspecto)?this.nombreProspecto:'',
             Correo:(this.correoProspecto)?this.correoProspecto:'',
@@ -119,7 +119,7 @@ export class ModuloVentasComponent implements OnInit {
             Telefono:(this.telefonoProspecto)?this.telefonoProspecto:'',
             IdUsuario: dat_usr.Datos.IdUsuario
         };
-        console.log('datos',datosProspecto);
+        //console.log('datos',datosProspecto);
         this.catalogosService.guardarProspectoVendedor(datosProspecto).then(res=>{
             this.correoProspecto = this.telefonoProspecto = this.nombreProspecto = this.descripcionProspecto = '';
             this.nuevoProspecto = false;
@@ -141,14 +141,14 @@ export class ModuloVentasComponent implements OnInit {
     }
     mostrarDrop(event){
         let prospecto =  this.Prospectos.find(c=>c.IdProspecto == event.event.id);
-        console.log('event',event);
-        console.log('prospecto',prospecto);
+        //console.log('event',event);
+        //console.log('prospecto',prospecto);
         if(event.view){
             prospecto.CitaNueva = moment(event.view.currentEnd).format('YYYY-MM-DD');
         }
     }
     modalDatosCita(event){
-        console.log('evento',event);
+        //console.log('evento',event);
     }
     createDemoEvents() {
         // Date for the calendar events (dummy data)
@@ -204,7 +204,7 @@ export class ModuloVentasComponent implements OnInit {
     }
     VerMapa(nombre,ter){ 
         this.terrenoActual =  ter;
-        console.log('terrenoActual',this.terrenoActual);
+        //console.log('terrenoActual',this.terrenoActual);
         this.modalService.open(nombre, {windowClass: 'modal-holder', size: 'lg'});
     }
     enviarCotizacionModal(content){
@@ -218,7 +218,7 @@ export class ModuloVentasComponent implements OnInit {
         this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
     }
     vistaEnviarCotizacion(event){
-        console.log('enviarcot',event);
+        //console.log('enviarcot',event);
         this.panelVisualizar = 'Prospectos';
         this.modalDatos = {Tipo: 'EnviarCotizacion', Clase: 'bg-warning', Titulo: 'Enviar Cotización a Cliente'};
         let Adj; let Buf;
@@ -226,7 +226,7 @@ export class ModuloVentasComponent implements OnInit {
             Adj = event.Cotizacion_string;
             Buf = event.Cotizacion_buffer;
         }
-        console.log('adj',Adj);
+        //console.log('adj',Adj);
         let datosUsr = JSON.parse(localStorage.getItem('Datos'));
         this.objCotizacion = {
             Para: `${this.prospectoActivo.Correo}`,
@@ -420,7 +420,7 @@ export class ModuloVentasComponent implements OnInit {
         }).then(resCli=>{
             this.clientesTodosTodos = this.clientesTodos =  this._ordenarDatosCliente(resCli['Data']);
             this.totales.Clientes = this.clientesTodosTodos.length;
-            console.log('clientes',this.clientesTodos);
+            //console.log('clientes',this.clientesTodos);
             this.nombresClientes = resCli['Data'].map((key)=>{
                 return key.Nombre;
             })
@@ -441,7 +441,7 @@ export class ModuloVentasComponent implements OnInit {
             }
             this.mantenimientos();
         }
-        console.log('clientes',this.clienteDetalles);
+        //console.log('clientes',this.clienteDetalles);
     }
     _limpiarPantallas(){
         this.clienteDetalles = this.clientesTodosVista = this.detallesClienteVista = this.mensualidadesVista = this.anualidadesVista = this.mantenimientoVista = false;
@@ -474,7 +474,7 @@ export class ModuloVentasComponent implements OnInit {
                     }else{
                         te.Mensualidades = {Datos: [{Fecha: '0000-00-00', Fecha_ultimo_abono: '0000-00-00', Importe:'-',Pagado : '-', Restante: '-', ObjCompleto: {}}]}
                     }
-                    console.log('mensu',te.Mensualidades);
+                    //console.log('mensu',te.Mensualidades);
                 })
                     this.clienteDetalles.Mensualidades = men['Data'];
                     //console.log('clientes',this.clienteDetalles);
@@ -565,7 +565,7 @@ export class ModuloVentasComponent implements OnInit {
         });
     }
     imprimirPagare(obj){
-        console.log('obj',obj);
+        //console.log('obj',obj);
     }
     nuevaCotizacion(){
         this._limpiarVistaYVariables();
@@ -587,7 +587,7 @@ export class ModuloVentasComponent implements OnInit {
         let datosModal = {Titulo:'Advertencia',Contenido: 'Estas a punto de poner borrar este prospecto, deseas continuar ? ',Tipo:'warning',Confirm:'Si Eliminar'}
         
         this._confirmarModal(datosModal).then(res=>{
-            console.log('datos',p);
+           //console.log('datos',p);
             p.Activo = 0;
             this.catalogosService.actualizarProspectoVendedor(p).then(res=>{
                 this.nuevoProspecto = false;
