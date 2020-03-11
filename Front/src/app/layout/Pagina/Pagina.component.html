@@ -9,10 +9,10 @@
                     <ng-template ngbTabContent>
                         <div class="row" style="padding:50px">
                             <div class="col-12">
-                                <button class="btn btn-info pull-right" (click)="guardarCambiosInicio();"> <i class="fa fa-save"></i> | Guardar </button>
-                            </div>                            
-                            <div class="col-12">
-                                <h4>Contenido sección de Inicio <button class="btn btn-warning pull-right" (click)="obtenerContenidoOriginal('Inicio');">Restaurar Inicio</button></h4>
+                                <h4>Contenido sección de Inicio 
+                                    <button class="btn btn-info pull-right" (click)="guardarCambiosInicio();"> <i class="fa fa-save"></i> | Guardar </button>
+                                    <button class="btn btn-warning pull-right" (click)="obtenerContenidoOriginal('Inicio');">Restaurar Inicio</button>
+                                </h4>
                                 <div class="card-body"  [froalaEditor] [(froalaModel)]="websiteContent.Inicio"></div>
                             </div>
                         </div>
@@ -23,10 +23,10 @@
                     <ng-template ngbTabContent>
                         <div class="row" style="padding:50px">
                             <div class="col-12">
-                                <button class="btn btn-info pull-right" (click)="guardarCambiosSobre();"> <i class="fa fa-save"></i> | Guardar </button>
-                            </div>
-                            <div class="col-12">
-                                <h4>Contenido sección Sobre Nosotros <button class="btn btn-warning pull-right" (click)="obtenerContenidoOriginal('Sobre');">Restaurar Sobre Nosotros</button></h4>
+                                <h4>Contenido sección Sobre Nosotros 
+                                    <button class="btn btn-info pull-right" (click)="guardarCambiosSobre();"> <i class="fa fa-save"></i> | Guardar </button>
+                                    <button class="btn btn-warning pull-right" (click)="obtenerContenidoOriginal('Sobre');">Restaurar Sobre Nosotros</button>
+                                </h4>
                                 <div class="card-body"  [froalaEditor] [(froalaModel)]="websiteContent.Sobre"></div>
                             </div>
                         </div>
@@ -37,10 +37,10 @@
                     <ng-template ngbTabContent>
                         <div class="row" style="padding:50px">
                             <div class="col-12">
-                                <button class="btn btn-info pull-right" (click)="guardarCambiosNoticias();"> <i class="fa fa-save"></i> | Guardar </button>
-                            </div>
-                            <div class="col-12">
-                                <h4>Contenido sección Noticias <button class="btn btn-warning pull-right" (click)="obtenerContenidoOriginal('Noticias');">Restaurar Noticias</button></h4>
+                                <h4>Contenido sección Noticias 
+                                    <button class="btn btn-info pull-right" (click)="guardarCambiosNoticias();"> <i class="fa fa-save"></i> | Guardar </button>
+                                    <button class="btn btn-warning pull-right" (click)="obtenerContenidoOriginal('Noticias');">Restaurar Noticias</button>
+                                </h4>
                                 <div class="card-body"  [froalaEditor] [(froalaModel)]="websiteContent.Noticias"></div>
                             </div>
                         </div>
@@ -51,10 +51,10 @@
                     <ng-template ngbTabContent>
                         <div class="row" style="padding:50px">
                             <div class="col-12">
-                                <button class="btn btn-info pull-right" (click)="guardarCambiosContacto();"> <i class="fa fa-save"></i> | Guardar </button>
-                            </div>
-                            <div class="col-12">
-                                <h4>Contenido sección Contacto <button class="btn btn-warning pull-right" (click)="obtenerContenidoOriginal('Contacto');">Restaurar Contacto</button></h4>
+                                <h4>Contenido sección Contacto 
+                                    <button class="btn btn-info pull-right" (click)="guardarCambiosContacto();"> <i class="fa fa-save"></i> | Guardar </button>
+                                    <button class="btn btn-warning pull-right" (click)="obtenerContenidoOriginal('Contacto');">Restaurar Contacto</button>
+                                </h4>
                                 <div class="card-body"  [froalaEditor] [(froalaModel)]="websiteContent.Contacto"></div>
                             </div>
                         </div>
