@@ -15,7 +15,7 @@ export class VentasComponent implements OnInit {
     //componentes
     @ViewChild('contratoGenerado')contratoGenerado;
     clienteNuevo;datosContrato;cotizacionNueva;
-    vistaCentro;clientesCatalogos;
+    vistaCentro;clientesCatalogos;detalleCliente;
     @Output() public contratos = new EventEmitter();
     constructor() {
 
@@ -47,6 +47,13 @@ export class VentasComponent implements OnInit {
             this.vistaCentro = true;
         });
     }
+    generarNuevoCliente(){
+        this._limpiarVistaYVariables();
+        this._delay(100).then(res=>{
+            this.detalleCliente = {Terrenos:[{Id:0,Cotizacion:[{IdCotizacion:0}]}]}
+            this.vistaCentro = true;
+        });
+    }
     procesarContratos(event){
 /*        let datosEvent = this._datosPrueba();
         console.log('datos_prueba',datosEvent);*/
@@ -57,7 +64,7 @@ export class VentasComponent implements OnInit {
         });
     }
     _limpiarVistaYVariables(){
-        this.vistaCentro = this.clientesCatalogos = this.datosContrato = this.clienteNuevo = this.cotizacionNueva  = false;
+        this.detalleCliente = this.vistaCentro = this.clientesCatalogos = this.datosContrato = this.clienteNuevo = this.cotizacionNueva  = false;
     }
     _delay(ms){
         return new Promise( resolve => setTimeout(resolve, ms) );
