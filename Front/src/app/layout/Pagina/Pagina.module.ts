@@ -6,7 +6,7 @@ import { NgbTabsetModule} from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 
 @NgModule({
-    imports: [ PaginaRoutingModule, SharedModule, NgbTabsetModule.forRoot(), FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(), ],
+    imports: [ PaginaRoutingModule, SharedModule, NgbTabsetModule, FroalaEditorModule, FroalaViewModule, ],
     declarations: [ PaginaComponent]
 })
 

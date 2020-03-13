@@ -13,7 +13,7 @@ import { PageHeaderModule } from '../../page-header/page-header.module';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { FormularioClientesSeparadoComponent } from './formulario-clientes-separado.component';
 @NgModule({
-    imports: [CommonModule, RouterModule, FormsModule,DatatableModule,VentasCotizadorModule,CotizadorMensualidadModule,CotizadorAnualidadModule,StatModule,PageHeaderModule,ReactiveFormsModule, NgxPaginationModule,    NgbTypeaheadModule.forRoot(), FroalaEditorModule.forRoot(), FroalaViewModule.forRoot()],
+    imports: [CommonModule, RouterModule, FormsModule,DatatableModule,VentasCotizadorModule,CotizadorMensualidadModule,CotizadorAnualidadModule,StatModule,PageHeaderModule,ReactiveFormsModule, NgxPaginationModule,    NgbTypeaheadModule, FroalaEditorModule, FroalaViewModule],
     declarations: [FormularioClientesSeparadoComponent],
     exports: [FormularioClientesSeparadoComponent] 
 })
