@@ -63,6 +63,27 @@ export class ModuloVentasComponent implements OnInit {
         this.datosNuevoCliente = {Terrenos:[{Id:0,Cotizacion:[{IdCotizacion:0}]}]};
     }
     ngOnInit() {}
+    HomeMenu(){
+        this.panelVisualizar = 'Blanco';
+        this._delay(100).then(res=>{
+            this.mostrarPrincipal = true; 
+            this.panelVisualizar = ''; 
+        });
+    }
+    AprobadosMenu(){
+        this.panelVisualizar = 'Blanco';
+        this._delay(100).then(res=>{
+            this.obtenerProspectos('Aprobados');
+            this.mostrarPrincipal=false;
+        });
+    }
+    NuevoClienteMenu(){
+        this.panelVisualizar = 'Blanco';
+        this._delay(100).then(res=>{
+            this.mostrarPrincipal=false;
+            this.panelVisualizar = 'NuevoCliente';
+        });
+    }
     obtenerProspectos(tipoPanel = ''){
         let dat_usr = JSON.parse(localStorage.getItem('Datos'));
         this.calendarEvents = [];

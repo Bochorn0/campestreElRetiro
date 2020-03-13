@@ -36,13 +36,10 @@ module.exports = class Reportes {
     }
 
     reporte_ventas(Filtros){
-        console.log('cuerpo', Filtros);
         return new Promise((resolve, reject)=>{
             let condiciones = (Filtros.Fecha_inicio)?`Fecha_venta >= '${Filtros.Fecha_inicio}' AND `:``;
             condiciones += (Filtros.Fecha_fin)?`Fecha_venta <= '${Filtros.Fecha_fin}'`:'';
-            console.log(`SELECT * FROM Ventas WHERE ${condiciones};`);
             let datos =  mysql.ejecutar(`SELECT * FROM Ventas  WHERE ${condiciones};`).then((res)=>{
-                console.log('res',res);
                 return resolve({Data: res, error: false});
             }).catch(err => { return reject({Data: false, err })});
         });
@@ -57,11 +54,9 @@ module.exports = class Reportes {
                 datosReporte.DatosVenta = res;
                 let condiciones2 = (Filtros.Fecha_inicio)?`Fecha_gasto >= '${Filtros.Fecha_inicio} ' AND `:``;
                 condiciones2 += (Filtros.Fecha_fin)?`Fecha_gasto <= '${Filtros.Fecha_fin} 23:59:59'`:'';
-                console.log('condiciones',`SELECT * FROM Gastos  JOIN Usuarios as u on u.IdUsuario = Gastos.IdUsuario WHERE ${condiciones2};`);
                 return mysql.ejecutar(`SELECT * FROM Gastos  JOIN Usuarios as u on u.IdUsuario = Gastos.IdUsuario WHERE ${condiciones2};`);
             }).then(res2=>{
                 datosReporte.DatosGastos = res2;
-                //console.log('datos Reporte',datosReporte);
                 return resolve({Data: datosReporte, error: false});
 
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});

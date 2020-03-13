@@ -23,7 +23,6 @@ module.exports = class Catalogos {
     Guardar_nuevo_ingreso(datos){
         return new Promise((resolve, reject)=>{
         //this.Obtener_folio_venta().then(fol=>{
-            //console.log('fol',fol);
             //let idVen = (fol['Data'][0])?fol['Data'][0].IdVenta:0;
             //let folioVenta = `${datos.DatosVenta.Folio.split('-')[0]}-${idVen+1}`;
             let folioVenta = `${datos.DatosVenta.Folio.split('-')[0]}`;
@@ -51,7 +50,6 @@ module.exports = class Catalogos {
                 }).catch(err=>{console.log('err',err); return rejE(err);});
             });
         }).then((actualizadoCliente)=>{
-            console.log('termino TODO');
             return resolve({Procesado: true, Operacion: 'La Venta se Guardo correctamente', Tipo: 'success', Cliente:datos});
         }).catch(err => { 
             console.log('err',err); return reject({Data: false, err })});
@@ -73,15 +71,11 @@ module.exports = class Catalogos {
         });
     }
     _ventaAbono(datos,concepto){
-        console.log('datos',datos);
-        console.log('concepto',concepto);
         return new Promise((resolve, reject)=>{
             let restante = concepto.Mensualidad.Importe - concepto.Importe;
             let updateAdeudos = '';
             updateAdeudos += `Pendiente = ${restante}`; 
             if( restante == 0 || (restante >= 0 && restante < .9 ) ){ updateAdeudos += `, Pagado = 1 `; }
-            //console.log('query', `Update Adeudos_clientes SET ${updateAdeudos} WHERE IdAdeudo = ${concepto.Mensualidad.IdAdeudo};`);
-            console.log('query',`Update Adeudos_clientes SET ${updateAdeudos} WHERE IdAdeudo = ${concepto.Mensualidad.IdAdeudo};`);
             return mysql.ejecutar(`Update Adeudos_clientes SET ${updateAdeudos} WHERE IdAdeudo = ${concepto.Mensualidad.IdAdeudo};`).then((actualizadoAdeudos)=>{
                 let restanteCredito =  datos.DatosCliente.Saldo_credito - concepto.Importe;
                 let updateClientes = '';
@@ -96,7 +90,6 @@ module.exports = class Catalogos {
                 updateClientes += `, Saldo_a_favor = ${saldo_a_favor}`;
                 datos.DatosCliente.Saldo_credito = restanteCredito;
                 datos.DatosCliente.Saldo_adeudo = saldo_a_favor;
-                //console.log('query', `Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
                 return mysql.ejecutar(`Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
 
             }).then((actualizadoCliente)=>{
@@ -117,7 +110,6 @@ module.exports = class Catalogos {
             }
             saldo_a_favor += datos.DatosCliente.Saldo_a_favor;
             updateClientes += `, Saldo_a_favor = ${saldo_a_favor}`;
-            //console.log('query', `Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
             return mysql.ejecutar(`Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`).then(res=>{
                 return resolve({Concepto:concepto, Procesado: true});
             }).catch(err=>{ return reject({Concepto:concepto, Procesado: false}) });
@@ -125,7 +117,6 @@ module.exports = class Catalogos {
     }
     _ventaAnualidad(datos,concepto){
         return new Promise((resolve, reject)=>{
-//            console.log('concepto',concepto);
             let restante = concepto.Anualidad.Importe - concepto.Importe;
             let updateAdeudos = '';
             updateAdeudos += `Pendiente = ${restante}`;
@@ -143,7 +134,6 @@ module.exports = class Catalogos {
                 saldo_a_favor += datos.DatosCliente.Saldo_a_favor;
                 updateClientes += `, Saldo_a_favor = ${saldo_a_favor}`;
                 datos.DatosCliente.Saldo_anualidad = restanteAnualidad;
-                //console.log('query', `Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
                 return mysql.ejecutar(`Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
             }).then((actualizadoCliente)=>{
                 return resolve({Concepto:concepto, Procesado: true});
@@ -163,7 +153,6 @@ module.exports = class Catalogos {
             }
             saldo_a_favor += datos.DatosCliente.Saldo_a_favor;
             updateClientes += `, Saldo_a_favor = ${saldo_a_favor}`;
-            //console.log('query', `Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
             return mysql.ejecutar(`Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`).then(res=>{
                 return resolve({Concepto:concepto, Procesado: true});
             }).catch(err=>{ return reject({Concepto:concepto, Procesado: false}) });
@@ -171,7 +160,6 @@ module.exports = class Catalogos {
     }
     _ventaACapital(datos,concepto){
         return new Promise((resolve, reject)=>{
-            console.log('datos',datos);
             let restanteCredito =  datos.DatosCliente.Saldo_credito - concepto.Importe;
             let updateClientes = '';
             let saldo_a_favor = 0;
@@ -183,7 +171,6 @@ module.exports = class Catalogos {
             }
             saldo_a_favor += datos.DatosCliente.Saldo_a_favor;
             updateClientes += `, Saldo_a_favor = ${saldo_a_favor}`;
-            //console.log('query', `Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
             return mysql.ejecutar(`Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`).then(res=>{
                 return mysql.ejecutar(`Update Cotizaciones SET Bloqueada = 1 WHERE IdCotizacion = ${datos.DatosTerreno.IdCotizacion};`);
             }).then(res=>{
@@ -206,7 +193,6 @@ module.exports = class Catalogos {
             }
             saldo_a_favor += datos.DatosCliente.Saldo_a_favor;
             updateClientes += `, Saldo_a_favor = ${saldo_a_favor}`;
-            //console.log('query', `Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
             return mysql.ejecutar(`Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`).then(res=>{
                 return resolve({Concepto:concepto, Procesado: true});
             }).catch(err=>{ return reject({Concepto:concepto, Procesado: false}) });
@@ -231,7 +217,6 @@ module.exports = class Catalogos {
         });
     }
     _abonoLibre(datos, concepto){
-        //console.log(datos.DatosVenta.ConceptosPagados);
         return new Promise((resolve, reject)=>{
             let saldo_a_favor =  datos.DatosCliente.Saldo_a_favor + concepto.Importe;
             let updateClientes = '';
@@ -299,7 +284,6 @@ module.exports = class Catalogos {
                 let cambiosConceptos = [];
                 datos.DatosMantenimiento.ConceptosPagados.forEach(con=>{
                     cambiosConceptos.push(this._actualizacionesPorTipoMantenimiento(datos,con).then(result=>{
-                        //console.log('result',result);
                         return {Concepto: con, Resuelto: true};
                     }).catch(err=>{
                         return {Concepto: con, Resuelto: false};
@@ -345,7 +329,6 @@ module.exports = class Catalogos {
                 saldo_a_favor += datos.DatosCliente.Saldo_a_favor;
                 updateClientes += `, Saldo_a_favor = ${saldo_a_favor}`;
                 datos.DatosCliente.Saldo_mantenimiento = restanteMantenimiento;
-                //console.log('query', `Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
                 return mysql.ejecutar(`Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
             }).then((actualizadoCliente)=>{
                 return resolve({Concepto:concepto, Procesado: true});
@@ -363,18 +346,14 @@ module.exports = class Catalogos {
                     let conceptosPagados = [];
                     if(mens[0]){
                         for(let i= 0; i<= mens.length;i++){
-                            //console.log('saldo',saldo_a_favor);
                             if(saldo_a_favor){
                                 let saldo_restante = saldo_a_favor - mens[i].Importe;
-                                //console.log('saldo a favor antes',saldo_a_favor);
                                 if(saldo_restante >= 0){
                                     conceptosPagados.push({Concepto: `${concepto.Concepto}`, Importe: mens[i].Importe ,TipoMovimiento: '01', Mantenimiento:mens[i]});
                                     saldo_a_favor = saldo_restante;
-                                    //console.log('saldo a favor despues',saldo_a_favor);
                                 }else if(saldo_restante < 0){
                                     conceptosPagados.push({Concepto: `Mantenimiento correspondiente al ${mens[i].Fecha}`, Importe: saldo_a_favor ,TipoMovimiento: '01', Mantenimiento:mens[i]});
                                     saldo_a_favor = 0;
-                                    //console.log('saldo a favor despues',saldo_a_favor);
                                     break;
                                 }else{
                                     break;
@@ -389,21 +368,18 @@ module.exports = class Catalogos {
                         let variosPagos =  [];
                         conceptosPagados.forEach(con=>{
                             variosPagos.push(this._actualizacionesPorTipoMantenimiento(datos,con).then(result=>{
-                                console.log('result',result);
                                 return {Concepto: con, Resuelto: true};
                             }).catch(err=>{
                                 return {Concepto: con, Resuelto: false};
                             }));
                         });
                         Promise.all(variosPagos).then(resultados=>{
-                            console.log('resultados procesados ',resultados);
                             return resO(resultados);
                         }).catch(err=>{
                             return rejE(err);
                         })
                     }else{
                         let updateClientes = `Saldo_a_favor = ${saldo_a_favor}`;
-                        console.log('update',`Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
                         return mysql.ejecutar(`Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`).then(res=>{
                             return resolve(res);
                         }).catch(err=>{return reject({Error:err});})
@@ -437,7 +413,6 @@ module.exports = class Catalogos {
                 if(cliente){
                     return this.Editar_cliente(conexion, datos, cliente);
                 }else{
-//                    console.log('cliente',cliente);
                     return this.Insertar_cliente(conexion,datos);
                 }
             }).then(res =>{
@@ -448,7 +423,6 @@ module.exports = class Catalogos {
     }
 
     Insertar_cliente(conexion, datos){
-        console.log('datos cliente insert',datos);
         return new Promise((resolve, reject)=>{
             let today = moment().format('YYYY-MM-DD HH:mm:ss');
                 let numCliente = ``;
@@ -465,13 +439,11 @@ module.exports = class Catalogos {
                 //GUARDA REGISTRO DEL CLIENTE
             }).then((res)=>{
                 let condiciones =  `Nombre = '${datos.Nombre}' AND Codigo = '${datos.Codigo}' `;
-                //console.log('query',`SELECT * FROM Clientes WHERE ${condiciones} LIMIT 1;`);
                 return this._ordenarQuery(conexion,`SELECT * FROM Clientes WHERE ${condiciones} LIMIT 1;`);
                 //OBTIENE LOS DATOS COMPLETOS DEL CLIENTE
             }).then(cliente=>{
                 datos.ClienteCompleto = cliente[0];
                 datos.ClienteCompleto.Codigo += `${datos.ClienteCompleto.IdCliente}`;
-                //console.log('datos',datos);
                 return this._guardarRelacionesTerrenos(conexion,datos);
                 //GUARDA LA RELACION CON LOS TERRENOS
             }).then(relacionesGuardadas =>{
@@ -508,8 +480,6 @@ module.exports = class Catalogos {
                         return rejE(err);
                     })
                 });
-                //console.log('cotizaciones',terminaCotizacion);
-
                 //return this._guardarMantenimientoBasico(conexion,datos);
                 //GUARDA EL PRIMER MANTENIMIENTO BASICOS
             }).then(terminaCotizacion =>{
@@ -527,7 +497,6 @@ module.exports = class Catalogos {
                 }
             }).then(terminaTodo=>{
                 //conexion.end();
-                //console.log('mantenimientos',terminaMantenimiento);
                 return resolve({Procesado: true, Operacion: 'El cliente fue guardado correctamente', Tipo: 'success', Cliente:datos});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
@@ -555,7 +524,6 @@ module.exports = class Catalogos {
                 str += `${d.Id},`;
             });
             str = (str.indexOf(',') > -1 )?str.slice(0,-1):str;
-            console.log('QUERY SUPER INSERT 3',`UPDATE Datos_todos SET ACTIVO = 0 WHERE Id = (${str});`);
             this._ordenarQuery(conexion,`UPDATE Datos_todos SET ACTIVO = 0 WHERE Id IN (${str});`).then((res)=>{
                 return resolve({});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
@@ -570,12 +538,10 @@ module.exports = class Catalogos {
             let Terreno =  datosTerreno;
             let Cotizacion =  datosTerreno.Cotizacion;
             let insert_anualidades = [];
-            // console.log('anualidades',Cotizacion[0].Anualidades);
             if(Cotizacion[0].Anualidades){
                 Cotizacion[0].Anualidades.Datos.forEach(m=>{
                     let campos = `IdCliente,IdTerreno,Num_pago,Importe,Fecha,Fecha_modificacion,Pagado`;
                     let valores =  `${datos.ClienteCompleto.IdCliente},${Terreno.IdTerreno},${m.Pago},${m.Total},'${m.Fecha}','${moment().format('YYYY-MM-DD HH:mm:ss')}',${(m.Pagado)?1:0} `;
-                    // console.log('query',`INSERT INTO Adeudos_anualidades (${campos}) VALUES (${valores});`);
                     insert_anualidades.push(this._ordenarQuery(conexion,`INSERT INTO Adeudos_anualidades (${campos}) VALUES (${valores});`));
                 });
             }else if(!Cotizacion[0].Anualidades && Cotizacion[0].Num_pagos > 1){            
@@ -598,14 +564,12 @@ module.exports = class Catalogos {
                   })
                 })
               }, Promise.resolve([])).then(r => {
-                  console.log('resolve',r);
                   return resolve(r);
                 }).catch(err=>{ console.log('error',err); reject(err);})
         });
     }
     _guardarMantenimientosCalculados(conexion,datos){
         return new Promise((resolve, reject)=>{
-            console.log('datos man nuevos ',datos);
             let today = moment().format('YYYY-MM-DD HH:mm:ss');
             let mantenimientosGuardados = [];
             this._ordenarQuery(conexion,`DELETE FROM Adeudos_mantenimientos WHERE IdCliente = ${datos.ClienteCompleto.IdCliente};`).then(res=>{
@@ -623,7 +587,6 @@ module.exports = class Catalogos {
                       })
                     })
                   }, Promise.resolve([])).then(r => {
-                      console.log('Resultado', r);
                       return resolve(r);
                     }).catch(err=>{ console.log('error',err); reject(err);})  
             });
@@ -633,7 +596,6 @@ module.exports = class Catalogos {
         return new Promise((resolve, reject)=>{
             let today = moment().format('YYYY-MM-DD HH:mm:ss');
             let diferencia_meses =  moment().diff(moment(datos.Fecha_mantenimiento), 'months');
-            console.log('diferencias',diferencia_meses);
             let fechas_mantenimientos = [];
             if(diferencia_meses >= datos.Periodo_cobro){
                 let fechas_pendientes = Math.floor(diferencia_meses/datos.Periodo_cobro);
@@ -661,7 +623,6 @@ module.exports = class Catalogos {
                   })
                 })
               }, Promise.resolve([])).then(r => {
-                  console.log('Resultado', r);
                   return resolve(r);
                 }).catch(err=>{ console.log('error',err); reject(err);})
         });
@@ -670,14 +631,12 @@ module.exports = class Catalogos {
         let today = moment().format('YYYY-MM-DD HH:mm:ss');
         return new Promise((resolve, reject)=>{
             let terrenosGuardados = [];
-            console.log('datos',datos);
             datos.Terrenos.forEach(ter=>{
                 let campos_terreno = `IdCliente, IdUsuario, IdTerreno, IdCotizacion,Fecha_insercion,Folio,Quien_guardo`;
                 let valores_terreno = `${datos.ClienteCompleto.IdCliente},${datos.Usuario.Datos.IdUsuario},${ter.IdTerreno},${(ter.IdCotizacion)?ter.IdCotizacion:0}, '${today}',${(ter.Folio)?ter.Folio:0},'${datos.Usuario.Datos.Nombre}'`;
                 let auxUp = (ter.Estado)?` ,Estado='${ter.Estado}' `:'  ';
                 auxUp += (ter.Pertenece)?` ,Pertenece='${ter.Pertenece}' `:``;
                 let updateTerrenos = `Update Terrenos Set Asignado = 1 ${auxUp} WHERE IdTerreno = ${ter.IdTerreno}`;
-                //console.log('rela',`INSERT INTO Clientes_terrenos (${campos_terreno}) VALUES (${valores_terreno});`);
                 terrenosGuardados.push(this._ordenarQuery(conexion,`INSERT INTO Clientes_terrenos (${campos_terreno}) VALUES (${valores_terreno});`));
                 terrenosGuardados.push(this._ordenarQuery(conexion,updateTerrenos));
                 terrenosGuardados.push(this._ordenarQuery(conexion,` UPDATE Datos_todos SET ACTIVO = 0 WHERE PARCELA = '${ter.parcela}'; `));
@@ -700,12 +659,10 @@ module.exports = class Catalogos {
             let Terreno =  datosTerreno;
             let Cotizacion =  datosTerreno.Cotizacion;
             let insert_cotizaciones = [];
-            // console.log('datosTerreno.Cotizacion',datosTerreno.Cotizacion);
             if(Cotizacion[0].Mensualidades){
                 Cotizacion[0].Mensualidades.Datos.forEach(m=>{
                     let campos = `IdCliente,IdTerreno,Num_pago,Importe,Fecha,Fecha_modificacion,Pagado`;
                     let valores =  `${datos.ClienteCompleto.IdCliente},${Terreno.IdTerreno},${m.Pago},${m.Total},'${m.Fecha}','${moment().format('YYYY-MM-DD HH:mm:ss')}',${(m.Pagado)?1:0} `;
-                    // console.log('query',`INSERT INTO Adeudos_clientes (${campos}) VALUES (${valores});`);
                     insert_cotizaciones.push(this._ordenarQuery(conexion,`INSERT INTO Adeudos_clientes (${campos}) VALUES (${valores});`));
                 });
 
@@ -715,7 +672,6 @@ module.exports = class Catalogos {
                     let fecha_mensualidad =  (i==1)?moment(Cotizacion[0].Fecha_inicio).format('YYYY-MM-DD'):moment(Cotizacion[0].Fecha_inicio).add(i ,'M').format('YYYY-MM-DD');
                     let modificacion =  moment().format('YYYY-MM-DD HH:mm:ss');
                     let valores =  `${datos.ClienteCompleto.IdCliente},${Terreno.IdTerreno},${i},${Cotizacion[0].Mensualidad},'${fecha_mensualidad}','${modificacion}' `;
-                    console.log('valors',`INSERT INTO Adeudos_clientes (${campos}) VALUES (${valores});`);
                     insert_cotizaciones.push(this._ordenarQuery(conexion,`INSERT INTO Adeudos_clientes (${campos}) VALUES (${valores});`));
                 }
             }else{
@@ -749,7 +705,6 @@ module.exports = class Catalogos {
                     let ifeNombre =  `Ife_${datos.Nombre}.${ifeExt}`;
                     return this._subirArchivo(ifePath,ifeNombre,ifeCont,2097152);
                 }).then(result=>{
-                    //console.log('res',result);
                     archivos.IdIfe = (result && !result.err)?result:0;
                     return resolve(archivos);
                 }).catch(err=>{console.log('err',err); return resolve({Error:err}) });
@@ -762,10 +717,7 @@ module.exports = class Catalogos {
         });
     }
     Editar_cliente(conexion,datos,Cliente){
-        console.log('datos',datos);
         return new Promise((resolve, reject)=>{
-//            console.log('datos ACTUALI',datos);
-//            console.log('datos ACTUALI',Cliente);
             let today = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
             datos.Fecha_nacimiento = (datos.Fecha_nacimiento && datos.Fecha_nacimiento != '-')?datos.Fecha_nacimiento:`${moment().format('YYYY-MM-DD')}`;
             let valores = `Nombre = '${datos.Nombre}'`;
@@ -801,7 +753,6 @@ module.exports = class Catalogos {
                 return this._ordenarQuery(conexion,`SELECT * FROM Clientes WHERE Nombre = '${datos.Nombre}'  LIMIT 1;`);
                 //OBTIENE LOS DATOS COMPLETOS DEL CLIENTE
             }).then(cliente=>{
-                //console.log('cliente',cliente);
                 datos.ClienteCompleto = cliente[0];
                 datos.ClienteCompleto.Codigo += `${datos.ClienteCompleto.IdCliente}`;
                 return this._eliminarAdeudosPendientes(conexion,datos);
@@ -844,7 +795,6 @@ module.exports = class Catalogos {
                         return rejE(err);
                     })
                 });
-                //console.log('cotizaciones',terminaCotizacion);
 
                 //return this._guardarMantenimientoBasico(conexion,datos);
                 //GUARDA EL PRIMER MANTENIMIENTO BASICOS
@@ -865,7 +815,6 @@ module.exports = class Catalogos {
             }).then(res=>{
                 return resolve({Procesado: true, Operacion: 'El cliente fue Editado correctamente', Tipo: 'success', Cliente:datos});
                 //conexion.end();
-                //console.log('mantenimientos',terminaMantenimiento);
 //                return resolve({Procesado: true, Operacion: 'El cliente fue guardado correctamente', Tipo: 'success', Cliente:datos});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
 
@@ -877,7 +826,6 @@ module.exports = class Catalogos {
         return new Promise((resolve, reject)=>{
             let condiciones =  ` IdCliente =  ${datos.ClienteCompleto.IdCliente} AND Pagado = 0 AND Pendiente = 0`;
             return this._ordenarQuery(conexion,`SELECT * FROM Adeudos_clientes WHERE ${condiciones} ;`).then(re=>{
-                console.log('entra');
                 if(re[0]){
                     let str = ``;
                     re.forEach(d=>{
@@ -886,11 +834,9 @@ module.exports = class Catalogos {
                     str = (str.indexOf(',') > -1 )?str.slice(0,-1):str;
                     return this._ordenarQuery(conexion,`DELETE FROM Adeudos_clientes WHERE IdAdeudo IN (${str});`);
                 }else{
-                    console.log('entro aqui')
                     return Promise.resolve({});
                 }
             }).then(res=>{
-                //console.log('res');
                 let condiciones =  ` IdCliente =  ${datos.ClienteCompleto.IdCliente} AND Pagado = 0 AND Pendiente = 0`;
                 return this._ordenarQuery(conexion,`SELECT * FROM Adeudos_anualidades WHERE ${condiciones} ;`);
             }).then(anu=>{
@@ -998,7 +944,6 @@ module.exports = class Catalogos {
     }
     Obtener_mensualidades(Id){
         return new Promise((resolve, reject)=>{
-            console.log(`SELECT * FROM Adeudos_clientes WHERE IdCliente =  ${Id} ORDER BY Fecha asc ;`);
             mysql.ejecutar(`SELECT * FROM Adeudos_clientes WHERE IdCliente =  ${Id} ORDER BY Fecha asc ;`).then((res)=>{
                 if(res[0]){
                     res.forEach(r=>{
@@ -1032,9 +977,7 @@ module.exports = class Catalogos {
                 terrenos += `${ter.IdTerreno},`;
             });
             let condiciones =  `IdCliente =  ${datos.IdCliente} AND IdTerreno IN (${terrenos.substring(0,terrenos.length-1)})`;
-            console.log('query',`SELECT * FROM Adeudos_mantenimientos  WHERE ${condiciones};`);
             mysql.ejecutar(`SELECT * FROM Adeudos_mantenimientos  WHERE ${condiciones};`).then((res)=>{
-                console.log('res',res);
                 return resolve({Data:res,Error:false});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
@@ -1100,35 +1043,27 @@ module.exports = class Catalogos {
         return new Promise((resolve, reject)=>{
             return this._ordenarQuery(conexion,`TRUNCATE Table Clientes`).then(clientesBorrados =>{
 //             return mysql.ejecutar(`TRUNCATE Table Clientes`).then(clientesBorrados =>{
-//                console.log('cli',clientesBorrados);
                 return this._ordenarQuery(conexion,`TRUNCATE Table Terrenos;`);
                 //return mysql.ejecutar(`TRUNCATE Table Terrenos;`);
             }).then(terrenosBorrados =>{
-//                console.log('ter',terrenosBorrados);
                 return this._ordenarQuery(conexion,`TRUNCATE Table Clientes_terrenos;`);
                 //return mysql.ejecutar(`TRUNCATE Table Clientes_terrenos`);
             }).then(relacionesBorradas =>{
-//                console.log('ter',relacionesBorradas);
                 return this._ordenarQuery(conexion,`TRUNCATE Table Adeudos_mantenimientos;`);
                 //return mysql.ejecutar(`TRUNCATE Table Adeudos_mantenimientos`);
             }).then(adeudosMantenimientosBorrados =>{
-//                console.log('adeMan',adeudosMantenimientosBorrados);
                 return this._ordenarQuery(conexion,`TRUNCATE Table Mantenimientos;`);
                 //return mysql.ejecutar(`TRUNCATE Table Mantenimientos`);
             }).then(mantenimientosBorrados =>{
-//                console.log('manten',mantenimientosBorrados);
                 return this._ordenarQuery(conexion,`TRUNCATE Table Adeudos_clientes;`);
                 //return mysql.ejecutar(`TRUNCATE Table Adeudos_clientes`);
             }).then(adeudosBorrados =>{
-//                console.log('adeuborr',adeudosBorrados);
                 return this._ordenarQuery(conexion,`TRUNCATE Table Ventas;`);
                 //return mysql.ejecutar(`TRUNCATE Table Ventas`);
             }).then(ventasBorradas =>{
-//                console.log('adeuborr',adeudosBorrados);
                 return this._ordenarQuery(conexion,`TRUNCATE Table Cotizaciones;`);
                 //return mysql.ejecutar(`TRUNCATE Table Cotizaciones`);
                 }).then(cotizacionesBorradas =>{
-//                console.log('ventas',ventasBorradas);
                 return this._ordenarQuery(conexion,`SELECT * FROM Datos_carga`);
                 //return mysql.ejecutar(`SELECT * FROM Datos_carga`);
             }).then(datosCarga =>{
@@ -1203,7 +1138,6 @@ module.exports = class Catalogos {
                 request.DatosCarga = this._ordenarDatosCargaFinal(request.DatosCarga);
                 return new Promise((resO, rejE)=>{
                     let clientesInsertados = [];
-                    //console.log('requestdatos',request.DatosCarga);
                     request.DatosCarga.forEach(d=>{
                         clientesInsertados.push(this.Guardar_nuevo_cliente(d));
                     });
@@ -1242,7 +1176,6 @@ module.exports = class Catalogos {
     }
     _mantenimientosPendientes(Datos, Clientes){ 
         let datosMantenimientosPendientes = [];
-        //console.log('Datos',Clientes);
         if(Datos.Deuda_mantenimiento > 0){
             let idCliente = Clientes.find(ob=> ob.ClienteCompleto.Nombre == Datos.Nombre_cliente).ClienteCompleto.IdCliente
             let numPend = Datos.Deuda_mantenimiento/Datos.Cuota_mantenimiento;
@@ -1260,7 +1193,6 @@ module.exports = class Catalogos {
             let file = `./shared/uploads/Recibos/RECIBO.pdf`;
             let wf = fs.createWriteStream(file);
             return this.obtenerDatosRecibo({}).then((datosCompletos) => {
-//                console.log('datos',datosCompletos);
                 let doc = new pfd();
                 wf.on('error', (error) => { console.error(error); });
                 doc.pipe(wf);
@@ -1286,7 +1218,6 @@ module.exports = class Catalogos {
     }
     Generar_pdf_pagare(datos){
         return new Promise((resolve, reject) => {
-            console.log('datos',datos.Datos);
             let file = `./shared/uploads/Pagares/Pagare.pdf`;
             let wf = fs.createWriteStream(file);
             let doc = new pfd();
@@ -1359,14 +1290,12 @@ module.exports = class Catalogos {
                 return resolve(doc);
             }
             catch(e){
-                //console.log(e)
                 reject(e);
             }
         })
     }
     Generar_pdf_recibo(datos){
         return new Promise((resolve, reject) => {
-            //console.log('datos',datos);
             let file = `./shared/uploads/Recibos/RECIBO.pdf`;
             let wf = fs.createWriteStream(file);
                 let doc = new pfd();
@@ -1444,7 +1373,6 @@ module.exports = class Catalogos {
                 return resolve(doc);
             }
             catch(e){
-                //console.log(e)
                 reject(e);
             }
         })
@@ -1494,14 +1422,12 @@ module.exports = class Catalogos {
                             /*.then(res=>{
                                 return {Procesado:true,Dato:c};
                             }).catch(err=>{
-                                console.log('er',err);
                                 return {Procesado:false,Dato:c};
                             })); */
                         });
                         clientesProcesados.reduce((CliP, current) => {
                             return CliP.then(results => {
                                 return current.then(currentResult => {
-                                    //console.log('currentResult',currentResult);
                                     return Promise.resolve({Procesado:true,Res:currentResult});
                                 }).catch(e => {
                                     return Promise.resolve({Procesado:false,Res:e});
@@ -1512,7 +1438,6 @@ module.exports = class Catalogos {
                         }).catch(err=>{ console.log('error',err); rejEC(err);})
                         /*
                         Promise.all(clientesProcesados).then(resultados=>{
-                            console.log('resultados_por_cliente',resultados);
                             return resOL(resultados);
                         }).catch(err=>{
                             return rejEC(err);
@@ -1522,7 +1447,6 @@ module.exports = class Catalogos {
                     return Promise.resolve({Procesado:false,Dat:0})
                 }
             }).then(res=>{
-                //console.log('res termina todo',res);
                 return resolve({Procesado: true, Operacion: 'Datos afectados Correctamente', Tipo: 'success'});
             }).catch(err=>{ console.log('err',err);return reject({Error:err});});
         });
@@ -1553,7 +1477,6 @@ module.exports = class Catalogos {
                     return resO(r);
                 }).catch(err=>{console.log('err',err); return rejE(err);});
                 /*            Promise.all(clientesAplicados).then(resultados=>{
-                console.log('TERMINO TODO BIEN',resultados);
                 return resO(resultados);
             }).catch(err=>{
                 return rejE(err);
@@ -1564,7 +1487,6 @@ module.exports = class Catalogos {
         });
     }
     _ajustarPorTerreno(Datos,c,t){
-        console.log('terres',t);
         return new Promise((resolve, reject)=>{
             return new Promise((resO, rejE)=>{
             let datosPartida;
@@ -1576,13 +1498,11 @@ module.exports = class Catalogos {
             }
             //CERTIFICADO
             let Importe_certificado = 8000 - parseFloat(datos_ven.Deuda_certificado);
-            //console.log('certificado',Importe_certificado);
             if(Importe_certificado < 8000){
                 ConceptosAutomaticos.push({Concepto: 'Abono/Pago de Certificado', Importe: Importe_certificado, TipoMovimiento: '07' });
             }
             //AGUA
             let Importe_agua = 5000-parseFloat(datos_ven.Contrato_agua);
-            //console.log('agua',Importe_agua);
             if(Importe_agua < 5000){
                 ConceptosAutomaticos.push({Concepto: 'Abono/Pago de Contrato de agua', Importe: Importe_agua, TipoMovimiento: '05' });
             }
@@ -1599,14 +1519,12 @@ module.exports = class Catalogos {
                 }
                 ConceptosAutomaticos.push({Concepto: `Abono Libre Automatico`, Importe: total_, TipoMovimiento:'06'});
             }
-            //console.log('conceptos',ConceptosAutomaticos);
             if(ConceptosAutomaticos[0]){
                 let total_partida = 0;
                 ConceptosAutomaticos.forEach(co=>{
                     total_partida += parseFloat(co.Importe);
                 })
                 datosPartida = { DatosUsuario:{Datos:{IdUsuario:0,Nombre:'Sistema'}}, DatosCliente: c, DatosTerreno: t, DatosVenta: { Folio: 'VEN-0', Recibo: '1', TipoVenta: 'Automatica', FormaPago: 'Efectivo', Concepto: 'Ajuste_automatico_sistema', Total: total_partida,ConceptosPagados : ConceptosAutomaticos } };
-                //console.log('datos_partida',datosPartida);
                 this.Guardar_nuevo_ingreso(datosPartida).then(re=>{
                     return resO({Procesado : true, Partida: datosPartida});
                 }).catch(er=>{
@@ -1621,7 +1539,6 @@ module.exports = class Catalogos {
                     let datosPartida;
                     let datos_man = Datos.DatosCarga.find(ob=>ob.Parcela == t.parcela);
                     let ConceptosAutomaticos = [];
-                    console.log('datos_man',datos_man);
                     if(datos_man.Deuda_mantenimiento == '0' && datos_man.Cuota_mantenimiento != '0' ){
                         ConceptosAutomaticos.push({Concepto: 'Abono Libre Automatico', Importe: parseFloat(datos_man.Cuota_mantenimiento), TipoMovimiento: '02' });
                     }
@@ -1631,7 +1548,6 @@ module.exports = class Catalogos {
                             total_partida += parseFloat(co.Importe);
                         })
                         datosPartida = { DatosUsuario:{Datos:{IdUsuario:0,Nombre:'Sistema'}}, DatosCliente: c, DatosTerreno: t, DatosMantenimiento: { Folio: 'MAN-0', Recibo: '1', TipoMantenimiento: '02', FormaPago: 'Efectivo', Concepto: 'Ajuste_automatico_sistema', Total: total_partida,ConceptosPagados : ConceptosAutomaticos } };
-                        console.log('datos_partida',datosPartida.DatosMantenimiento.ConceptosPagados);
                         this.Guardar_nuevo_mantenimiento(datosPartida).then(re=>{
                             return resO({Procesado : true, Partida: datosPartida});
                         }).catch(er=>{
@@ -1652,7 +1568,6 @@ module.exports = class Catalogos {
         });
     }
     _ordenarDatosCargaFinal(Datos){
-        //console.log('Datos',Datos);
         let DatosClientes = [];
         Datos.forEach(d=>{
             let registrosCliente = Datos.filter(ob=> ob.Nombre_cliente == d.Nombre_cliente);
@@ -1666,7 +1581,6 @@ module.exports = class Catalogos {
                 Terrenos.push({IdTerreno:r.IdTerreno,parcela:r.Parcela,etapa:r.Etapa,lote:r.Lote,
                     Pertenece:r.Nombre_parcela,Superficie:r.Superficie,Asignado:1,Activo:1,IdCotizacion:r.IdCotizacion,Cotizacion:[Cotizacion]});
             });
-            //console.log('terrenos',Terrenos);
             let existe = DatosClientes.find(ob=>ob.Nombre == d.Nombre_cliente);
             if(!existe){
                 let saldo_anualidad;
@@ -1674,12 +1588,10 @@ module.exports = class Catalogos {
                     let cant = parseInt(d.Numero_anualidades);
                     let monto = parseFloat(d.Cantidad_anualidades);
                     let ultima = parseFloat(d.Cantidad_ultima_anualidad);
-                    //console.log('aaaa',`${cant}-${monto}-${ultima}`);
                     saldo_anualidad = (((cant-1)*monto)+ultima);
                 }else{
                     saldo_anualidad = 0;
                 }
-                //console.log('saldo_an',saldo_anualidad);
                 DatosClientes.push({IdIfe:0,IdComprobante:0,Nombre:d.Nombre_cliente,Correo:d.Correo,
                 Telefono:d.Telefono,Direccion:d.Direccion,Saldo_agua:d.Contrato_agua,Saldo_adeudo:d.Enganche,
                 Saldo_credito:d.Saldo_credito,Saldo_mantenimiento:d.Deuda_mantenimiento,Saldo_certificado:d.Deuda_certificado,Credito_original:d.Saldo_credito,
@@ -1739,7 +1651,6 @@ module.exports = class Catalogos {
                 Saldo_credito:d.Saldo_credito,Saldo_mantenimiento:d.Mantenimiento,Credito_original:d.Saldo_credito,
                 NumIfe:d.Numero_ine,Origen:d.Lugar_origen,Ref1:d.Nombre_ref_1,Ref2:d.Nombre_ref_2,
                 Ref3:d.Nombre_ref_3,Fecha_nacimiento:d.Fecha_nacimiento};
-                //console.log('d',datos_cliente);
         });
     }
     Guardar_datos_archivo(datos){
@@ -1780,7 +1691,6 @@ module.exports = class Catalogos {
                             d.forEach(dd=>{
                                 //cont == 9 || 
                                 if(cont == 12 || cont == 26|| cont == 30 || cont == 35 || cont == 37 ){
-                                    //console.log('cont',dd);
                                     valores_insert += (dd != '-')?`'${moment(this.ExcelDateToJSDate(dd)).format("YYYY-MM-DD")}',`:`'-',`;
                                 }else{
                                     valores_insert += (dd != '-')?`'${dd}',`:`'-',`;
@@ -1794,10 +1704,8 @@ module.exports = class Catalogos {
                                     return {Procesado: true, Dat: d};
                                 }).catch(err => { console.log('err',err); return {Procesado: false, Dat: d}})
                             );
-//                            console.log('valores_insert',valores_insert);
                         });
                         Promise.all(camposProcesados).then(resultados=>{
-//                            console.log('resultados',resultados);
                             return resO(resultados);
                         }).catch(err=>{
                             return rejE(err);
@@ -1870,11 +1778,9 @@ module.exports = class Catalogos {
         });
      }
      Obtener_ventas_empleado(datosEmpleado){
-         console.log('dat',datosEmpleado);
         return new Promise((resolve, reject)=>{
             let dia = moment().day();
             //let dias_numero = {Domingo: 1,Lunes: 2, Martes:3, Miercoles: 4, Jueves: 5, Viernes:6, Sabado:0};
-            console.log('dia',dia);
             let condiciones = `IdUsuario = ${datosEmpleado.IdUsuario} LIMIT 5`;
             mysql.ejecutar(`SELECT * From Ventas WHERE ${condiciones}`).then((res)=>{
                 return resolve({Datos:res});
@@ -1898,9 +1804,7 @@ module.exports = class Catalogos {
             }).then((mantenimientos)=>{
                     let clientesAfectados = [];
                     mantenimientos.forEach(m=>{
-                        //console.log('r',r.IdCliente);
                         let existe = clientesAfectados.find(ob=>ob.IdCliente == m.IdCliente);
-                        //console.log('existe',existe);
                         if(!existe){
                             let cli_ = clientes.find(c=>c.IdCliente ==  m.IdCliente);
                             if(cli_){
@@ -1911,7 +1815,6 @@ module.exports = class Catalogos {
                     return this._procesarMantenimientosAutomaticos(mantenimientos,clientesAfectados);
 
             }).then(final=>{
-                console.log('termino',final);
                 return resolve({Procesado:true});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         }); 
@@ -1989,7 +1892,6 @@ module.exports = class Catalogos {
                 });
                 return this._procesarMensualidadesVencidas(vencidas,clientes);
             }).then(final=>{
-                console.log('termino',final);
                 return resolve({Procesado:true});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });        
@@ -2005,7 +1907,6 @@ module.exports = class Catalogos {
           });
         conexion.connect();
         return new Promise((resO, rejE)=>{
-            console.log('mensualidades',mensualidades);
             if(!mensualidades[0]){ return resO({Procesado:true, Mensualidades:mensualidades, Motivo: 'Todas al dia'})}
             let  promesasVencidas= [];
 //            let saldoInicialMoroso = clientes.Saldo_moroso;
@@ -2051,12 +1952,10 @@ module.exports = class Catalogos {
             }else{
                 mantenimiento = [];
             }
-            console.log('mant',mantenimiento);
             return resolve(mantenimiento);
         });
      }
      _calcularEnBaseAMonto(datos){
-        console.log('datos fecha',datos);
         let MantenimientoTemporadas = {
             "2002":[450,450],"2003":[450,450],"2004":[450,450],"2005":[450,450],
             "2006":[450,450],"2007":[900,900],"2008":[900,900],"2009":[900,1200],
@@ -2080,10 +1979,7 @@ module.exports = class Catalogos {
         let saldo_p ;
         while(sigue){
             let fecha =  moment(datos.Fecha_mantenimiento).subtract(quitar,'month').format('YYYY-MM-DD');
-            // console.log('fecha',fecha);
-            // console.log('lugar',this._mesesLugar(fecha));
             let monto = (MantenimientoTemporadas[`${moment(fecha).format('YYYY')}`])?MantenimientoTemporadas[`${moment(fecha).format('YYYY')}`][this._mesesLugar(fecha)]:450;
-            // console.log('monto',monto);
 //            mantenimientos.push({Fecha:fecha, Monto: monto });
             saldo_p = montoInicial;
             montoInicial -=monto;
@@ -2098,7 +1994,6 @@ module.exports = class Catalogos {
         return {mantenimientos, Saldo: saldo_p};
      }
      _calcularEnBaseAFecha(datos){
-        console.log('datos fecha',datos);
         let MantenimientoTemporadas = {
             "2002":[450,450],"2003":[450,450],"2004":[450,450],"2005":[450,450],
             "2006":[450,450],"2007":[900,900],"2008":[900,900],"2009":[900,1200],
@@ -2118,13 +2013,10 @@ module.exports = class Catalogos {
         let diferencia_meses =  moment().diff(moment(datos.Fecha_adeudo_mantenimiento), 'months');
         let mantenimientos = [];
         let saldoMan = 0;
-//        console.log('diferencia',diferencia_meses);
         if(diferencia_meses >= datos.Periodo_cobro){
             for( let s=0;s<=diferencia_meses;){
                 let fecha = moment(datos.Fecha_adeudo_mantenimiento).add(s,'month').format('YYYY-MM-DD');
-//                console.log('fecha',fecha);
                 let monto = (MantenimientoTemporadas[`${moment(fecha).format('YYYY')}`])?MantenimientoTemporadas[`${moment(fecha).format('YYYY')}`][this._mesesLugar(fecha)]:datos.Importe_mantenimiento;
-//                console.log('monto',monto);
                 saldoMan += monto;
                 mantenimientos.push({"Fecha Mantenimiento":fecha, "Monto Mantenimiento": monto , "Acumulado": saldoMan });
                 s +=datos.Periodo_cobro;
@@ -2133,7 +2025,6 @@ module.exports = class Catalogos {
         }else{
             mantenimientos.push({"Fecha Mantenimiento":datos.Fecha_adeudo_mantenimiento, "Monto Mantenimiento": datos.Importe_mantenimiento , "Acumulado":  datos.Importe_mantenimiento  });
         }
-        console.log('mantenimientos',mantenimientos);
         return {mantenimientos, Saldo: saldoMan};
      }
      _mesesLugar(fecha){
@@ -2155,7 +2046,6 @@ module.exports = class Catalogos {
     }
      _ordenarQuery(conexion, query){
         return new Promise((resolve, reject) => {
-            console.log('query',query);
             conexion.query(query, (error, results)=>{
                 if(results){
                     let datosOrdenados = [];

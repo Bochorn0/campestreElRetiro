@@ -3,26 +3,22 @@
     <!-- MENU PRINCIPAL -->
     <div class="row text-center menuPrincipal" *ngIf="mostrarPrincipal ">
         <a (click)="mostrarPrincipal=false; obtenerProspectos('Prospectos'); " class="col-6 text-menu ">
-            <img src="http://134.209.238.227/assets/images/App_icons/Prospectos.png" class="img-fluid" /><br> 
-            <b >Prospectos</b>
+            <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Prospectos_texto.png" class="img-fluid" /><br> 
         </a> 
         <a (click)="mostrarPrincipal=false; obtenerProspectos('Citas');" class="col-6 text-menu">
-            <img src="http://134.209.238.227/assets/images/App_icons/Citas.png" class="img-fluid"  /><br>
-            <b >Citas</b>
+            <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Citas_texto.png" class="img-fluid"  /><br>
         </a> 
     </div>
     <div class="row text-center menuPrincipal" *ngIf="mostrarPrincipal ">
         <a (click)="mostrarPrincipal=false; panelVisualizar = 'Cotizaciones';" class="col-6 text-menu ">
-            <img src="http://134.209.238.227/assets/images/App_icons/Cotizaciones.png" class="img-fluid"  /><br>
-            <b >Cotizaciones</b>
+            <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Cotizaciones_texto.png" class="img-fluid"  /><br>
         </a>
         <a (click)="mostrarPrincipal=false; obtenerTerrenosDisponibles(); panelVisualizar = 'Lotes';" class="col-6 text-menu ">
-            <img src="http://134.209.238.227/assets/images/App_icons/Lotes_disponibles.png" class="img-fluid"  /><br>
-            <b >Lotes</b>
+            <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Lotes_texto.png" class="img-fluid"  /><br>
         </a>
     </div>
     <!-- NUEVO CLIENTE -->
-    <div class="row" *ngIf="panelVisualizar == 'NuevoCliente' ">
+    <div class="row" *ngIf="panelVisualizar == 'NuevoCliente' " >
         <div class="col-sm-12">
             <h3 class="text-center">Nuevo Cliente</h3>
             <div class="row">
@@ -31,7 +27,7 @@
         </div>
     </div>
     <!-- CITAS CALENDAR -->
-    <div class="row"  *ngIf="panelVisualizar == 'Citas' ">
+    <div class="row"  *ngIf="panelVisualizar == 'Citas' " >
         <div class="col-lg-12">
             <br>
             <full-calendar  #calendar defaultView="dayGridMonth" editable= true locale="esLocale" droppable=true
@@ -42,7 +38,7 @@
         </div>
     </div>
     <!-- LOTES -->
-    <div class="row"  *ngIf="panelVisualizar == 'Lotes' ">
+    <div class="row"  *ngIf="panelVisualizar == 'Lotes' " >
         <div class="col-sm-12">
             <h3 class="text-center">Terrenos Activos</h3>
             <input type="text" class="form-control" placeholder="Buscar terrenos relacionados con :" [(ngModel)]="terrenosBuscar" (keydown)="filtrarTerrenos();" />
@@ -73,7 +69,7 @@
         </div>   
     </div>
     <!-- COTIZADOR -->
-    <div class="row" *ngIf="panelVisualizar == 'Cotizaciones' ">
+    <div class="row" *ngIf="panelVisualizar == 'Cotizaciones' " >
         <div class="col-12">
             <br>
             <div class="row">
@@ -84,7 +80,7 @@
         </div>
     </div>
     <!-- DETALLES APROBADOS -->
-    <div class="row" *ngIf="panelVisualizar == 'Aprobados' ">
+    <div class="row" *ngIf="panelVisualizar == 'Aprobados' " >
         <div class="col-12">
             <div class="card-header bg-transparent">
                 <h3>
@@ -118,7 +114,7 @@
         </div>
     </div>    
     <!-- DETALLES PROSPECTOS -->
-    <div class="row" *ngIf="panelVisualizar == 'Prospectos' ">
+    <div class="row" *ngIf="panelVisualizar == 'Prospectos' " >
         <div class="col-sm-12">
             <div class="card-header bg-transparent">
                 <h3>
@@ -203,14 +199,22 @@
 <!-- MENU BOTTOM -->
 <div class="row text-center navbarBottom" >
     <div class="col-5">
-        <a  (click)="mostrarPrincipal=false; panelVisualizar = 'NuevoCliente';" > <i class="fa fa-plus-circle text-success"></i> Nuevo</a>
+        <a (click)="NuevoClienteMenu();" >
+             <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Nuevo_cliente_texto.png" class="img-fluid"  /> 
+        </a>
     </div>
     <div class="col-2 ">
-        <a  class="menuCenter" (click)="mostrarPrincipal = true; panelVisualizar = '' "> <i class="fa fa-bars"></i>  </a>
+        <a (click)="HomeMenu();">
+            <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Home.png" class="img-fluid"  /> 
+        </a>
     </div>
     <div class="col-5 ">
-        <a  (click)="mostrarPrincipal=false; obtenerProspectos('Aprobados'); " > <i class="fa fa-clipboard text-warning"></i> Aprobados </a>
-    </div>          
+        <a (click)="AprobadosMenu();" >
+             <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Aprobados_texto.png" class="img-fluid"  /> 
+        </a>
+    </div>
+</div>
+<div class="row" *ngIf="panelVisualizar == 'Blanco' " [@routerTransition]>
 </div>
 <!-- MODAL APARTADO -->
 <ng-template #modalApartado let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">

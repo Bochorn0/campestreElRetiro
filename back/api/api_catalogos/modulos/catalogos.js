@@ -35,7 +35,6 @@ module.exports = class Catalogos {
                         }
                         r.Codigo += `${numCliente}${r.IdCliente}`; 
                         r.Saldo_total = r.Saldo_credito + r.Saldo_adeudo + r.Saldo_mantenimiento + r.Saldo_agua + r.Saldo_certificado +r.Saldo_anualidad;
-                        //console.log('saldo',r);
                     })
                     return resolve({Data: res, error: false});
                 }else{
@@ -48,7 +47,6 @@ module.exports = class Catalogos {
         return new Promise((resolve, reject)=>{
             // as cli JOIN Clientes_terrenos as cter on cli.IdCliente = cter.IdCliente JOIN Terrenos as ter on ter.IdTerreno = cter.IdTerreno;
             mysql.ejecutar('SELECT * from Clientes_terrenos as cter JOIN Terrenos as ter on ter.IdTerreno = cter.IdTerreno').then((res)=>{
-                //console.log('res',res);
                 return resolve({Data: res, error: false});
             }).catch(err=>{ console.log('error',err); reject(err);})
         })
@@ -98,18 +96,14 @@ module.exports = class Catalogos {
     }
     _ordenarClientesTerrenos(datos){
         if(datos){
-            //console.log('datos',datos);
             let datosTerreno = [];
             let datosCliente = [];
             datos.forEach(dat=>{
                 let cliente = dat.IdCliente;
                 let existe =  datosCliente.filter(ob=>ob.IdCliente =  dat.IdCliente);
                 let terrenos =  datos.filter(ob=>ob.IdCliente =  dat.IdCliente);
-                console.log('dat',dat);
                 if(!existe){
-                    console.log('dat',dat);
                     //Push datos cliente
-                    console.log('terrenos',terrenos);
                     datosCliente.push({IdCliente:dat.IdCliente,IdArchivo_ife:dat.IdArchivo_ife,IdArchivo_comprobante:dat.IdArchivo_comprobante,
                         Nombre:dat.Nombre,Codigo:dat.Codigo,Correo:dat.Correo,Telefono:dat.Telefono,Direccion:dat.Direccion,Enganche:dat.Enganche,
                         Saldo_adeudo:dat.Saldo_adeudo,Saldo_credito:dat.Saldo_credito,Credito_original:dat.Credito_original,Num_ife:dat.Num_ife,
@@ -120,7 +114,6 @@ module.exports = class Catalogos {
                 Parcela:dat.parcela,Etapa:dat.etapa,Lote:dat.Lote,Pertenece:dat.Pertenece,Superficie:dat.Superficie});*/
                 //Datos Cliente
             });
-            console.log('datosCliente',datosCliente);
         return datosCliente;
         }
     }
@@ -213,7 +206,6 @@ module.exports = class Catalogos {
     obtener_prospectos_ventas(datos){
         return new Promise((resolve, reject)=>{
             let condiciones = ` IdUsuario = ${datos.IdUsuario} `;
-//            console.log('q',`SELECT * FROM Prospectos_ventas WHERE ${condiciones}; `);
             mysql.ejecutar(`SELECT * FROM Prospectos_ventas WHERE ${condiciones}; `).then((res)=>{
                 return resolve({Data: res, error: false});
             }).catch(err=>{ console.log('error',err); reject(err);})
@@ -221,7 +213,6 @@ module.exports = class Catalogos {
     }
     actualizar_prospectos_ventas(datos){
         return new Promise((resolve, reject)=>{
-            console.log('datos',datos);
             let update = ` Fecha_modificacion = '${moment().format('YYYY-MM-DD HH:mm:ss')}' `;
             update += (datos.Comentarios)?`, Comentarios = '${datos.Comentarios}'`:``;
             update += (datos.Resolucion)?`, Resolucion = '${datos.Resolucion}'`:``;
@@ -237,7 +228,6 @@ module.exports = class Catalogos {
         });        
     }
     guardar_prospectos_ventas(datos){
-        console.log('datos',datos);
         return new Promise((resolve, reject)=>{
             let today = moment().format('YYYY-MM-DD HH:mm:ss');
             let campos = `IdUsuario, Nombre_prospecto, Descripcion, Telefono,Correo, Fecha, Fecha_modificacion`;
@@ -249,14 +239,12 @@ module.exports = class Catalogos {
     }
     borrar_prospectos_ventas(datos){
         return new Promise((resolve, reject)=>{
-            console.log('datos',datos);
             mysql.ejecutar(`DELETE FROM Prospectos_ventas WHERE IdProspecto = ${datos.IdProspecto}`).then((res)=>{
                 return resolve({Procesado: true, Operacion: 'El prospecto fue eliminada correctamente', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
     }
     Guardar_nueva_cuenta_especial(datosCuenta){
-        console.log('datos',datosCuenta);
         return new Promise((resolve, reject)=>{
             let campos = `Nombre, Numero, Saldo, Activa`;
             let valores = `'${datosCuenta.Nombre}','${datosCuenta.Numero}',${datosCuenta.Saldo},1`;
@@ -291,7 +279,6 @@ module.exports = class Catalogos {
     }
     Guardar_nueva_categoria(datos){
         return new Promise((resolve, reject)=>{
-            console.log('datos',datos);
             let campos = `Categoria,IdPadre`;
             let valores = `'${datos.Categoria}',${(datos.IdPadre)?datos.IdPadre:0}`;
             mysql.ejecutar(`INSERT INTO Catalogo_gastos(${campos}) VALUES (${valores});`).then((res)=>{
@@ -301,7 +288,6 @@ module.exports = class Catalogos {
     }
     Borrar_categoria(datos){
         return new Promise((resolve, reject)=>{
-            console.log('datos',datos);
             let idCategoria = datos.IdCategoria;
             mysql.ejecutar(`DELETE FROM Catalogo_gastos WHERE IdCategoria = ${idCategoria}`).then((res)=>{
                 return resolve({Procesado: true, Operacion: 'La categoria fue eliminada correctamente', Tipo: 'success'});
@@ -359,13 +345,9 @@ module.exports = class Catalogos {
     }
     Actualizar_cliente(datos){
         return new Promise((resolve, reject)=>{
-            console.log('datos',datos);
             let datos_update = `Nombre = '${datos.Nombre}', Correo = '${datos.Correo}', Num_ife = '${datos.Num_ife}', Origen= '${datos.Origen}', Telefono = '${datos.Telefono}', Fecha_nacimiento = '${datos.Fecha_nacimiento}', Direccion =  '${datos.Direccion}' `;
             let condiciones = `IdCliente = ${datos.IdCliente}`;
-            console.log('datos update',`UPDATE Clientes SET ${datos_update} WHERE ${condiciones};`);
-
             mysql.ejecutar(`UPDATE Clientes SET ${datos_update} WHERE ${condiciones};`).then((res)=>{
-                //console.log('res',res);
                 return resolve({Procesado: true, Operacion: 'Los Datos del Cliente fueron cambiados exitosamente ', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err }); });
         })
@@ -400,12 +382,10 @@ module.exports = class Catalogos {
         });
     }
     Guardar_nomina_empleado(datos){
-        console.log('datos',datos);
         return new Promise((resolve, reject)=>{
             let today =  moment().format('YYYY-MM-DD HH:mm:ss');
             let campos =  `IdEmpleado, IdUsuario, Nombre_empleado, Fecha_nomina, Horas_laboradas, Comisiones, Sueldo, Bonos, Descuentos, Descuentos_totales, Total, Fecha_insercion`;
             let valores = `${datos.Nomina.IdEmpleado},${datos.Usuario.Datos.IdUsuario},'${datos.Nomina.Nombre}','${moment().format('YYYY-MM-DD')}',${datos.Nomina.Horas},${datos.Nomina.Comisiones}, ${datos.Nomina.Sueldo},${datos.Nomina.Bonos},${datos.Nomina.Descuentos},${datos.Nomina.Descuentos_totales},${datos.Nomina.Total},'${today}'`;
-            console.log('valores',valores);
             mysql.ejecutar(`INSERT INTO Nominas (${campos}) VALUES (${valores});`).then((res)=>{
                 return resolve({Procesado: true, Operacion: 'La Nomina fue guardada correctamente ', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
@@ -426,7 +406,6 @@ module.exports = class Catalogos {
         });
     }
     subir_excel_terrenos(datos_archivo){
-        //console.log('datos',datos_archivo);
         return new Promise((resolve, reject)=>{
             let datos = new Buffer(datos_archivo.file, "base64");
             let path = `./shared/uploads/Catalogos/`;
@@ -438,14 +417,11 @@ module.exports = class Catalogos {
             }).then((datosExcel) => {
                 //ORGANIZA LOS DATOS DEL EXCEL PARA TENER DATOS ORDENADOS POR CABECERA
                 let datosHoja1 = datosExcel.getWorksheet(1);
-                //console.log('datosHoja1',datosHoja1);
                 return this._organizarDatosTerrenos(datosHoja1);
             }).then(datosFinal=>{
-                console.log('terminado',datosFinal);
                 //return resolve(res);
                 this.Guardar_varios_terrenos(datosFinal);
             }).then(res=>{
-                console.log('terminado',res);
                 //return resolve(res);
                 return resolve({Procesado: true, Operacion: 'Terrenos guardados correctamente', Tipo: 'success'});
             }).catch(err=>{
@@ -465,7 +441,6 @@ module.exports = class Catalogos {
                 });
                 datosOrdenados.push(columnas);
             });
-            //console.log('datosOrdenados',datosOrdenados);
             let llaves = [];
             datosOrdenados[0].forEach(d=>{
                 if(d != null){
@@ -511,7 +486,6 @@ module.exports = class Catalogos {
     return dato;
     }
     Actualizar_terreno(datos){
-        console.log('datos',datos);
         return new Promise((resolve, reject)=>{            
             let update = (datos.Lote || datos.Parcela || datos.Etapa || datos.Superficie)?`SET`:``;
             update += (datos.Lote )?` lote = '${datos.Lote}',`:``;
@@ -523,7 +497,6 @@ module.exports = class Catalogos {
             update += (!datos.Asignado || datos.Asignado == 0 )?` Asignado = 0,`:(datos.Asignado)?` Asignado = 1,`:'';
             update += (!datos.Activo || datos.Activo == 0 )?` Activo = 0,`:(datos.Activo)?` Activo = 1,`:'';
             update = update.slice(0,-1);
-            console.log(`UPDATE Terrenos ${update} WHERE IdTerreno= ${datos.IdTerreno};`);
             mysql.ejecutar(`UPDATE Terrenos ${update} WHERE IdTerreno= ${datos.IdTerreno};`).then((res)=>{
                 return resolve({Procesado: true, Operacion: 'Los Datos del terreno fueron cambiados exitosamente ', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
@@ -531,7 +504,6 @@ module.exports = class Catalogos {
     }
     Borrar_terreno(datos){
         return new Promise((resolve, reject)=>{
-            console.log('datos',datos);
             let IdTerreno = datos.IdTerreno;
             mysql.ejecutar(`DELETE FROM Terrenos WHERE IdTerreno = ${IdTerreno}`).then((res)=>{
                 return resolve({Procesado: true, Operacion: 'El terreno fue eliminado correctamente', Tipo: 'success'});
@@ -539,7 +511,6 @@ module.exports = class Catalogos {
         });
     }
     Borrar_terrenos_multiples(datos){
-        console.log('datos',datos);
         return new Promise((resolve, reject)=>{
             return mysql.ejecutar(`DELETE FROM Terrenos WHERE IdTerreno IN (${datos.Ids});`).then((res)=>{
                 return resolve({Eliminado: true});
@@ -573,7 +544,6 @@ module.exports = class Catalogos {
               });
             conexion.connect();
             datos.forEach(d=>{
-                console.log('d',d);
                 let campos = `parcela, etapa, lote, Pertenece, Superficie, Asignado, Activo`;
                 let valores = `'${d.PARCELA}','${d.ETAPA}','${d.LOTE}','${d.PERTENECE}',${d.SUPERFICIE},${d.ASIGNADO},${d.ACTIVO}`;
                 Promesas.push(this._ordenarQuery(conexion,`INSERT INTO Terrenos(${campos}) VALUES(${valores})`));
@@ -598,10 +568,7 @@ module.exports = class Catalogos {
                 str += (d.llave != 'Id' && d.llave != 'Obj' && d.llave != 'Cotizacion' && d.llave != 'ObjCompleto' && d.llave != 'ACTIVO' )?'`'+`${d.llave}`+'`'+`='${d.valor}',`:``;
             })
             str = (str.indexOf(',') > -1 )?str.slice(0,-1):str;
-            //console.log('str',str);
-            //console.log('query',`UPDATE Datos_todos ${str} WHERE Id= ${datos.Id};`);
             mysql.ejecutar(`UPDATE Datos_todos ${str} WHERE Id= ${datos.Id};`).then((res)=>{
-                //console.log('res',res);
                 return resolve({Procesado: true, Operacion: 'Los Datos de la cuenta fueron cambiados exitosamente ', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
@@ -614,13 +581,11 @@ module.exports = class Catalogos {
             });
             ids = (ids.indexOf(',') > -1 )?ids.slice(0,-1):ids;            
             mysql.ejecutar(`UPDATE Datos_todos WHERE Id IN (${ids}); `).then((res)=>{
-                //console.log('res',res);
                 return resolve({Procesado: true, Operacion: 'Los Datos de fueron eliminados correctamente; ', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
     }
     Catalogo_datos(data){
-//        console.log('datos',data);
         return new Promise((resolve, reject)=>{
             let condiciones = ` ACTIVO = 1 AND `+"`"+`NOMBRE DEL CLIENTE`+"`"+` NOT LIKE '%DUARTE%MEDRANO%' AND  `+"`"+`NOMBRE DEL CLIENTE`+"`"+` NOT LIKE '%DUARTE%PRECIADO%' AND  `+"`"+`NOMBRE DEL CLIENTE`+"`"+` NOT LIKE '%MEDRANDO%' AND  `+"`"+`NOMBRE DEL CLIENTE`+"`"+` NOT LIKE '%MEDRANO%NEVAREZ%' `;
             return mysql.ejecutar(`SELECT * from Datos_todos WHERE ${condiciones}`).then((res)=>{
@@ -630,7 +595,6 @@ module.exports = class Catalogos {
     }
     _ordenarQuery(conexion, query){
         return new Promise((resolve, reject) => {
-            console.log('query',query);
             conexion.query(query, (error, results)=>{
                 if(results){
                     let datosOrdenados = [];
@@ -693,14 +657,12 @@ module.exports = class Catalogos {
                         let respuesta = {Procesado: false, Operacion: 'Fallo el envio de correo', Tipo: 'error',Error: error};
                         if (error) { return reject(respuesta); }
                         return resolve({Procesado: true, Operacion: 'Correo Enviado Correctamente', Tipo: 'success'});
-                        //console.log('Message sent: %s', info.messageId); console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
                     });
                 });
             }
         });
     }
     envio_correo_contacto(datos){
-        console.log('Datos',datos);
         return new Promise((resolve, reject) => {
             if(`${datos.Correo}`.indexOf('@') > -1 && datos.Nombre != ''  && datos.Mensaje != ''){
                 const nodemailer = require('nodemailer');
@@ -715,7 +677,6 @@ module.exports = class Catalogos {
                         let respuesta = {Procesado: false, Operacion: 'Fallo el envio de correo', Tipo: 'error',Error: error};
                         if (error) { return reject(respuesta); }
                         return resolve({Procesado: true, Operacion: 'Correo Enviado Correctamente', Tipo: 'success'});
-                        //console.log('Message sent: %s', info.messageId); console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
                     });
                 });
             }

@@ -12,14 +12,11 @@ module.exports = class Usuarios {
             if(datos.Correo && datos.Password){
                 let condiciones =  `WHERE u.Correo = '${datos.Correo}' AND u.Password = '${datos.Password}'`;
                 let JOIN = `JOIN Perfiles as p  on p.IdPerfil = u.IdPerfil`;
-//                console.log('datos',datos);
                 mysql.ejecutar(`SELECT *  FROM Usuarios as u ${JOIN} ${condiciones} LIMIT 1;`).then((res)=>{
-//                    console.log('res',res);
                     let objToken = JSON.stringify({Correo: res[0].Correo, Password: res[0].Password});
                     let token = Buffer.from(objToken).toString("base64");
                     return this._generarToken(res[0],token);
                 }).then(d=>{
-                    console.log('d',d);
                     return resolve({Data: d, error: false});
                 }).catch(err => { return reject({Error:true,ErrorMessage: "Datos invalidos"})});
             }else{
@@ -59,7 +56,6 @@ module.exports = class Usuarios {
         modulos.Carga = (datos.Carga == 1)?{Permisos:permisos}:false;
 
 //        if(datos.Ventas == 1){modulos.Ventas.push({ permisos })}
-        console.log('modulos',modulos);
  /*       if(datos.Cobranza == 1){modulos.Cobranza = permisos }
         if(datos.Finanzas == 1){modulos.Finanzas = permisos }
         if(datos.Cotizaciones == 1){modulos.Cotizaciones = permisos }
@@ -73,7 +69,6 @@ module.exports = class Usuarios {
     Apartar_documento(datos){
         return new Promise((resolve, reject)=>{
             this._verificarDocumento(datos).then(Documento =>{
-                console.log('doc',Documento);
                 if(Documento){
                     return resolve({Procesado: true, Operacion: 'Este documento ya se encuentra apartado', Tipo: 'warning'});
                 }else{
@@ -115,7 +110,6 @@ module.exports = class Usuarios {
         });
     }
     Guardar_nuevo_perfil(datos){
-        console.log('datos',datos);
         return new Promise((resolve, reject)=>{
             let today =  moment(new Date()).format('YYYY-MM-DD');
             let campos =  `Nombre_perfil, Fecha_insert, Clientes, Abonos, Mantenimientos, Cotizaciones, Altas, Egresos, Empleados, Nomina, Usuarios, Reportes, Carga`;
@@ -150,7 +144,6 @@ module.exports = class Usuarios {
         });
     }
     Actualizar_datos_usuario(datos){
-        console.log('datos',datos);
         return new Promise((resolve, reject)=>{            
             let update = (datos.Nombre || datos.Correo || datos.Password)?`SET`:``;
             update += (datos.Nombre || datos.Nombre)?` Nombre = '${datos.Nombre}',`:``;
@@ -164,7 +157,6 @@ module.exports = class Usuarios {
     }
     Actualizar_datos_perfil(datos){
         return new Promise((resolve, reject)=>{
-            console.log('datos',datos);
             let update = ` SET `;
             update += (datos.Nombre_perfil != null)?` Nombre_perfil = '${datos.Nombre_perfil}',`:``;
             update += (datos.Ventas != null)?` Ventas = ${datos.Ventas},`:``;
@@ -178,9 +170,7 @@ module.exports = class Usuarios {
             update += (datos.Reportes != null)?` Reportes = ${datos.Reportes},`:``;
             update += (datos.Carga != null)?` Carga = ${datos.Carga},`:``;
             update = update.slice(0,-1);
-            console.log('update',`UPDATE Perfiles ${update} WHERE IdPerfil = ${datos.IdPerfil};`);
             mysql.ejecutar(`UPDATE Perfiles ${update} WHERE IdPerfil = ${datos.IdPerfil};`).then((res)=>{
-                console.log('exito',res);
                 return resolve({Procesado: true, Operacion: 'Los Datos del Perfil fueron actualizados exitosamente ', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });

@@ -19,13 +19,11 @@ module.exports = class Gastos {
         });
     }
     Guardar_nuevo_gasto(datos){
-        console.log('datos',datos);
         return new Promise((resolve, reject)=>{
 /*            this.Obtener_folio_gasto().then(fol=>{
                 datos.folioGasto = `GAS-${(fol['Data'])?(fol['Data'][0].IdGasto)+1:1}`;*/
             return Promise.resolve({}).then(reS=>{
                 if(datos.Adjunto){
-                    console.log('entro',datos.Adjunto)
                     let compExt = `${datos.Adjunto.split(',')[0].split(';')[0].split('/')[1]}`;
                     let cont = new Buffer(datos.Adjunto.split(',')[1], "base64");
                     let path = `./shared/uploads/Gastos/`;
@@ -35,9 +33,7 @@ module.exports = class Gastos {
                     return Promise.resolve(0);
                 }
             }).then(arch=>{
-                console.log('arch',arch);
                 datos.Archivo = arch;
-                console.log('datos',datos);
                 let campos =  `Folio_gasto,Forma_pago,IdCuenta ,IdUsuario, Responsable,Concepto,Nota,Tipo,Total,Categoria,Subcategoria,Adjunto,Fecha_gasto,Fecha_insert`;
                 let valores = `'${(datos.folioGasto)?datos.folioGasto:'GAS'}','${datos.FormaPago}',${datos.IdCuenta}, ${datos.Usuario.Datos.IdUsuario},'${datos.Responsable}','${(datos.Concepto)?datos.Concepto:'-'}','${(datos.Nota)?datos.Nota:'-'}','${(datos.Tipo)?datos.Tipo:'01'}',${datos.Total},'${datos.Categoria}','${datos.Subcategoria}',${datos.Archivo},'${(datos.Fecha_gasto)?`${datos.Fecha_gasto}`:`${moment().format('YYYY-MM-DD')}`}','${moment().format('YYYY-MM-DD HH:mm:ss')}'`;
                 return mysql.ejecutar(`INSERT INTO Gastos (${campos}) VALUES (${valores});`);
@@ -95,7 +91,6 @@ module.exports = class Gastos {
         });
     }
     Borrar_gastos_multiples(datos){
-        console.log('datos',datos);
         return new Promise((resolve, reject)=>{
             return mysql.ejecutar(`DELETE FROM Gastos WHERE IdGasto IN (${datos.Ids});`).then((res)=>{
                 return resolve({Eliminado: true});
@@ -135,13 +130,11 @@ module.exports = class Gastos {
                 })
             })
             }, Promise.resolve([])).then(r => {
-                console.log('r',r);
                 return resolve(r);
             }).catch(err=>{console.log('err',err); return reject(err); });
         });
     }
     Subir_excel_partidas(datos_archivo){
-        //console.log('datos',datos_archivo);
         return new Promise((resolve, reject)=>{
             let datos = new Buffer(datos_archivo.file, "base64");
             let path = `./shared/uploads/Gastos/`;
@@ -158,7 +151,6 @@ module.exports = class Gastos {
                 //return resolve(res);
                 this.Guardar_varios_gastos(datosFinal);
             }).then(res=>{
-                console.log('terminado',res);
                 //return resolve(res);
                 return resolve({Procesado: true, Operacion: 'Gastos guardados corretamente', Tipo: 'success'});
             }).catch(err=>{
@@ -173,7 +165,6 @@ module.exports = class Gastos {
                 let datos = xlsx.parse(fullPath);
                 let datosOrdenados = [];
                 datos[0].data.forEach((item, index) => {
-                    console.log('item',item[0]);
                     datosOrdenados.push(item[0]);
                 });
                 return resolve(datosOrdenados);
@@ -228,7 +219,6 @@ module.exports = class Gastos {
                 });
                 datosOrdenados.push(columnas);
             });
-            //console.log('datosOrdenados',datosOrdenados);
             let llaves = [];
             let str_llaves = ``;
             datosOrdenados[0].forEach(d=>{
@@ -261,14 +251,12 @@ module.exports = class Gastos {
                     valor = `${valor}`.split('í').join('i').split('ó').join('o').split('á').join('a').split('ú').join('u').split('é').join('e').split('ñ').join('ñ');
                     str += `"${llaves[i]}":"${valor.toString().trim()}",`;
                     if(llaves[i]== 'SUBCATEGORIAS'){
-                        //console.log('valor',valor);
                     }
                 }
                 str = (str.indexOf(',') > -1 )?str.slice(0,-1):str;
                 str += `}`;
                 if(!filaVacia){
                     datosProcesados.push(JSON.parse(str));
-                    //console.log('datosProcesados',datosProcesados);
                 }
             });
             //DATOS CON FORMARO DE SISTEMA Y FILTRADOS POR TIPO
@@ -278,7 +266,6 @@ module.exports = class Gastos {
                 datosFiltrados.forEach(d=>{
                     let cuen;
                     cuentas.Data.forEach(c=>{
-                        //console.log('cuenta',d.CUENTA);
                         if(c.Nombre.indexOf(`${d.CUENTA}`) > -1){
                             cuen =  c;
                         }
