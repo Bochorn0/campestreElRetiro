@@ -14,7 +14,7 @@ import swal from 'sweetalert2';
 })
 
 export class EstadoFinancieroComponent implements OnInit {
-    idReporte;fInicio;fFin;resultadoReporte;cuentas;catalogoUsuarios;cuenta;usuario;
+    idReporte;fInicio;fFin;resultadoReporte;cuentas;catalogoUsuarios;cuenta;usuario;errorFecha;
     @ViewChild('datatableIngresos')datatableIngresos;
     @ViewChild('datatableGastos')datatableGastos;
     @ViewChild('datatableGastosDetalle')datatableGastosDetalle;

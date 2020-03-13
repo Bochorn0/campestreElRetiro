@@ -18,56 +18,56 @@
                         <div class="col-lg-3">
                             <div class="form-group">
                                 <label class="label-form"> Superficie </label>
-                                <input type="number" [(ngModel)]="superficie" (change)="calcularAmortizacion();" placeholder="1500" class="form-control">
+                                <input type="number" [(ngModel)]="superficie" (change)="calcularAmortizacion(false);" placeholder="1500" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-2">
                             <div class="form-group">
                                 <label class="label-form"> $ Metro </label>
-                                <input type="number" [(ngModel)]="precioMetro" (change)="calcularAmortizacion();" placeholder="140" class="form-control">
+                                <input type="number" [(ngModel)]="precioMetro" (change)="calcularAmortizacion(false);" placeholder="140" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-3">
                             <div class="form-group">
                                 <label class="label-form"> Enganche </label>
-                                <input type="number" [(ngModel)]="enganche" (change)="calcularAmortizacion();" placeholder="10000" class="form-control">
+                                <input type="number" [(ngModel)]="enganche" (change)="calcularAmortizacion(false);" placeholder="10000" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-2">
                             <div class="form-group">
                                 <label class="label-form"> Interes </label>
-                                <input type="number" [(ngModel)]="interesAnual" (change)="calcularAmortizacion();" placeholder="18%" class="form-control">
+                                <input type="number" [(ngModel)]="interesAnual" (change)="calcularAmortizacion(false);" placeholder="18%" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-2">
                             <div class="form-group">
                                 <label class="label-form"> # Pagos </label>
-                                <input type="number" [(ngModel)]="pagosMensuales" (change)="calcularAmortizacion();" placeholder="72" class="form-control">
+                                <input type="number" [(ngModel)]="pagosMensuales" (change)="calcularAmortizacion(false);" placeholder="72" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-3">
                             <div class="form-group">
                                 <label class="label-form"> Primer Pago </label>
-                                <input type="date" [(ngModel)]="fPrimeraMensualidad" (change)="calcularAmortizacion();" class="form-control">
+                                <input type="date" [(ngModel)]="fPrimeraMensualidad" (change)="calcularAmortizacion(false);" class="form-control">
                             </div>
                         </div>
     <!--                    <div class="col-lg-3"  *ngIf="costoTotal">
                             <div class="form-group">
                                 <label class="label-form"> Costo Total </label><br>
                                 <label class="label-form text-danger" *ngIf="costoTotal">{{costoTotal}}</label>
-                                <input type="number" [(ngModel)]="costoTotal" (change)="calcularAmortizacion();" placeholder="140" class="form-control">
+                                <input type="number" [(ngModel)]="costoTotal" (change)="calcularAmortizacion(false);" placeholder="140" class="form-control">
                             </div>
                         </div>-->
                         <div class="col-lg-3" >
                             <div class="form-group">
                                 <label class="label-form"> Mensualidad </label>
-                                <input type="number" [(ngModel)]="totalMensual" (change)="calcularAmortizacion();" placeholder="0" class="form-control" >
+                                <input type="number" [(ngModel)]="totalMensual" (change)="calcularAmortizacion(false);" placeholder="0" class="form-control" >
                             </div>
                         </div>
                         <div class="col-lg-3">
                             <div class="form-group" *ngIf="cotizacionAnualidades">
                                 <label class="label-form"> Primer Anualidad </label>
-                                <input type="date" [(ngModel)]="fPrimeraAnualidad" (change)="calcularAmortizacion();" class="form-control">
+                                <input type="date" [(ngModel)]="fPrimeraAnualidad" (change)="calcularAmortizacion(false);" class="form-control">
                             </div>
                         </div>
                         <div class="col-lg-3">

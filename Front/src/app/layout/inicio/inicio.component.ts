@@ -13,7 +13,7 @@ import { EstadisticasService } from '../../shared/services/estadisticas.service'
 export class InicioComponent implements OnInit {
     public alerts: Array<any> = [];
     reporteActivo;reportesIngresos;reportesGastos;reportesCartera;reportesClientes;
-    ingresosChart;gastosChart;carteraChart;clientesChart;datosUsuario;
+    ingresosChart;gastosChart;carteraChart;clientesChart;datosUsuario;datosDashboard;
     @ViewChild('datatableClientes')datatableClientes;
     @ViewChild('datatableCartera')datatableCartera;
     @ViewChild('datatableGastos')datatableGastos;

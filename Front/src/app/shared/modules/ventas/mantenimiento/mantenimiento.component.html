@@ -42,7 +42,7 @@
                         <div class="row">
                             <div class="col-lg-5">
                                 <div class="form-group">
-                                    <input autofocus id="typeahead-format" placeholder="Nombre del cliente:" type="text" class="form-control" [(ngModel)]="datosCliente.Nombre" [ngbTypeahead]="filtrarCliente" (selectItem)="seleccionarCliente($event)" [resultFormatter]="formatter" />
+                                    <input autofocus id="typeahead-format" placeholder="Nombre del cliente:" type="text" class="form-control" [(ngModel)]="datosCliente.Nombre" [ngbTypeahead]="filtrarCliente" (selectItem)="seleccionarCliente($event)"  />
                                 </div>
                             </div>
                             <div class="col-lg-3">

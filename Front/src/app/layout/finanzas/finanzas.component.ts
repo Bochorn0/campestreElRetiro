@@ -25,7 +25,7 @@ catalogoCuentas(){
         this.vistaCentro = true;
     });
 }
-estadosFinancieros(){
+estadosFinancieros(event){
     this._limpiarVista();
     this._delay(100).then(res=>{
         this.verEstadoFinanciero = true;

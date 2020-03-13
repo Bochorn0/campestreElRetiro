@@ -9,7 +9,7 @@
             <app-stat [bgClass]="'secondary'" [icon]="'fa-users'" [label]="'Catalogo de Clientes'" (event)="verCatalogoClientes($event);"></app-stat>
         </div>
         <div class="col-xs-12 col-lg-4">
-            <app-stat [bgClass]="'info'" [icon]="'fa-book'" [label]="'Datos Cliente'" (event)="verDatosTodos($event);"></app-stat>
+            <app-stat [bgClass]="'info'" [icon]="'fa-book'" [label]="'Datos Cliente'" (event)="verDatosTodos();"></app-stat>
         </div>        
     </div>
     <hr />
@@ -157,7 +157,7 @@
     </div>
     <div class="row" *ngIf="datosDetalle || detalleCliente">
         <div class="col-lg-12">
-            <button class="btn btn-primary pull-right" (click)="verDatosTodos({});" >Ver Todos</button>
+            <button class="btn btn-primary pull-right" (click)="verDatosTodos();" >Ver Todos</button>
 <!--            <button class="btn btn-primary pull-right" (click)="this.datosDetalle = false; this.detalleCliente = false;" >Ver Todos</button>-->
             <br><br>
         </div>

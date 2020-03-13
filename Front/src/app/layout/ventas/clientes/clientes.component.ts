@@ -17,7 +17,7 @@ import * as _ from 'lodash';
 export class ClientesComponent implements OnInit {
     //Datos Basicos
     IdCotizacion;cotizaciones;nombre;numIfe;comprobante;fotoIfe;origen;telefono;correo;fComprobante;fIfe;direccion;fNacimiento;
-    terrenos;IdTerreno; datosTerreno;celReferencia1;celReferencia2;celReferencia3;pdfPagare;
+    terrenos;IdTerreno; datosTerreno;celReferencia1;celReferencia2;celReferencia3;pdfPagare;mensualidad;anualidad;numPagos;
     parcelas;lotes;etapas;
     //Datos Referencias
     referencia1;referencia2;referencia3;

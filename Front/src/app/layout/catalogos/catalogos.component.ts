@@ -13,7 +13,9 @@ import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
     providers: [CatalogosService]
 })
 export class CatalogosComponent implements OnInit {
-    catalogoTerrenos;catalogoCliente;ingresoNuevo;datosVenta;mantenimientoNuevo;datosMantenimiento;
+    catalogoTerrenos;catalogoCliente;ingresoNuevo;datosVenta;mantenimientoNuevo;datosMantenimiento;ingresosExtraNuevo;
+    datosIngresosExtra =[];
+    clientesCatalogos;
     frmSolicitud: FormGroup; // Formulario de solicitud
     frmCliente: FormGroup; // Formulario de solicitud
     datosTodos;datosTodosTotales;datosDetalle;detalleCliente;

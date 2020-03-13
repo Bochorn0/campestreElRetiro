@@ -12,7 +12,7 @@ import * as _ from 'lodash';
 })
 
 export class ReportesComponent implements OnInit {
-    idReporte;fInicio;fFin;resultadoReporte;
+    idReporte;fInicio;fFin;resultadoReporte;errorFecha;
     @ViewChild('datatableReportes')datatableReportes;
 constructor(private estadisticasService: EstadisticasService) {
     this.idReporte = 0;

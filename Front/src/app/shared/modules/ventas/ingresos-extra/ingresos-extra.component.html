@@ -94,7 +94,7 @@
                                 </div>
                             </div>
                             <div class="col-lg-2">
-                                <div class="form-group" *ngIf="datosCliente.IdCliente && tipoIngreso != '0' ">
+                                <div class="form-group" *ngIf="datosCliente.IdCliente && tipoIngresoExtra!= '0' ">
                                     <label class="label-form"> <br> </label><br>
                                     <button class="btn btn-success" (click)="agregarVenta();"><i class="fa fa-plus-circle" ></i> Agregar</button>
                                 </div>
@@ -117,7 +117,7 @@
                             </div>
                             <div class="col-lg-5"></div>
                             <div class="col-lg-4">
-                                <div class="form-group" *ngIf="datosCliente.IdCliente && tipoIngreso != '0' ">
+                                <div class="form-group" *ngIf="datosCliente.IdCliente && tipoIngresoExtra != '0' ">
                                     <label class="label-form"> Forma de Pago </label>
                                     <div class="form-group">
                                         <!--<input autofocus id="typeahead-format" placeholder="Fuente del gasto:" type="text" class="form-control" [(ngModel)]="fuenteGasto" [ngbTypeahead]="filtrarFuentes" [resultFormatter]="formatter" />-->
