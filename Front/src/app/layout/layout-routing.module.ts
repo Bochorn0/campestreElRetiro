@@ -14,7 +14,7 @@ const routes: Routes = [
             { path: 'Ventas', loadChildren: './ventas/ventas.module#VentasModule' },
             { path: 'ModuloVentas', loadChildren: './Modulo_venta/Modulo_ventas.module#ModuloVentasModule' },
             { path: 'Finanzas', loadChildren: './finanzas/finanzas.module#FinanzasModule' },
-            { path: 'Cotizaciones', loadChildren: './cotizaciones/cotizaciones.module#CotizacionesModule' },
+            //{ path: 'Cotizaciones', loadChildren: './cotizaciones/cotizaciones.module#CotizacionesModule' },
             { path: 'Egresos', loadChildren: './egresos/egresos.module#EgresosModule' },
             { path: 'Pagina', loadChildren: './Pagina/Pagina.module#PaginaModule' },
             //{ path: 'Cuentas', loadChildren: './catalogo-cuentas/catalogo-cuentas.module#CatalogoCuentasModule' },            

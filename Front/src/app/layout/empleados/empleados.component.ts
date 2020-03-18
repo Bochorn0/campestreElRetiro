@@ -20,7 +20,7 @@ export class EmpleadosComponent implements OnInit {
     catalogoEmpleados;nombresEmpleados;totalNomina;nominaCalculada;horasLaboradas;comision;datosEmpleado;sueldoEmpleado;
     bonos;descuentos;
     //Alta nuevo empleado
-    nombre;fNacimiento;correo;sueldo;puesto;
+    nombre;fNacimiento;correo;sueldo;puesto;panelVisualizar;
     //Alta Nuevo Puesto
     constructor(private catalogosService : CatalogosService, private ventasService : VentasService) {
         this._catalogoEmpleados();
@@ -65,7 +65,9 @@ export class EmpleadosComponent implements OnInit {
         this._limpiarVariables();
         this.catalogosService.obtenerEmpleados().then(res =>{
             this.vistaCentro = true;
-            this.empladosActivos =  { Datos : res['Data']};
+            this.empladosActivos = res['Data'];
+            this.panelVisualizar = 'Empleados';
+            //this.empladosActivos =  { Datos : res['Data']};
         }).catch(err=>{this._limpiarVariables();});
     }
     nuevoEmpleado(){
@@ -146,8 +148,9 @@ export class EmpleadosComponent implements OnInit {
         }).catch(err=>{console.log('err',err);});
     }
     _limpiarVariables(){
-    this.vistaCentro  =  this.altaEmpleado = this.empladosActivos = this.fNacimiento  = this.nominaCalculada = false;
+    this.mostrarNomina = this.vistaCentro  =  this.altaEmpleado = this.empladosActivos = this.fNacimiento  = this.nominaCalculada = false;
     this.correo =  this.nombre = '';
+    this.panelVisualizar = '';
     this.puesto = this.sueldo = 0;
     this.datosEmpleado = this.sueldoEmpleado = this.descuentos = this.bonos = this.horasLaboradas = 0 ;
     }

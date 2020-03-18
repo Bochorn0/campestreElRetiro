@@ -13,17 +13,17 @@
             <i class="fa fa-fw fa-bar-chart-o"></i>&nbsp;{{ 'Ventas' | translate }}
         </a>
         <a *ngIf="datosUsuario.Modulos.Cobranza" [routerLink]="['/Cobranza']" [routerLinkActive]="['router-link-active']" class="list-group-item">
-            <i class="fa fa-fw fa-briefcase"></i>&nbsp;{{ 'Cobranza' | translate }}
+            <i class="fa fa-fw fa-cc-mastercard"></i>&nbsp;{{ 'Cobranza' | translate }}
         </a>
         <a *ngIf="datosUsuario.Modulos.Finanzas" [routerLink]="['/Finanzas']" [routerLinkActive]="['router-link-active']" class="list-group-item">
             <i class="fa fa-fw fa-briefcase"></i>&nbsp;{{ 'Finanzas' | translate }}
         </a>
         <a *ngIf="datosUsuario.Modulos.Catalogos" [routerLink]="['/Catalogos']" [routerLinkActive]="['router-link-active']" class="list-group-item">
-            <i class="fa fa-fw fa-th-list"></i>&nbsp;{{ 'Catalogos' | translate }}
+            <i class="fa fa-fw fa-tasks"></i>&nbsp;{{ 'Catalogos' | translate }}
         </a>
-        <a *ngIf="datosUsuario.Modulos.Cotizaciones" [routerLink]="['/Cotizaciones']" [routerLinkActive]="['router-link-active']" class="list-group-item">
+        <!-- <a *ngIf="datosUsuario.Modulos.Cotizaciones" [routerLink]="['/Cotizaciones']" [routerLinkActive]="['router-link-active']" class="list-group-item">
             <i class="fa fa-fw fa-address-card"></i>&nbsp;{{ 'Cotizaciones' | translate }}
-        </a>
+        </a> -->
         <a *ngIf="datosUsuario.Modulos.Gastos" [routerLink]="['/Egresos']" [routerLinkActive]="['router-link-active']" class="list-group-item">
             <i class="fa fa-fw fa-table"></i>&nbsp;{{ 'Gastos' | translate }}
         </a>

@@ -2,10 +2,6 @@
     <app-page-header [heading]="'Empleados'" [icon]="'fa-desktop'"></app-page-header>
     <!--Menu principal-->
     <div class="row">
-        <div class="col-xs-12 col-xl-12 col-lg-12">
-            <button (click)="nuevoEmpleado();" class="btn btn-success"><i class="fa fa-plus-circle"></i> Nuevo Empleado</button>
-            <br><br>
-        </div>
         <div class="col-xl-6 col-lg-6">
             <app-stat [bgClass]="'primary'" [icon]="'fa-address-book'" [label]="'Empleados Activos'" (event)="mostrarEmpleados($event);"></app-stat>
         </div>
@@ -17,17 +13,46 @@
     <div class="row" *ngIf="this.vistaCentro">
         <div class="col-xl-12 col-lg-12 col-xs-12">
             <!--Empleados Activos-->
-            <div class="row" *ngIf="this.empladosActivos" [@routerTransition]>
-                <div class="col-xl-12 col-lg-12 col-xs-12" *ngIf="this.empladosActivos">
+            <div class="row" [@routerTransition]>
+                <div class="col-12" *ngIf="panelVisualizar == 'Empleados'">
+                    <button (click)="nuevoEmpleado();" style="margin: 0 10px;"  class="btn btn-success pull-right"><i class="fa fa-plus-circle"></i> Nuevo Empleado</button>
+                    <br><br>
+                </div>                
+                <div class="col-12" *ngIf="this.empladosActivos">
+                    <div class="card card-default">
+                        <div class="card-header bg-primary">
+                            <h4 class="text-white">Empleados Activos</h4>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="row">
+                                <div class="col-12 col-sm-12 col-md-6 col-xl-4" *ngFor="let d of this.empladosActivos">
+                                    <div class="card card-default tarjeta">
+                                        <div class="card-body text-center">
+                                            <div class="mb-2 img-fluid rounded-circle thumb64" > <i class="fa fa-user fa-2x"></i></div>
+                                            <h4>{{d.Nombre}}</h4>
+                                            <a class="" (click)="detUsuario = dr">
+                                                <b>{{d.Puesto}}</b>
+                                            </a>
+                                            <p> <b>{{d.Correo}}</b> </p>
+                                            <p> <b>{{d.Fecha_registro}}</b> </p>
+                                        </div>
+                                        <button class=" card-footer btn bg-warning btn-warning text-center text-white "> <b><i class="fa fa-pencil"></i> | Editar</b></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <div class="col-xl-12 col-lg-12 col-xs-12" *ngIf="this.empladosActivos">
                     <div class="card mb-3">
                         <div class="card-header bg-primary">
-                            Empleados Activos
                         </div>
                         <div class="card-body">
                             <app-datatables-general *ngIf="this.empladosActivos" [datosDatatable]="this.empladosActivos"></app-datatables-general>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
             <!--Calcular Nominas-->
             <div class="row" *ngIf="this.mostrarNomina" [@routerTransition]>

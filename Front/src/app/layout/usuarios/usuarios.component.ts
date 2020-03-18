@@ -5,8 +5,8 @@ import { UsuariosService } from '../../shared/services/usuarios.service'
 import swal from 'sweetalert2';
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
+var moment = require('moment');
 
-//const moment =  require('moment');
 @Component({
     selector: 'app-usuarios',
     templateUrl: './usuarios.component.html',
@@ -18,11 +18,13 @@ export class UsuariosComponent implements OnInit {
     vistaCentro;catalogoPuestos;catalogoEmpleados;altaNuevoUsuario;datosUsuarios;datosPuestos;altaNuevoPuesto;Todos;
     //Formulario Usuarios
     uNombre;uCorreo;uPassword;uIdPerfil;sugerenciasEmpleados;visualizarSugerencias;
+    panelVisualizar;
     //Formulario Puestos
     pNombre;
     Clientes;Abonos;Mantenimientos;Cotizaciones;Altas;Egresos;Empleados;Nomina;Usuarios;Reportes;Carga;
     datosEmpleado;nombresEmpleados;
     constructor(private catalogosService:CatalogosService, private usuariosService:UsuariosService) {
+        this.panelVisualizar = '';
         this._catalogoPuestos();
         this._catalogoEmpleados();
         this.uIdPerfil = 0;
@@ -69,9 +71,11 @@ export class UsuariosComponent implements OnInit {
         this._limpiarVariables();
         this.catalogosService.obtenerUsuarios().then(res =>{
             let datosUsuarios = this._ordenarUsuarios(res['Data']);
-            this.datosUsuarios = { Opciones:{Eliminar:true,Editar:true}, Datos:datosUsuarios};
+            this.datosUsuarios = datosUsuarios;
+//            this.datosUsuarios = { Opciones:{Eliminar:true,Editar:true}, Datos:datosUsuarios};
 //            this.datosUsuarios = { Opciones:{Eliminar:true,Editar:true}, Columnas : ["Nombre", "Correo", "Fecha_creacion", "Password"] ,Datos:res['Data']};
             this.vistaCentro=true;
+            this.panelVisualizar = 'Usuarios';
         }).catch(err=>{
             console.log('error usuarios', err);
             this._limpiarVariables();
@@ -85,7 +89,7 @@ export class UsuariosComponent implements OnInit {
                 Correo: d.Correo,
                 Perfil: d.Nombre_perfil,
                 Password: d.Password,
-                "Fecha de Creación": d.Fecha_creacion,
+                Fecha_creacion: moment(d.Fecha_creacion).format('YYYY-MM-DD HH:mm:ss'),
                 ObjCompleto: d
             });
         });
@@ -170,31 +174,19 @@ export class UsuariosComponent implements OnInit {
         this._limpiarVariables();
         this.catalogosService.obtenerPuestos().then(res=>{
             let datosPerfiles =  this._ordenarPerfiles(res['Data']);
-            this.datosPuestos = { Opciones:{Eliminar:true, Editar: true},Datos:datosPerfiles};
+            this.datosPuestos = datosPerfiles;
+            // this.datosPuestos = { Opciones:{Eliminar:true, Editar: true},Datos:datosPerfiles};
             this.vistaCentro=true;
+            this.panelVisualizar = 'Perfiles';
         });
     }
     _ordenarPerfiles(datos){
-        let datosOrdenados = [];
         datos.forEach(d=>{
-            console.log('d',d);
-            datosOrdenados.push({
-                "Nombre del Perfil": d.Nombre_perfil,
-                "Fecha de Creación": d.Fecha_insert,
-                "Ventas": d.Ventas,
-                "Cobranza": d.Cobranza, 
-                "Finanzas": d.Finanzas,
-                "Catalogos": d.Catalogos,
-                "Cotizaciones": d.Cotizaciones,
-                "Gastos": d.Gastos,
-                "Empleados": d.Empleados,
-                "Usuarios": d.Usuarios,
-                "Carga": d.Carga,
-                "Reportes": d.Reportes,
-                "ObjCompleto": d
-            });
-        })
-        return datosOrdenados;
+            d.PermisosTitulos = ['Pagina','Ventas','Cobranza','Finanzas','Catalogos','Gastos','Empleados','Usuarios','AppVentas'];
+            d.PermisosDetalles = [d.Pagina,d.Ventas,d.Cobranza,d.Finanzas,d.Catalogos,d.Gastos,d.Empleados,d.Usuarios,d.AppVentas];
+        });
+        console.log('datos ordenados',datos);
+        return datos;
     }
     //Borrar Puesto
     borrarPuesto(obj){
@@ -221,6 +213,7 @@ export class UsuariosComponent implements OnInit {
     _limpiarVariables(){
         this.vistaCentro = false;
         this.vistaCentro = this.datosPuestos = this.datosUsuarios  = this.altaNuevoPuesto = this.altaNuevoUsuario = false;
+        this.panelVisualizar='';
     }
     _delay(ms){
         return new Promise( resolve => setTimeout(resolve, ms) );
