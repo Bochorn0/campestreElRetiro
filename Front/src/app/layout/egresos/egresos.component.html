@@ -2,26 +2,24 @@
     <app-page-header [heading]="'Gastos nuevos'" [icon]="'fa-table'"></app-page-header>
     <hr>
     <div class="row">
-        <div class="col-4">
-            <button (click)="nuevoGasto();" class="btn btn-info text--right"><i class="fa fa-plus"></i> Nuevo Gasto</button>
+        <div class="col-12 col-sm-6">
+            <div class="form-group">
+                <button (click)="subirArchivo.click();" class="btn btn-danger w-100"><i class="fa fa-upload"></i> <i class="fa fa-file-excel"></i> Cargar Excel</button>                    
+            </div>
         </div>
-        <div class="col-4">
-            <button (click)="subirArchivo.click();" class="btn btn-danger pull-right"><i class="fa fa-upload"></i> <i class="fa fa-file-excel"></i> Cargar Excel</button>                    
-        </div>
-        <div class="col-4">
-            <button (click)="obtenerPlantillaGastos();" class="btn btn-warning pull-right"><i class="fa fa-download"></i> <i class="fa fa-file-excel"></i> Exportar Plantilla </button>                    
-        </div>
-        <div class="col-4">
-            <button *ngIf="this.chksGastos.length > 0" (click)="borrarMultiplesGastos();" class="btn btn-danger-clasic pull-right"><i class="fa fa-times"></i> Borrar Multiples </button>
+        <div class="col-12 col-sm-6">
+            <div class="form-group">
+                <button (click)="obtenerPlantillaGastos();" class="btn btn-warning w-100"><i class="fa fa-download"></i> <i class="fa fa-file-excel"></i> Exportar Plantilla </button>                    
+            </div>
         </div>
             <!--<input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)" />-->
     </div>
     <div class="row">
         <div class="col-lg-6">
-            <app-stat [bgClass]="'primary'" [icon]="'fa-money'" [label]="'Ver Gastos'" (event)="obtenerGastos();"  ></app-stat>
+            <app-stat [bgClass]="'primary'" [icon]="'fa-trello'" [label]="'Ver Gastos'" (event)="obtenerGastos();"  ></app-stat>
         </div>
         <div class="col-lg-6">
-            <app-stat [bgClass]="'warning'" [icon]="'fa-building'" [label]="'Catalogo de categorias'" (event)="verCatalogoCategorias($event);" ></app-stat>
+            <app-stat [bgClass]="'warning'" [icon]="'fa-code-fork'" [label]="'Catalogo de categorias'" (event)="verCatalogoCategorias($event);" ></app-stat>
         </div>
 <!--        <div class="col-xl-4 col-lg-4">
             <app-stat [bgClass]="'info'" [icon]="'fa-briefcase'" [label]="'Reportes'" ></app-stat>
@@ -146,13 +144,27 @@
                     </div>
                 </div>
             </div>
-            <div class="row" *ngIf="this.datosGastos" [@routerTransition]>
+            <div class="row"  [@routerTransition]>
                 <div class="col-xs-12 col-lg-12 col-xl-12">
                     <div class="card-header bg-primary">
                         Gastos <b class="pull-right" style="color: #fff;">$ {{this.totalGastoAcumulado | number}}</b>
                     </div>
                     <div class="card-body table-responsive">
                         <div class="row">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <button (click)="nuevoGasto();" class="btn btn-info w-100"><i class="fa fa-plus"></i> Nuevo Gasto</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-group">
+                                            <button *ngIf="this.chksGastos.length > 0" (click)="borrarMultiplesGastos();" class="btn btn-danger-clasic w-100"><i class="fa fa-times"></i> Borrar Multiples </button>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                            </div>
 <!--                            <div class="col-lg-4" *ngIf="catalogoGastos && datosGastos.Datos.length > 0">
                                 <div class="form-group">
                                     <label class="label-form"> Por Tipo de Gasto </label>

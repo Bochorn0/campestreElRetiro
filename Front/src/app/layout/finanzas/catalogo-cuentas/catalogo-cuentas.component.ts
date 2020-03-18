@@ -17,7 +17,7 @@ import * as moment from 'moment';
 export class CatalogoCuentasComponent implements OnInit {
     @ViewChild('datatableCuentas')datatableCuentas;
     cuentasEspeciales;datosCuentasEspeciales;vistaNuevaCuenta;datosOriginalesCuentas;vistaCentro;
-    nombreCuenta;numeroCuenta;saldoCuenta;
+    nombreCuenta;numeroCuenta;saldoCuenta;fInicio;fFin;
     @Output() public nuevaOperacion = new EventEmitter();
     constructor(private catalogosService : CatalogosService, private ventasService: VentasService) {
         this._obtenerCuentasEspeciales();
@@ -34,12 +34,37 @@ export class CatalogoCuentasComponent implements OnInit {
             });
             this.cuentasEspeciales =  nombresCuentas;
             this.datosOriginalesCuentas =  this.datosOriginalesCuentas;
-            this.datosCuentasEspeciales = {Opciones: {Eliminar: true} ,Datos:this.datosOriginalesCuentas};
-            if(this.datatableCuentas != null){
-                this.datatableCuentas._reiniciarRegistros(this.datosCuentasEspeciales);
-            }
+            // this.datosCuentasEspeciales = {Opciones: {Eliminar: true} ,Datos:this.datosOriginalesCuentas};
+            // if(this.datatableCuentas != null){
+            //     this.datatableCuentas._reiniciarRegistros(this.datosCuentasEspeciales);
+            // }
             
         }).catch(err=>{console.log('err',err);});
+    }
+    _movimientosMensuales(datosCuentas){
+        if(this.datosCuentasEspeciales[0]){
+            this.datosCuentasEspeciales.forEach(de=>{
+                let movimientosCuentas = datosCuentas.filter(dc=>dc.IdCuenta == de.IdCuenta);
+                de.TotalDescuentos = 0;
+                de.TotalIngresos = 0;
+                if(movimientosCuentas[0]){
+                    let Gastos = movimientosCuentas.filter(mc=>mc.Tipo == 'Gastos');
+                    let Ingresos = movimientosCuentas.filter(mc=>mc.Tipo == 'Ingresos');
+                    if(Gastos[0]){
+                        Gastos.forEach(m=>{
+                            de.TotalDescuentos += m.Total;
+                        });
+                    }
+                    if(Ingresos[0]){
+                        Ingresos.forEach(m=>{
+                            de.TotalIngresos += m.Total;
+                        });
+                    }
+                }
+            });
+            if(datosCuentas[0]){
+            }
+        }
     }
     ngOnInit() {}
     filtrarFuentes = (text$: Observable<string>) =>
@@ -52,10 +77,23 @@ export class CatalogoCuentasComponent implements OnInit {
             this.vistaCentro = true;
             let datosRestantes = res['Data'].filter(da=> da.Activa == 1);
             console.log('dats',datosRestantes);
-            this.datosCuentasEspeciales = {Opciones: {Desactivar: true, Editar:true} ,Datos:datosRestantes};
-            if(this.datatableCuentas != null){
-                this.datatableCuentas._reiniciarRegistros(this.datosCuentasEspeciales);
-            }                        
+            this.datosCuentasEspeciales = datosRestantes;
+            this.fInicio = moment().subtract('1','month').format('YYYY-MM-DD');
+            this.fFin = moment().format('YYYY-MM-DD');
+            this.ventasService.obtenerMovimientosPeriodo({Fecha_inicio:this.fInicio,Fecha_fin:this.fFin }).then(detallesCuentas=>{
+                console.log('detallesCuentas',detallesCuentas);
+                if(detallesCuentas['Data']){
+                    this._movimientosMensuales(detallesCuentas['Data']);
+                    // detallesCuentas['Data'].forEach(d=>{
+                    // });
+                }
+            }).catch(err=>{
+                console.log('er',err);
+            });            
+            // this.datosCuentasEspeciales = {Opciones: {Desactivar: true, Editar:true} ,Datos:datosRestantes};
+            // if(this.datatableCuentas != null){
+            //     this.datatableCuentas._reiniciarRegistros(this.datosCuentasEspeciales);
+            // }                        
         }).catch(err=>{console.log('err',err);});
     }
     obtenerCuentasInactivas(){

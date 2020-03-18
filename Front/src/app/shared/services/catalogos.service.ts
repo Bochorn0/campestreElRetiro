@@ -222,5 +222,4 @@ export class CatalogosService {
       return Promise.resolve(response);
     }).catch(err => { return Promise.reject(err); });
   }
-  
 }

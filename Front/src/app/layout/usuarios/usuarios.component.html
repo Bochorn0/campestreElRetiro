@@ -7,10 +7,10 @@
             <button (click)="nuevoPuesto();" class="btn btn-success text-right"><i class="fa fa-plus-"></i> Nuevo Puesto</button>
             <br><br>
         </div> -->
-        <div class="col-xl-4 col-lg-4">
+        <div class="col-12 col-lg-6">
             <app-stat [bgClass]="'primary'" [icon]="'fa-address-book'" [label]="'Usuarios'" (event)="obtenerUsuarios();"  ></app-stat>
         </div>
-        <div class="col-xl-4 col-lg-4">
+        <div class="col-12 col-lg-6">
             <app-stat [bgClass]="'danger'" [icon]="'fa-address-card'" [label]="'Perfiles'" (event)="obtenerPuestos();" ></app-stat>
         </div>
     </div>
@@ -171,19 +171,19 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-3 text-center">
+                                <div class="col-0 col-sm-0 col-md-0 col-lg-2  text-center">
                                     <h5> Nombre del Perfil </h5>
                                 </div>
-                                <div class="col-9 text-center">
+                                <div class="col-0 col-sm-0 col-md-0 col-lg-8  text-center">
                                     <h5> Permisos para Modulos </h5>
                                 </div>
                                 <div class="col-12" *ngFor="let d of this.datosPuestos">
                                     <div class="row tarjeta">
-                                        <div class="col-4 col-sm-4 col-md-2 text-center tarjeta-perfil">
+                                        <div class="col-12 col-lg-2 text-center tarjeta-perfil">
                                             <i class="fa fa-address-book fa-3x"></i><br>
                                             {{d.Nombre_perfil}}
                                         </div>
-                                        <div class="col-8 col-sm-8 col-md-10" style="overflow:auto;">
+                                        <div class="col-12 col-lg-10" style="overflow:auto;">
                                             <table class="table table-striped">
                                                 <tr>
                                                     <th *ngFor="let p of d.PermisosTitulos" style="background-color:#f9f9f9;"> {{p}} </th>

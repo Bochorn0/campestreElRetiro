@@ -20,6 +20,9 @@ module.exports = class Catalogos {
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
     }
+    obtener_movimientos_periodo(){
+
+    }
     Guardar_nuevo_ingreso(datos){
         return new Promise((resolve, reject)=>{
         //this.Obtener_folio_venta().then(fol=>{
@@ -335,6 +338,38 @@ module.exports = class Catalogos {
             }).catch(err=>{ return reject({Concepto:concepto, Procesado: false}) });
         });
     }
+    _movimientoFinancieroEnCuentas(cuenta, movimientos,Usuario){
+        let saldoOriginal; let saldoFinal;
+        return new Promise((resolve, reject)=>{
+            if(!cuenta.IdCuenta || !movimientos[0]){
+                return reject({errorMessage: 'Debes Introducir al menos un moviminto y los datos de la cuenta para continuar'});
+            }
+            return mysql.ejecutar(`SELECT * FROM Cuentas_especiales WHERE IdCuenta = ${cuenta.IdCuenta};`).then(datosC=>{
+                saldoFinal = saldoOriginal = datosC.Saldo;
+                movimientos.forEach(m=>{
+                    if(m.Tipo == 'Ingreso'){
+                        saldoFinal += m.Total;
+                    }else if(m.Tipo == 'Egreso'){
+                        saldoFinal -= m.Total
+                    }
+                });
+                return mysql.ejecutar(`Update Cuentas_especiales SET Saldo = ${saldoCuenta} WHERE IdCuenta = ${cuenta.IdCuenta};`);
+            }).then(datosFin=>{
+                if(saldoOriginal != saldoFinal){
+                    let campos = `IdCuenta, Movimiento,Fecha_insert,Usuario,NombreUsuario`;
+                    let valores = `${cuenta.IdCuenta}.'Saldo Modificado de ${saldoOriginal} a ${saldoFinal} ','${moment().format('YYYY-MM-DD HH:mm:ss')}','${Usuario.Datos.Usuario}','${Usuario.Datos.Nombre}' `;
+                    return mysql.ejecutar(`INSERT INTO Bitacora_cuentas_especiales(${campos}) VALUES (${valores});`);
+                }else{
+                    return Promise.resolve({});
+                }
+            }).then(datosFin=>{
+                return resolve({Procesado:true});
+            }).catch(err=>{
+                return reject({errorMessage: 'Ocurrio un error al modificar los datos de la cuenta'},err);
+            });
+        });
+    }
+
     _abonoLibreMantenimiento(datos,concepto){
         return new Promise((resolve, reject)=>{
             let saldo_a_favor =  datos.DatosCliente.Saldo_a_favor + concepto.Importe;

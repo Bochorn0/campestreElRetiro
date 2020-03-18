@@ -116,4 +116,9 @@ export class VentasService {
       return Promise.resolve(response);
     }).catch(err => { return Promise.reject(err); });
   }
+  obtenerMovimientosPeriodo(datos){
+    return this.api.post(`/ingresos/obtenerMovimientosPeriodo`, datos).then(response => {
+      return Promise.resolve(response);
+    }).catch(err => { return Promise.reject(err); });
+  }
 }

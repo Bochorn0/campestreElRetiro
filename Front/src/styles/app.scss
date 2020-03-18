@@ -70,21 +70,40 @@
 //     background-color:#359B83 !important;
 //     border-color: #46b8da;
 // }
-// .bg-primary{
-//     color:#fff;
-//     background-color: #10798D !important ;
-//     border-color: #46b8da;
-// }
+.bg-primary{
+    color:#fff;
+    background-color: #5d9cec !important ;
+}
+.bg-warning{
+  color:#fff;
+  background-color:#ff902b !important; 
+}
+.bg-danger{
+  color: #fff;
+  background-color:#f05050 !important;
+}
+//DISPLAY NO
+   @media (max-width: 500px) {
+    .col-0{
+      display: none; 
+    }
+   }
+   @media (min-width: 501px) and (max-width: 767px) {   
+    .col-sm-0{
+      display: none; 
+    }
+   }
+   @media (min-width: 768px) and (max-width: 991px) {   
+    .col-md-0{
+      display: none; 
+    }
+   }
 // .bg-warning{
 //     color:#fff;
 //     background-color:#2A8901 !important;
 //     border-color: #46b8da;
 // }
-// .bg-danger{
-//     color:#fff;
-//     background-color:#955006 !important;
-//     border-color: #46b8da;
-// }
+
 // .bg-secondary{
 //     color:#fff;
 //     background-color:#232E5C !important;
