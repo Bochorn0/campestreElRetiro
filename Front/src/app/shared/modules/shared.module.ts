@@ -21,6 +21,7 @@ import { NgbCarouselModule, NgbAlertModule, NgbTypeaheadModule,NgbTabsetModule ,
 import { NgxPaginationModule } from 'ngx-pagination';
 import { AuthGuard } from '../guard/auth.guard';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+import { NgxSelectModule } from 'ngx-select-ex';
 //import { AngularPrint} from 'angular-print';
 /*import {
     AlertComponent,
@@ -65,7 +66,8 @@ import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
     FroalaViewModule,
     NgbTabsetModule,
     NgbModalModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    NgxSelectModule
    // AngularPrint
   ],
   exports: [
@@ -95,7 +97,8 @@ import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
     FroalaViewModule,
     NgbTabsetModule,
     NgbModalModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    NgxSelectModule
    // AngularPrint
   ],
   providers:[AuthGuard]

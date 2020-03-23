@@ -54,34 +54,31 @@ module.exports = class Catalogos {
     Catalogo_gastos(solicitud){
         let categoriasTodas = {};
         return new Promise((resolve, reject)=>{
-            mysql.ejecutar('SELECT * FROM Catalogo_gastos WHERE IdPadre = 0').then((res)=>{
-                categoriasTodas.TodasPadres = res;
+            mysql.ejecutar('SELECT * FROM Catalogo_gastos WHERE IdPadre = 0').then((padres)=>{
+                categoriasTodas.Categorias = (padres)?padres:[];
                 return mysql.ejecutar('SELECT cg1.IdCategoria,cg1.Categoria as Categoria,cg2.IdCategoria as IdSubcategoria,cg2.Categoria as Subcategoria from Catalogo_gastos as cg1 JOIN Catalogo_gastos as cg2  on cg2.IdPadre = cg1.IdCategoria order by cg1.Categoria');
-            }).then(res=>{
-                categoriasTodas.Relacionadas = res;
-                return resolve({Data: this._ordenarDatosCategoriasGastos(categoriasTodas), error: false});
+            }).then(hijas=>{
+                categoriasTodas.Relacionadas = (hijas)?hijas:[];
+                return resolve({Data:categoriasTodas,error:false});
+//                return resolve({Data: this._ordenarDatosCategoriasGastos(categoriasTodas), error: false});
             }).catch(err=>{ console.log('error',err); reject(err);})
         })
     }
     _ordenarDatosCategoriasGastos(datos){
+        let datosOrdenados = {categorias:[],subcategorias:[],TodasPadres :datos.TodasPadres,TodasHijas:datos.Relacionadas};
         if(datos.Relacionadas[0]){
-            let categorias = [];
-            let subcategorias = [];
-            let datosOrdenados;
             datos.Relacionadas.forEach(d=>{
-                let existeCat =  categorias.find(ob=>ob.IdCategoria == d.IdCategoria);
+                let existeCat =  datosOrdenados.categorias.find(ob=>ob.IdCategoria == d.IdCategoria);
                 if(!existeCat){
-                    categorias.push({IdCategoria: d.IdCategoria, Categoria: d.Categoria});
+                    datosOrdenados.categorias.push({IdCategoria: d.IdCategoria, Categoria: d.Categoria});
                 }
-                let existeSub =  subcategorias.find(ob=>ob.IdSubcategoria == d.IdSubcategoria);
+                let existeSub =  datosOrdenados.subcategorias.find(ob=>ob.IdSubcategoria == d.IdSubcategoria);
                 if(!existeSub){
-                    subcategorias.push({IdSubcategoria: d.IdSubcategoria, Subcategoria: d.Subcategoria});
+                    datosOrdenados.subcategorias.push({IdSubcategoria: d.IdSubcategoria, Subcategoria: d.Subcategoria});
                 }
             });
-            datosOrdenados= {Categorias:categorias,Subcategorias:subcategorias,Juntos:datos.Relacionadas, TodasPadres :datos.TodasPadres};
-            return datosOrdenados;
         }
-        return false;
+        return datosOrdenados;
     }
     _ordenarRelacionesTerrenos(datos){
         if(datos){
@@ -116,6 +113,29 @@ module.exports = class Catalogos {
             });
         return datosCliente;
         }
+    }
+    actualizar_datos_puestos(datos){
+        return new Promise((resolve, reject)=>{
+            let Promesas = [];
+            datos.forEach(d=>{
+                let update = ` SET `;
+                update += (d.Nombre_perfil)?` Nombre_perfil = '${d.Nombre_perfil}',`:``;
+                update += (d.Pagina || d.Pagina == 0)?` Pagina = ${d.Pagina},`:``;
+                update += (d.Ventas || d.Ventas == 0)?` Ventas = ${d.Ventas},`:``;
+                update += (d.Cobranza) || d.Cobranza == 0?` Cobranza = ${d.Cobranza},`:``;
+                update += (d.Finanzas || d.Finanzas == 0)?` Finanzas = ${d.Finanzas},`:``;
+                update += (d.Catalogos || d.Catalogos == 0)?` Catalogos = ${d.Catalogos},`:``;
+                update += (d.Gastos || d.Gastos == 0)?` Gastos = ${d.Gastos},`:``;
+                update += (d.Empleados || d.Empleados == 0)?` Empleados = ${d.Empleados},`:``;
+                update += (d.Usuarios || d.Usuarios == 0)?` Usuarios = ${d.Usuarios},`:``;
+                update += (d.AppVentas || d.AppVentas == 0)?` AppVentas = ${d.AppVentas},`:``;
+                update = update.slice(0,-1);
+                Promesas.push(mysql.ejecutar(`UPDATE Perfiles ${update} WHERE IdPerfil = ${d.IdPerfil};`));
+            });
+            return Promise.all(Promesas).then((res)=>{
+                return resolve({Procesado: true, Operacion: 'Los Perfiles fueron actualizados exitosamente ', Tipo: 'success'});
+            }).catch(err => { console.log('err',err); return reject({Data: false, err })});
+        });
     }
     Catalogo_empleados(solicitud){
         return new Promise((resolve, reject)=>{
@@ -254,14 +274,16 @@ module.exports = class Catalogos {
         })
     }
     Actualizar_cuenta_especial(datos){
-        return new Promise((resolve, reject)=>{            
-            let update = (datos.Activa || datos.Nombre || datos.Saldo || datos.Numero)?`SET`:``;
+        return new Promise((resolve, reject)=>{           
+            console.log('datos',datos); 
+            let update = ` `;
             update += (datos.Activa || datos.Activa == '0')?` Activa = ${datos.Activa},`:``;
             update += (datos.Nombre)?` Nombre = '${datos.Nombre}',`:``;
-            update += (datos.Saldo)?` Saldo = ${datos.Saldo.split('$').join('').split(',').join('')},`:``;
-            update += (datos.Numero)?` Numero = ${datos.Numero},`:``;
+            update += (datos.Saldo)?` Saldo = ${datos.Saldo},`:``;
+            update += (datos.Numero)?` Numero = '${datos.Numero}',`:``;
             update = update.slice(0,-1);
-            mysql.ejecutar(`UPDATE Cuentas_especiales ${update} WHERE IdCuenta= ${datos.IdCuenta};`).then((res)=>{
+            console.log('query',`UPDATE Cuentas_especiales ${update} WHERE IdCuenta = ${datos.IdCuenta};`);
+            mysql.ejecutar(`UPDATE Cuentas_especiales SET ${update} WHERE IdCuenta  = ${datos.IdCuenta};`).then((res)=>{
                 return resolve({Procesado: true, Operacion: 'Los Datos de la cuenta fueron cambiados exitosamente ', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });

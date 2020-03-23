@@ -1,42 +1,42 @@
 <div [@routerTransition]>
     <app-page-header [heading]="'Gastos nuevos'" [icon]="'fa-table'"></app-page-header>
     <hr>
-    <div class="row">
-        <div class="col-12 col-sm-6">
-            <div class="form-group">
-                <button (click)="subirArchivo.click();" class="btn btn-danger w-100"><i class="fa fa-upload"></i> <i class="fa fa-file-excel"></i> Cargar Excel</button>                    
+    <!-- MENU PRINCIPAL -->
+    <div class="row text-center">
+        <div class="col-6 col-lg-3">
+            <div class="form-group" >
+                <button (click)="obtenerGastos();" class="btn btn-primary w-100 text-white" ><i class="fa fa-trello"></i> | Gastos </button>
             </div>
         </div>
-        <div class="col-12 col-sm-6">
+        <div class="col-6 col-lg-3">    
             <div class="form-group">
-                <button (click)="obtenerPlantillaGastos();" class="btn btn-warning w-100"><i class="fa fa-download"></i> <i class="fa fa-file-excel"></i> Exportar Plantilla </button>                    
+                <button (click)="verCatalogoCategorias();" class="btn bg-warning menu w-100 text-white" ><i class="fa fa-code-fork"></i> | Castegorias</button>
             </div>
         </div>
-            <!--<input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)" />-->
-    </div>
-    <div class="row">
-        <div class="col-lg-6">
-            <app-stat [bgClass]="'primary'" [icon]="'fa-trello'" [label]="'Ver Gastos'" (event)="obtenerGastos();"  ></app-stat>
+        <div class="col-6 col-lg-3">
+            <div class="form-group">
+                <button (click)="obtenerPlantillaGastos();" class="btn bg-secondary menu w-100 text-white"><i class="fa fa-cloud-download"></i> | Formato Gastos</button>
+            </div>
         </div>
-        <div class="col-lg-6">
-            <app-stat [bgClass]="'warning'" [icon]="'fa-code-fork'" [label]="'Catalogo de categorias'" (event)="verCatalogoCategorias($event);" ></app-stat>
+        <div class="col-6 col-lg-3">
+            <div class="form-group">
+                <button (click)="subirArchivo.click();" class="btn bg-danger menu w-100 text-white" ><i class="fa fa-cloud-upload"></i> | Importar Gastos</button>
+            </div>
         </div>
-<!--        <div class="col-xl-4 col-lg-4">
-            <app-stat [bgClass]="'info'" [icon]="'fa-briefcase'" [label]="'Reportes'" ></app-stat>
-        </div>-->
     </div>
-    <hr />
+    <!-- FORM UPLOAD -->
     <form [formGroup]="frmSolicitud" class="form-validate" (keydown.enter)="$event.preventDefault()" novalidate="">
-        <!--,application/vnd.ms-excel-->
-            <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)"  formControlName="File" />
-            <br><br>
+        <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)"  formControlName="File" />
     </form>
+    <hr>
+    <!-- VISTA CENTRAL -->
     <div class="row" *ngIf="vistaCentro">
-        <div class="col-xl-12 col-lg-12 col-xs-12">
+        <div class="col-12">
+            <!-- PANELNUEVO GASTO -->
             <div class="row" *ngIf="this.altaNuevoGasto" [@routerTransition]>
                 <div class="col-xs-12 col-xl-12 col-lg-12">
                     <div class="card mb-3">
-                        <div class="card-header bg-info">
+                        <div class="card-header bg-info text-white">
                             Nuevo Gasto 
                         </div>
                         <div class="card-body">
@@ -58,19 +58,21 @@
                                 <div class="col-lg-2">
                                     <div class="form-group">
                                         <label class="label-form"> Categoria </label>
-                                        <select class="form-control" [(ngModel)]="categoriaGasto" (change)="seleccionarCategoria();">
+                                        <ngx-select [items]="datosCategorias" optionValueField="Categoria" placeholder="Clasificación:" (select)="seleccionarCategoria();" [(ngModel)]="categoriaGasto"></ngx-select>
+                                    <!-- <select class="form-control" [(ngModel)]="categoriaGasto" (change)="seleccionarCategoria();">
                                             <option value="0">Selecciona</option>
                                             <option *ngFor="let c of this.catalogoCategorias.Categorias" value="{{c.Categoria}}">{{c.Categoria}}</option>
-                                        </select>
+                                        </select> -->
                                     </div>
                                 </div>
                                 <div class="col-lg-3" *ngIf="subcategorias.length > 0">
                                     <div class="form-group">
                                         <label class="label-form"> Subcategoria </label>
-                                        <select class="form-control" [(ngModel)]="subcategoriaGasto">
+                                        <ngx-select [items]="subcategorias" optionValueField="Subcategoria"  placeholder="Subclasificación:" [(ngModel)]="subcategoriaGasto"></ngx-select>
+                                        <!-- <select class="form-control" [(ngModel)]="subcategoriaGasto">
                                             <option value="0">Selecciona</option>
                                             <option *ngFor="let c of this.subcategorias" value="{{c.Subcategoria}}">{{c.Subcategoria}}</option>
-                                        </select>
+                                        </select> -->
                                     </div>
                                 </div>                                
                                 <div class="col-lg-2">
@@ -84,10 +86,11 @@
                                         <label class="label-form"> Forma de Pago </label>
                                         <div class="form-group">
                                             <!--<input autofocus id="typeahead-format" placeholder="Fuente del gasto:" type="text" class="form-control" [(ngModel)]="fuenteGasto" [ngbTypeahead]="filtrarFuentes" [resultFormatter]="formatter" />-->
-                                            <select [(ngModel)]="fuenteGasto" class="form-control">
+                                            <ngx-select [items]="formaDePago" optionValueField="Nombre" placeholder="Selecciona un cuenta" [(ngModel)]="fuenteGasto"></ngx-select>
+                                            <!-- <select [(ngModel)]="fuenteGasto" class="form-control">
                                                 <option value="0">Selecciona una fuente</option>
                                                 <option *ngFor="let f of formaDePago" value="{{f.IdCuenta}}">{{f.Nombre}}</option>
-                                            </select>
+                                            </select> -->
                                         </div>
                                     </div>
                                 </div>
@@ -112,10 +115,11 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="label-form"> Responsable </label>
-                                        <select  class="form-control" [(ngModel)]="responsable">
+                                        <ngx-select [items]="nombresEmpleados" placeholder="Selecciona un empleado"  [(ngModel)]="responsable"></ngx-select>
+                                        <!-- <select  class="form-control" [(ngModel)]="responsable">
                                             <option value="0">Selecciona un empleado</option>
                                             <option *ngFor="let f of nombresEmpleados" value="{{f}}">{{f}}</option>
-                                        </select>
+                                        </select> -->
 <!--                                        <input placeholder="Nombre del responsable:" type="text" class="form-control" [(ngModel)]="responsable" [ngbTypeahead]="filtrarResponsables" (selectItem)="this.responsable = $event.item" [resultFormatter]="formatter" />-->
                                     </div>
                                     <br>
@@ -144,27 +148,21 @@
                     </div>
                 </div>
             </div>
-            <div class="row"  [@routerTransition]>
-                <div class="col-xs-12 col-lg-12 col-xl-12">
+            <!-- PANEL DE GASTOS -->
+            <div class="row"  [@routerTransition]  *ngIf="panelVisualizar == 'Gastos'">
+                <div class="col-12">
+                    <div class="form-group">
+                        <button (click)="nuevoGasto();" class="btn btn-success w-100 pull-right col-lg-3"><i class="fa fa-plus" style="margin-right:10px;"></i> Nuevo Gasto</button>
+                        <button *ngIf="this.chksGastos.length > 0" (click)="borrarMultiplesGastos(); col-lg-3" class="btn btn-danger-clasic w-100 pull-right" ><i class="fa fa-times"></i> Borrar Multiples </button>
+                        <br><br>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-lg-12 col-xl-12" *ngIf="datosGastos">
                     <div class="card-header bg-primary">
                         Gastos <b class="pull-right" style="color: #fff;">$ {{this.totalGastoAcumulado | number}}</b>
                     </div>
                     <div class="card-body table-responsive">
                         <div class="row">
-                            <div class="col-12">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <button (click)="nuevoGasto();" class="btn btn-info w-100"><i class="fa fa-plus"></i> Nuevo Gasto</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <button *ngIf="this.chksGastos.length > 0" (click)="borrarMultiplesGastos();" class="btn btn-danger-clasic w-100"><i class="fa fa-times"></i> Borrar Multiples </button>
-                                        </div>
-                                    </div>                                    
-                                </div>
-                            </div>
 <!--                            <div class="col-lg-4" *ngIf="catalogoGastos && datosGastos.Datos.length > 0">
                                 <div class="form-group">
                                     <label class="label-form"> Por Tipo de Gasto </label>
@@ -198,27 +196,54 @@
                                     </div>
                                 </div>
 
-                            <div class="col-lg-3" *ngIf="datosGastos.Datos.length > 0">
+                            <div class="col-lg-3" *ngIf="datosGastos">
                                 <div class="form-group">
                                     <label class="label-form"> Fecha inicio </label>
                                     <input type="date" [(ngModel)]="fInicio" (change)="filtrarGastosPorTipo();" class="form-control" >
                                 </div>
                             </div>
-                            <div class="col-lg-3" *ngIf="datosGastos.Datos.length > 0">
+                            <div class="col-lg-3" *ngIf="datosGastos">
                                 <div class="form-group">
                                     <label class="label-form"> Fecha fin </label>
                                     <input type="date" [(ngModel)]="fFin" (change)="filtrarGastosPorTipo();" class="form-control" >
                                 </div>
                             </div>
-                            <div class="col-lg-12">
-                                <app-datatables-general #datatableGastos *ngIf="this.datosGastos" [datosDatatable]="this.datosGastos" (delete)="borrarGasto($event);" (checks)="this.chksGastos = $event"></app-datatables-general>
+                            <div class="card-body" id="pageGastos" *ngIf="gastosPorCategoria[0]">
+                                <div class="row " *ngFor="let s of gastosPorCategoria  | paginate: { itemsPerPage: 3, currentPage: pageGastos , id:'GastosId' }" class="borderPad">
+                                    <div class="col-12" style="overflow:auto;" *ngIf="s.Gastos[0]">
+                                        <h3>
+                                            {{s.Categoria}}
+                                        </h3>
+                                        <table class="table table-striped" id="{{s.Pagina}}">
+                                            <tr style="background-color:#ddd;" ><th>Categoria</th><th>Folio</th><th>Fecha</th><th>Concepto</th><th>Importe</th></tr>
+                                            <tr *ngFor="let ss of s.Gastos | paginate: { itemsPerPage: 5, currentPage: s.Pagina , id:s.Pagina }" >
+                                                <td>
+                                                    <i class="fa fa-address-book rounded-circle2 tarjeta-perfil"></i>
+                                                    {{ss.Subcategoria}}
+                                                </td>
+                                                <td>{{ss.Folio}}</td>
+                                                <td>{{ss.Fecha.split('T').join(' ').split('.')[0]}}</td>
+                                                <td>{{ss.Concepto}}</td>
+                                                <td>$ {{ss.Total | number}}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class=" col-12 text-center">
+                                        <pagination-controls (pageChange)="s.Pagina = $event" id="{{s.Pagina}}"></pagination-controls>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class=" col-12 text-right">
+                                <br>
+                                <pagination-controls (pageChange)="pageGastos = $event" id="GastosId"></pagination-controls>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <!--Catalogo de categorias-->
-            <div class="row" *ngIf="formularioCatalogoCategorias" [@routerTransition]>
+            <!-- *ngIf="formularioCatalogoCategorias" -->
+            <div class="row"  *ngIf="verCategorias" [@routerTransition]>
                 <div class="col-lg-12">
                     <div class="card mb-3">
                         <div class="card-header bg-warning">
@@ -226,7 +251,77 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-lg-6">
+                                <div class="col-12 col-xl-3 col-lg-4">
+                                    <div class="d-flex mb-2" >
+                                        <button class="btn btn-sm btn-success" (click)="nuevaCat = !nuevaCat;">
+                                            <i class="fa fa-{{(nuevaCat)?'minus':'plus'}}-circle"></i> | Nueva Categoria
+                                        </button>
+                                    </div>
+                                    <div class="form-group"  *ngIf="nuevaCat">
+                                        <!-- <label class="label-form"> Nueva Categoria </label> -->
+                                        <div class="input-group mb-3">
+                                            <input class="form-control" type="text" [(ngModel)]="nombreCategoria"  placeholder="Nombre Categoria"  />
+                                            <div class="input-group-append">
+                                                <button class="btn btn-success" (click)="guardarCategoriaNueva();"  type="button"><i class="fa fa-arrow-down"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-boxes" >
+                                        <div class="card card-default minim-categos">
+                                            <!-- <h4> Categorias </h4> -->
+                                            <div class="card-body" *ngIf="datosCategorias[0]" >
+                                                <ul class="nav nav-pills flex-column">
+                                                    <li class="nav-item"  *ngFor="let c of datosCategorias">
+                                                        <button class="btn btn-secondary w-100 text-left" style="margin:5px;" (click)="selectCat = c"> 
+                                                            <i class="fa fa-arrow-circle-right" ></i> 
+                                                            <span> {{c.Categoria}}</span>
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-9 col-lg-8">
+                                    <div class="d-flex mb-2" >
+                                        <button class="btn btn-sm btn-success pull-right" (click)="nuevaSub = !nuevaSub;">
+                                            <i class="fa fa-{{(nuevaSub)?'minus':'plus'}}-circle"></i> | Nueva Subcategoria
+                                        </button>
+                                    </div>
+                                    <div class="form-group"  *ngIf="nuevaSub">
+                                        <!-- <label class="label-form"> Nueva Categoria </label> -->
+                                        <div class="input-group mb-3">
+                                            <select type="text" [(ngModel)]="idCategoriaPadre"  class="form-control" style="margin-right:10px;" >
+                                                <option value="0">Categoria padre</option>
+                                                <option *ngFor="let c of datosCategorias" value="{{c.IdCategoria}}">{{c.Categoria}}</option>
+                                            </select>
+                                            <input class="form-control" type="text" [(ngModel)]="nombreSubcategoria" placeholder="Nombre Subcategoria"  />
+                                            <div class="input-group-append">
+                                                <button class="btn btn-success" (click)="guardarSubcategoriaNueva();"  type="button"><i class="fa fa-arrow-down"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-boxes" >
+                                        <div class="card card-default minim-categos">
+                                            <div class="card-body" *ngIf="datosSubcategorias[0]">
+                                                <div class="row " *ngFor="let s of datosSubcategorias" class="{{(s.IdCategoria == selectCat?.IdCategoria)?'borderPadSelected':'borderPad'}}">
+                                                    <div class="col-12 col-lg-2 text-center">
+                                                        <div class=" img-fluid rounded-circle thumb64 tarjeta-perfil" > 
+                                                            <i class="fa fa-address-book"></i><br>
+                                                        </div>
+                                                        {{s.Categoria}}
+                                                    </div>
+                                                    <div class="col-12 col-lg-10" style="overflow:auto;" *ngIf="s.Subcategorias[0]">
+                                                        <ul style=" margin:0; padding: 0; ">
+                                                            <li *ngFor="let ss of s.Subcategorias" style="float: left; margin: 0 20px;  ">{{ss.Subcategoria}}</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- <div class="col-lg-6">
                                     <button class="btn btn-green" (click)="nuevaCategoria();"> <i class="fa fa-plus-circle"></i> Categoria </button>
                                     <div class="row" *ngIf="categoriaAlta">
                                         <div class="col-lg-8">
@@ -244,8 +339,8 @@
                                     </div>
                                     <div class="col-lg-12"><br><hr></div>
                                     <app-datatables-general #datatableCategorias *ngIf="datosCategorias" [datosDatatable]="datosCategorias" (edit)="editarCategoria($event);" (delete)="borrarCategoria($event);"></app-datatables-general>
-                                </div>
-                                <div class="col-lg-6">
+                                </div> -->
+                                <!-- <div class="col-lg-6">
                                     <button class="btn btn-green" (click)="nuevaSubcategoria();"> <i class="fa fa-plus-circle"></i> Subcategoria </button>
                                     <div class="row" *ngIf="subcategoriaAlta">
                                             <div class="col-lg-4">
@@ -272,7 +367,7 @@
                                         </div>
                                     <div class="col-lg-12"><br><hr></div>
                                     <app-datatables-general #datatableSubcategorias *ngIf="datosSubcategorias" [datosDatatable]="datosSubcategorias" (edit)="editarSubcategoria($event);" (delete)="borrarSubcategoria($event);"></app-datatables-general>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>

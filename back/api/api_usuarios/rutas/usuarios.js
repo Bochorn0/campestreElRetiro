@@ -84,6 +84,15 @@ router.post('/actualizarDatosPerfil', (req, res) => {
         res.status(400).send(error);
     })
 });
+router.post('/actualizarDatosEmpleado', (req, res) => {
+    let objUsuarios = new Usuarios();
+    objUsuarios.Actualizar_datos_empleado(req.body).then((result) => {
+        res.status(200).send(result);
+    }).catch((error) => {
+        res.status(400).send(error);
+    })
+});
+
 
 
 

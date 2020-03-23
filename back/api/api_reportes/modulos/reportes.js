@@ -52,9 +52,10 @@ module.exports = class Reportes {
             condiciones += (Filtros.Fecha_fin)?`Fecha_venta <= '${Filtros.Fecha_fin} 23:59:59'`:'';
             mysql.ejecutar(`SELECT * FROM Ventas  JOIN Usuarios as u on u.IdUsuario = Ventas.IdUsuario WHERE ${condiciones};`).then((res)=>{
                 datosReporte.DatosVenta = res;
-                let condiciones2 = (Filtros.Fecha_inicio)?`Fecha_gasto >= '${Filtros.Fecha_inicio} ' AND `:``;
+                let condiciones2 = (Filtros.Fecha_inicio)?`Fecha_gasto >= '${Filtros.Fecha_inicio} 00:00:00' AND `:``;
                 condiciones2 += (Filtros.Fecha_fin)?`Fecha_gasto <= '${Filtros.Fecha_fin} 23:59:59'`:'';
-                return mysql.ejecutar(`SELECT * FROM Gastos  JOIN Usuarios as u on u.IdUsuario = Gastos.IdUsuario WHERE ${condiciones2};`);
+                //  JOIN Usuarios as u on u.IdUsuario = Gastos.IdUsuario
+                return mysql.ejecutar(`SELECT * FROM Gastos  WHERE ${condiciones2};`);
             }).then(res2=>{
                 datosReporte.DatosGastos = res2;
                 return resolve({Data: datosReporte, error: false});

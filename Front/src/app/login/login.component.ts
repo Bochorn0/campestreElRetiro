@@ -30,15 +30,15 @@ export class LoginComponent implements OnInit {
             if(sesion['Data']){
                 localStorage.setItem('Datos', JSON.stringify(sesion['Data'][0]));
                 
-                if(sesion['Data'][0].Perfil == 'Vendedor' ){
+                if(sesion['Data'][0].Modulos.AppVentas && sesion['Data'][0].Perfil == 'Vendedor'){
                     this.router.navigate(['/ModuloVentas/']);            
                 }else{
                     this.router.navigate(['/Inicio/']);
                 }
             }
         }).catch(err=>{ 
-            swal('Error',`${err.message}`,'error');
-//            swal('Error','Datos Incorrectos por favor verifique','error');
+//            swal('Error',`${err.message}`,'error');
+            swal('Error','Datos Incorrectos por favor verifique','error');
             console.log('err',err);
         });
 

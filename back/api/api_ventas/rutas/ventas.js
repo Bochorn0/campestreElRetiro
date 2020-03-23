@@ -229,14 +229,6 @@ router.post('/obtenerMantenimientoCalculado', (req, res) => {
         res.status(400).send(error);
     })
 });
-router.post('/obtenerMovimientosPeriodo', (req, res) => {
-    let objVentas = new Ventas();
-    objVentas.obtener_movimientos_periodo(req.body).then((result) => {
-        res.status(200).send(result);
-    }).catch((error) => {
-        res.status(400).send(error);
-    })
-});
 
 
 

@@ -1,38 +1,287 @@
 <div [@routerTransition]>
     <app-page-header [heading]="'Usuarios'" [icon]="'fa-table'"></app-page-header>
     <hr>
-    <div class="row">
-        <!-- <div class="col-12">
-            <button (click)="nuevoUsuario();" class="btn btn-info text-right"><i class="fa fa-plus-"></i> Nuevo Usuario</button> &nbsp;&nbsp;|&nbsp;&nbsp; 
-            <button (click)="nuevoPuesto();" class="btn btn-success text-right"><i class="fa fa-plus-"></i> Nuevo Puesto</button>
-            <br><br>
-        </div> -->
-        <div class="col-12 col-lg-6">
-            <app-stat [bgClass]="'primary'" [icon]="'fa-address-book'" [label]="'Usuarios'" (event)="obtenerUsuarios();"  ></app-stat>
+    <!-- MENU PRINCIPAL -->
+    <div class="row text-center">
+        <div class="col-6 col-lg-3">
+            <div class="form-group" >
+                <button (click)="mostrarEmpleados($event);" class="btn btn-secondary menu w-100 text-white" ><i class="fa fa-address-book"></i> | Empleados </button>
+            </div>
         </div>
-        <div class="col-12 col-lg-6">
-            <app-stat [bgClass]="'danger'" [icon]="'fa-address-card'" [label]="'Perfiles'" (event)="obtenerPuestos();" ></app-stat>
+        <div class="col-6 col-lg-3">    
+            <div class="form-group">
+                <button (click)="obtenerUsuarios();" class="btn bg-primary menu w-100 text-white" ><i class="fa fa-users"></i> | Usuarios</button>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="form-group">
+                <button (click)="obtenerPuestos();" class="btn bg-danger menu w-100 text-white"><i class="fa fa-address-card"></i> | Perfiles</button>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="form-group">
+                <button (click)="mostrarCalcularNomina();" class="btn bg-warning menu w-100 text-white" ><i class="fa fa-wrench"></i> | Nomina</button>
+            </div>
         </div>
     </div>
     <hr />
+    <!-- SECCION DE AYUDA -->
+    <div class="row"  *ngIf="panelVisualizar == 'Ayuda' ">
+        <div class="col-12 text-center">
+            <div class="card card-default" style="width: 70%; margin: 0 auto;">
+                <div clasS="card-body">
+                    <h2>Bienvenido al apartado de Usuarios</h2>
+                    <br>
+                    <p>
+                        Para aprender como utilizar este apartado debes descargar el manual de esta sección y seguir las reglas de los diagramas relacionados.
+                        <br><br>
+                        <button class="btn btn-info">
+                            <i class="fa fa-cloud-download"></i> | 
+                            Descargar Manual de Apartado de Usuarios 
+                        </button>
+                        <br><br>
+                        <b>Tambien puedes solicitar ayuda al siguiente correo <a href="mailto:luisfernandocordova.24@gmail.com">Luis Cordova</a></b>
+                    </p>                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- VISTA CENTRAL PRINCIPAL -->
     <div class="row" *ngIf="vistaCentro">
         <div class="col-xl-12 col-lg-12 col-xs-12">
+            <!-- SECCION DE EMPLEADOS -->
+            <div class="row" [@routerTransition]>
+                <div class="col-12" *ngIf="panelVisualizar == 'Empleados'">
+                    <button (click)="nuevoEmpleado();" style="margin: 0 10px;"  class="btn btn-success pull-right"><i class="fa fa-plus-circle"></i> Nuevo Empleado</button>
+                    <br><br>
+                </div>                
+                <div class="col-12" *ngIf="this.empladosActivos && !empleadoEditar">
+                    <div class="card card-default">
+                        <div class="card-header bg-secondary">
+                            <h4 class="text-white">Empleados Activos</h4>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="row" id="EmpleadosId">
+                                <div class="col-12 col-sm-12 col-md-6 col-xl-4" *ngFor="let d of this.empladosActivos  | paginate: { itemsPerPage: 6, currentPage: pageEmpleados, id:'EmpleadosId' }">
+                                    <div class="card card-default tarjeta">
+                                        <div class="card-body text-center">
+                                            <div class="mb-2 img-fluid rounded-circle thumb64" > <i class="fa fa-user fa-2x"></i></div>
+                                            <h4>{{d.Nombre}}</h4>
+                                            <a class="" (click)="detUsuario = dr">
+                                                <b>{{d.Puesto}}</b>
+                                            </a>
+                                            <p> <b>{{d.Correo}}</b> </p>
+                                            <p> <b>{{d.Fecha_registro.split('T').join(' ').split('.')[0]}}</b> </p>
+                                        </div>
+                                        <button class=" card-footer btn bg-warning btn-warning text-center text-white " (click)="empleadoEditar=d;"> <b><i class="fa fa-pencil"></i> | Editar</b></button>
+                                    </div>
+                                </div>
+                                <div class=" col-12 text-right">
+                                    <br>
+                                    <pagination-controls (pageChange)="pageEmpleados = $event" id="EmpleadosId"></pagination-controls>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- EDICION DE EMPLEADOS -->
+            <div class="col-12" *ngIf="empleadoEditar && catalogoPuestos">
+                <div class="card mb-3">
+                    <div class="card-header bg-warning text-white">
+                        Editar Usuario {{empleadoEditar.Nombre}}
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!--Perfiles-->
+                            <div class="col-12 col-lg-3 ">
+                                <div class="form-group">
+                                    <label class="label-form"> Perfil </label>
+                                    <select class="form-control" [(ngModel)]="empleadoEditar.Puesto" >
+                                        <option value="0">Selecciona el puesto</option>
+                                        <option *ngFor="let per of catalogoPuestos" value="{{per.Nombre_perfil}}">{{per.Nombre_perfil}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-3 ">
+                                <div class="form-group">
+                                    <label class="label-form"> Nombre </label>
+                                    <input type="text" class="form-control" placeholder="Nombre" [(ngModel)]="empleadoEditar.Nombre" />
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-3 ">
+                                <div class="form-group">
+                                    <label class="label-form"> Sueldo </label>
+                                    <input type="number" class="form-control" placeholder="Sueldo" [(ngModel)]="empleadoEditar.Sueldo" />
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-3 ">
+                                <div class="form-group">
+                                    <label class="label-form"> Correo </label>
+                                    <input type="text" class="form-control" placeholder="Correo:"  [(ngModel)]="empleadoEditar.Correo"/>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="label-form"> &nbsp;</label><br>
+                                    <button (click)="actualizarEmpleado();"  class="btn btn-warning pull-right"><i class="fa fa-save"></i> |  Actualizar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                    
+            </div>
+            <!-- SECCION DE NOMINAS -->
+            <div class="row" *ngIf="this.mostrarNomina" [@routerTransition]>
+                <div class="col-xl-12 col-lg-12 col-xs-12" >
+                    <div class="card mb-3">
+                        <div class="card-header bg-warning">
+                            Calcular Nomina
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Empleado </label>
+                                        <input autofocus id="typeahead-format" placeholder="Nombre del empleado:" type="text" class="form-control" [(ngModel)]="catalogoEmpleados.Nombre" [ngbTypeahead]="filtrarEmpleado" (selectItem)="seleccionarEmpleado($event)" [resultFormatter]="formatter" />
+                                        <input type="hidden" value="0" *ngIf="datosEmpleado" [(ngModel)]="datosEmpleado.IdEmpleado" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"> Sueldo  </label>
+                                        <input type="number"  [(ngModel)]="sueldoEmpleado" class="form-control"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"> Horas  </label>
+                                        <input type="number"  [(ngModel)]="horasLaboradas" class="form-control"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"> Descuentos  </label>
+                                        <input type="number"  [(ngModel)]="descuentos" class="form-control"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="label-form"> Bonos  </label>
+                                        <input type="number"  [(ngModel)]="bonos" class="form-control"/>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="col-lg-12" *ngIf="datosEmpleado">
+                                    <h4 class="text-danger text-center">Ventas Acumuladas</h4>
+                                    <table class="table table-hover table-stripped">
+                                        <tr>
+                                            <th>Folio</th>
+                                            <th>Tipo</th>
+                                            <th>Terreno</th>
+                                            <th>Fecha venta</th>
+                                            <th>Monto</th>
+                                            <th>Comision</th>
+                                        </tr>
+                                        <tr *ngFor="let ven of datosEmpleado.Ventas">
+                                            <td>{{ven.Folio_venta}}-{{ven.IdVenta}}</td>
+                                            <td>{{ven.Tipo_venta}}</td>
+                                            <td>Parcela:{{ven.DatosTerreno.parcela}} - Lote: {{ven.DatosTerreno.lote}} - Etapa: {{ven.DatosTerreno.etapa}}</td>
+                                            <td>{{ven.Fecha_venta.split('T')[0]}}</td>
+                                            <td>{{ven.Importe|number}}</td>
+                                            <td><input style="width: 150px;" class="form-control" type="number" placeholder="Comision: %" [(ngModel)]="ven.Comision" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-lg-12 pull-right"><button class="btn btn-info pull-right" (click)="calcularNominaEmpleado();">Calcular</button></div>
+                                <div class="col-lg-12" *ngIf="nominaCalculada">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-info">
+                                            Nomina de {{datosEmpleado.Nombre}}
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-stripped table-hover">
+                                                <tr><th>Horas Laboradas</th><th>Comisiones</th><th>Sueldo</th><th>Bonos</th><th>Descuentos</th><th>Total</th></tr>
+                                                <tr><td>{{datosEmpleado.Horas}}</td><td>{{datosEmpleado.Comisiones}}</td><td>{{datosEmpleado.Sueldo}}</td><td>{{datosEmpleado.Bonos}}</td><td>-{{datosEmpleado.Descuentos_totales}}</td><td>$ {{totalNomina}}</td></tr>
+                                            </table>
+                                            <button class="btn btn-success pull-right" (click)="guardarNomina();">Guardar Nomina</button>
+                                        </div>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>                
+            <!-- NUEVO EMPLEADO -->
+            <div class="row" *ngIf="this.altaEmpleado" [@routerTransition]>
+                <div class="col-xs-12 col-xl-12 col-lg-12">
+                    <div class="card mb-3">
+                        <div class="card-header bg-success text-white">
+                            Nuevo Empleado
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Nombre</label>
+                                        <input type="text" class="form-control" placeholder="Nombre empleado: " [(ngModel)]="nombre" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Correo </label>
+                                        <input type="text" class="form-control" placeholder="Correo:"  [(ngModel)]="correo"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Puesto </label>
+                                        <select class="form-control" [(ngModel)]="puesto" >
+                                            <option value="0">Selecciona el puesto</option>
+                                            <option *ngFor="let pue of catalogoPuestos" value="pue.Nombre_perfil">{{pue.Nombre_perfil}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Sueldo </label>
+                                        <input type="text" class="form-control" placeholder="10000" [(ngModel)]="sueldo" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Fecha nacimiento </label>
+                                        <input type="date" class="form-control" [(ngModel)]="fNacimiento" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> &nbsp;</label><br>
+                                        <button (click)="guardarEmpleadoNuevo();"  class="btn btn-primary pull-right">Guardar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- SECCION DE USUARIOS -->
             <div class="row"  [@routerTransition]>
                 <div class="col-12" *ngIf="panelVisualizar=='Usuarios' ">
-                    <button class="btn btn-primary pull-right" style="margin: 0 10px;" (click)="guardarCambiosUsuario();"> <i class="fa fa-save"></i> |  Guardar Cambios </button>
-                    <button class="btn btn-info pull-right" style="margin: 0 10px;" (click)="nuevoUsuario();"> <i class="fa fa-plus-circle"></i> |  Nuevo Usuarios </button>
+                    <button class="btn btn-success pull-right" style="margin: 0 10px;" (click)="nuevoUsuario();"> <i class="fa fa-plus-circle"></i> |  Nuevo Usuario </button>
                     <br><br>
                 </div>
-                <!--Nuevo Usuario-->
+                <!-- NUEVOS USUARIO -->
                 <div class="row" *ngIf="this.altaNuevoUsuario" [@routerTransition]>
                     <div class="col-xs-12 col-xl-12 col-lg-12">
                         <div class="card mb-3">
-                            <div class="card-header bg-info">
+                            <div class="card-header bg-success text-white">
                                 Nuevo Usuario
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <!--Empleado-->
+                                    <!-- SELECCION DE EMPLEADO -->
                                     <div class="col-xs-7 col-lg-7 col-xl-7">
                                         <div class="form-group">
                                             <label class="label-form"> Empleado </label>
@@ -41,7 +290,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xs-2 col-lg-2 col-xl-2"></div>
-                                    <!--Perfiles-->
+                                    <!-- SELECCION DE PERFILES -->
                                     <div class="col-xs-3 col-lg-3 col-xl-3">
                                         <div class="form-group">
                                             <label class="label-form"> Perfil </label>
@@ -80,78 +329,182 @@
                         </div>
                     </div>
                 </div>                
-                <div class="col-12" *ngIf="this.datosUsuarios">
+                <!-- PANEL DE USUARIOS -->
+                <div class="col-12" *ngIf="this.datosUsuarios && !usuarioEditar">
                     <div class="card card-default">
                         <div class="card-header bg-primary">
                             <h4 class="text-white">Usuarios Activos</h4>
                         </div>
                         <div class="card-body text-center">
-                            <div class="row">
-                                <div class="col-12 col-sm-12 col-md-6 col-xl-4" *ngFor="let d of this.datosUsuarios">
+                            <div class="row" id="UsuariosId">
+                                <div class="col-12 col-sm-12 col-md-6 col-xl-4" *ngFor="let d of this.datosUsuarios  | paginate: { itemsPerPage: 6, currentPage: pageUsuarios, id:'UsuariosId' }">
                                     <div class="card card-default tarjeta">
                                         <div class="card-body text-center">
-                                            <!-- <img class="mb-2 img-fluid rounded-circle thumb64" src="assets/img/user/02.jpg" alt="Contact" /> -->
                                             <div class="mb-2 img-fluid rounded-circle thumb64" > <i class="fa fa-user fa-2x"></i></div>
                                             <h4>{{d.Nombre}}</h4>
                                             <a class="" (click)="detUsuario = dr">
-                                                <b>{{d.Perfil}}</b>
-                                                <!-- <em class="fa" [ngClass]="favContact1 ? 'fa-star text-warning' : 'fa-star-o'"></em> -->
+                                                <b>{{d.Nombre_perfil}}</b>
                                             </a>
                                             <p> <b>{{d.Correo}}</b> </p>
-                                            <p> <b>{{d.Fecha_creacion}}</b> </p>
+                                            <p> <b>{{d.Fecha_creacion.split('T').join(' ').split('.')[0]}}</b> </p>
                                         </div>
                                         <div class="card-footer d-flex">
                                             <div>
-                                                <button type="button" class="btn btn-xs btn-primary">Enviar Accesos</button>
+                                                <button type="button" class="btn btn-xs bg-warning" (click)=" usuarioActivo = d; enviarAccesosModal(modalAccesos);  modalDatos = {Tipo: 'EnviarAccesos', Clase: 'bg-warning', Titulo: 'Enviar Accesos a Usuario'} " ><i class="fa fa-envelope"></i> |  Enviar Accesos</button>
                                             </div>
                                             <div class="ml-auto">
-                                                <button type="button" class="btn btn-xs btn-secondary">Permisos</button>
+                                                <button type="button" class="btn btn-xs btn-secondary" (click)="usuarioEditar = d; "> <i class="fa fa-pencil"></i> | Editar</button>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class=" col-12 text-right">
+                                    <br>
+                                    <pagination-controls (pageChange)="pageUsuarios = $event" id="UsuariosId"></pagination-controls>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!-- EDICION DE USUARIOS -->
+                <div class="col-12" *ngIf="usuarioEditar && catalogoPuestos">
+                    <div class="card mb-3">
+                        <div class="card-header bg-secondary text-white">
+                            Editar Usuario {{usuarioEditar.Nombre}}
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!--Perfiles-->
+                                <div class="col-xs-3 col-lg-3 col-xl-3">
+                                    <div class="form-group">
+                                        <label class="label-form"> Perfil </label>
+                                        <select class="form-control" [(ngModel)]="usuarioEditar.IdPerfil" >
+                                            <option value="0">Selecciona el puesto</option>
+                                            <option *ngFor="let per of catalogoPuestos" value="{{per.IdPerfil}}">{{per.Nombre_perfil}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4 col-xl-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Nombre </label>
+                                        <input type="text" class="form-control" placeholder="Nombre" [(ngModel)]="usuarioEditar.Nombre" />
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4 col-xl-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Correo </label>
+                                        <input type="text" class="form-control" placeholder="Correo:"  [(ngModel)]="usuarioEditar.Correo"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-4 col-lg-4 col-xl-4">
+                                    <div class="form-group">
+                                        <label class="label-form"> Password </label>
+                                        <input type="text" class="form-control"  [(ngModel)]="usuarioEditar.Password"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-lg-12 col-xl-12">
+                                    <div class="form-group">
+                                        <label class="label-form"> &nbsp;</label><br>
+                                        <button (click)="actualizarUsuario();"  class="btn btn-warning pull-right"><i class="fa fa-save"></i> |  Actualizar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
             </div>
+            <!-- SECCION DE PUESTOS -->
             <div class="row" [@routerTransition]>
                 <div class="col-12" *ngIf="panelVisualizar == 'Perfiles'">
-                    <button class="btn btn-primary pull-right" style="margin: 0 10px;" (click)="guardarCambiosPuesto();"> <i class="fa fa-save"></i> |  Guardar Cambios </button>
+                    <button class="btn btn-warning text-white pull-right" style="margin: 0 10px;" (click)="guardarCambiosPerfiles();"> <i class="fa fa-save"></i> |  Guardar Cambios en Permisos </button>
                     <button class="btn btn-success pull-right" style="margin: 0 10px;" (click)="nuevoPuesto();"> <i class="fa fa-plus-circle"></i> |  Nuevo Perfil </button>
                     <br><br>
                 </div>
-                <!--Nuevo Puesto-->
+                <!-- NUEVO PUESTO -->
                 <div class="row" *ngIf="altaNuevoPuesto" [@routerTransition]>
                     <div class="col-xs-12 col-xl-12 col-lg-12">
                         <div class="card mb-3">
-                            <div class="card-header bg-success">
+                            <div class="card-header bg-success text-white">
                                 Nuevo Puesto
                             </div>
                             <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-12">
+                                <div class="row tarjeta">
+                                    <div class="col-12 col-lg-3 text-center tarjeta-perfil">
                                         <div class="form-group">
                                             <label class="label-form"> Nombre perfil </label>
                                             <input type="text" class="form-control" placeholder="Perfil" [(ngModel)]="pNombre" />
                                         </div>
                                     </div>
-                                    <div class="col-xs-12 col-lg-12 col-xl-12">
-                                        <div class="form-group">
-                                            <label class="label-form"> Permisos </label> &nbsp;&nbsp;&nbsp;<input type="checkbox" name="" [(ngModel)]="Todos" (change)="seleccionarTodos();"> Todos<br>
-                                            <input type="checkbox" name="" [(ngModel)]="Clientes"> Clientes &nbsp;&nbsp;
-                                            <input type="checkbox" name="" [(ngModel)]="Abonos"> Abonos &nbsp;&nbsp;
-                                            <input type="checkbox" name="" [(ngModel)]="Mantenimientos"> Mantenimientos &nbsp;&nbsp;
-                                            <input type="checkbox" name="" [(ngModel)]="Cotizaciones"> Cotizaciones &nbsp;&nbsp;
-                                            <input type="checkbox" name="" [(ngModel)]="Altas"> Altas &nbsp;&nbsp;
-                                            <input type="checkbox" name="" [(ngModel)]="Egresos"> Egresos &nbsp;&nbsp;
-                                            <input type="checkbox" name="" [(ngModel)]="Empleados"> Empleados &nbsp;&nbsp;
-                                            <input type="checkbox" name="" [(ngModel)]="Nomina"> Nomina &nbsp;&nbsp;
-                                            <input type="checkbox" name="" [(ngModel)]="Usuarios"> Usuarios &nbsp;&nbsp;
-                                            <input type="checkbox" name="" [(ngModel)]="Catalogos"> Catalogos &nbsp;&nbsp;
-                                            <input type="checkbox" name="" [(ngModel)]="Reportes"> Reportes &nbsp;&nbsp;
-                                            <input type="checkbox" name="" [(ngModel)]="Carga"> Carga 
-                                        </div>
+                                    <div class="col-12 col-lg-9" style="overflow:auto;">
+                                        <table class="table table-striped">
+                                            <tr>
+                                                <th style="background-color:#ddd;"> Pagina </th>
+                                                <th style="background-color:#ddd;"> Ventas </th>
+                                                <th style="background-color:#ddd;"> Cobranza </th>
+                                                <th style="background-color:#ddd;"> Finanzas </th>
+                                                <th style="background-color:#ddd;"> Catalogos </th>
+                                                <th style="background-color:#ddd;"> Gastos </th>
+                                                <th style="background-color:#ddd;"> Empleados </th>
+                                                <th style="background-color:#ddd;"> Usuarios </th>
+                                                <th style="background-color:#ddd;"> App Ventas </th>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label class="switch">
+                                                        <input type="checkbox" [(ngModel)]="Pagina" />
+                                                        <span class="slider round"></span>
+                                                    </label>        
+                                                </td>
+                                                <td>
+                                                    <label class="switch">
+                                                        <input type="checkbox" [(ngModel)]="Ventas" />
+                                                        <span class="slider round"></span>
+                                                    </label>        
+                                                </td>
+                                                <td>
+                                                    <label class="switch">
+                                                        <input type="checkbox" [(ngModel)]="Cobranza" />
+                                                        <span class="slider round"></span>
+                                                    </label>        
+                                                </td>
+                                                <td>
+                                                    <label class="switch">
+                                                        <input type="checkbox" [(ngModel)]="Finanzas" />
+                                                        <span class="slider round"></span>
+                                                    </label>        
+                                                </td>
+                                                <td>
+                                                    <label class="switch">
+                                                        <input type="checkbox" [(ngModel)]="Catalogos" />
+                                                        <span class="slider round"></span>
+                                                    </label>        
+                                                </td>
+                                                <td>
+                                                    <label class="switch">
+                                                        <input type="checkbox" [(ngModel)]="Gastos" />
+                                                        <span class="slider round"></span>
+                                                    </label>        
+                                                </td>
+                                                <td>
+                                                    <label class="switch">
+                                                        <input type="checkbox" [(ngModel)]="Empleados" />
+                                                        <span class="slider round"></span>
+                                                    </label>        
+                                                </td>
+                                                <td>
+                                                    <label class="switch">
+                                                        <input type="checkbox" [(ngModel)]="Usuarios" />
+                                                        <span class="slider round"></span>
+                                                    </label>        
+                                                </td>
+                                                <td>
+                                                    <label class="switch">
+                                                        <input type="checkbox" [(ngModel)]="AppVentas" />
+                                                        <span class="slider round"></span>
+                                                    </label>        
+                                                </td>
+                                            </tr>
+                                        </table>               
                                     </div>
                                     <div class="col-xs-12 col-lg-12 col-xl-12">
                                         <div class="form-group">
@@ -163,21 +516,22 @@
                             </div>
                         </div>
                     </div>
-                </div>                
+                </div>    
+                <!-- PANEL DE PERFILES -->
                 <div class="col-12" *ngIf="this.datosPuestos">
                     <div class="card card-default">
                         <div class="card-header bg-danger">
                             <h4 class="text-white">Perfiles</h4>
                         </div>
                         <div class="card-body">
-                            <div class="row">
+                            <div class="row" id="PuestosId">
                                 <div class="col-0 col-sm-0 col-md-0 col-lg-2  text-center">
                                     <h5> Nombre del Perfil </h5>
                                 </div>
                                 <div class="col-0 col-sm-0 col-md-0 col-lg-8  text-center">
                                     <h5> Permisos para Modulos </h5>
                                 </div>
-                                <div class="col-12" *ngFor="let d of this.datosPuestos">
+                                <div class="col-12" *ngFor="let d of this.datosPuestos | paginate: { itemsPerPage: 3, currentPage: pagePuestos, id:'PuestosId' }">
                                     <div class="row tarjeta">
                                         <div class="col-12 col-lg-2 text-center tarjeta-perfil">
                                             <i class="fa fa-address-book fa-3x"></i><br>
@@ -248,19 +602,45 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class=" col-12 text-right">
+                                    <br>
+                                    <pagination-controls (pageChange)="pagePuestos = $event" id="PuestosId"></pagination-controls>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                    <!-- <div class="col-xs-12 col-lg-12 col-xl-12">
-                        <div class="card-header bg-danger">
-                            Puestos
-                        </div>
-                        <div class="card-body table-responsive">
-                        <app-datatables-general *ngIf="this.datosPuestos" [datosDatatable]="this.datosPuestos" (edit)="editarPuestos($event);"  (delete)="borrarPuesto($event);"></app-datatables-general>
-                        </div>
-                    </div>
-                </div> -->
+            </div>
         </div>
     </div>
 </div>
+<!-- MODAL ENVIAR ACCESOS -->
+<ng-template #modalAccesos let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header {{modalDatos.Clase?modalDatos.Clase:''}}">
+        <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row" *ngIf="objCorreoEnviar">
+            <div class="col-12">
+                <div class="form-group">
+                    <label class="label-form">Para: </label>
+                    <input type="text" class="form-control" [(ngModel)]="objCorreoEnviar.Para" placeholder="jesus.ortiz@gmail.com" />
+                </div>
+                <div class="form-group">
+                    <label class="label-form">Asunto: </label>
+                    <input type="text" class="form-control" [(ngModel)]="objCorreoEnviar.Asunto" placeholder="Cotización solicitada" />
+                </div>
+                <div class="form-group">
+                    <label class="label-form">Mensaje:</label>
+                    <textarea rows="10" class="form-control" [(ngModel)]="objCorreoEnviar.Mensaje" placeholder="Cuerpo del correo"></textarea>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary form-control" (click)="enviarCorreoAccesos();"><i class="fa fa-envelope"></i> Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

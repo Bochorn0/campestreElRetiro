@@ -47,6 +47,11 @@ export class UsuariosService {
       return Promise.resolve(response);
     }).catch(err => { return Promise.reject(err); });
   }
+  actualizarDatosEmpleado(datosActualizar){
+    return this.api.post(`/usuarios/actualizarDatosEmpleado`,datosActualizar).then(response => {
+      return Promise.resolve(response);
+    }).catch(err => { return Promise.reject(err); });
+  }
   actualizarDatosPerfil(datosActualizar){
     return this.api.post(`/usuarios/actualizarDatosPerfil`,datosActualizar).then(response => {
       return Promise.resolve(response);

@@ -1,0 +1,42 @@
+.minim-categos{
+    min-height: 250px;
+}
+.borderPad{
+    border: 5px solid #ddd;
+    border-radius:5px;
+    margin: 5px;
+    padding: 5px;
+}
+.borderPadSelected{
+    border: 5px solid #868e96;
+    border-radius:5px;
+    padding: 5px;
+}
+.pad-sub{
+    padding: 10px;
+}
+.tarjeta{
+    margin: 10px;
+}
+.rounded-circle{
+    border: 5px solid #ddd;
+    width: 40px;
+    margin: 0 auto;
+    padding: 3px;
+    height: 40px;
+}
+.rounded-circle2{
+    border: 5px solid #ddd;
+    width: 40px;
+    margin: 0 auto;
+    padding: 7px;
+    height: 40px;
+}
+// .tarjeta-perfil{
+//     padding: 10px;
+//     background: #f9f9f9;
+//     border: 1px solid #ddd;
+// }
+.br-{
+    border-right: 1px solid #ddd;
+}

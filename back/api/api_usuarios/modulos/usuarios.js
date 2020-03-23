@@ -43,27 +43,15 @@ module.exports = class Usuarios {
             default:permisos = {Leer:true};break;
         }*/
         let modulos = {};
+        modulos.Pagina = (datos.Pagina == 1)?{Permisos:permisos}:false;
         modulos.Ventas = (datos.Ventas == 1)?{Permisos:permisos}:false;
         modulos.Cobranza = (datos.Cobranza == 1)?{Permisos:permisos}:false;
         modulos.Finanzas = (datos.Finanzas == 1)?{Permisos:permisos}:false;
-        modulos.Pagina = (datos.Pagina == 1)?{Permisos:permisos}:false;
-        modulos.Cotizaciones = (datos.Cotizaciones == 1)?{Permisos:permisos}:false;
+        modulos.Catalogos = (datos.Catalogos == 1)?{Permisos:permisos}:false;
         modulos.Gastos = (datos.Gastos == 1)?{Permisos:permisos}:false;
         modulos.Empleados = (datos.Empleados == 1)?{Permisos:permisos}:false;
         modulos.Usuarios = (datos.Usuarios == 1)?{Permisos:permisos}:false;
-        modulos.Reportes = (datos.Reportes == 1)?{Permisos:permisos}:false;
-        modulos.Catalogos = (datos.Catalogos == 1)?{Permisos:permisos}:false;
-        modulos.Carga = (datos.Carga == 1)?{Permisos:permisos}:false;
-
-//        if(datos.Ventas == 1){modulos.Ventas.push({ permisos })}
- /*       if(datos.Cobranza == 1){modulos.Cobranza = permisos }
-        if(datos.Finanzas == 1){modulos.Finanzas = permisos }
-        if(datos.Cotizaciones == 1){modulos.Cotizaciones = permisos }
-        if(datos.Gastos == 1){modulos.Gastos = permisos }
-        if(datos.Empleados == 1){modulos.Empleados = permisos }
-        if(datos.Usuarios == 1){modulos.Usuarios = permisos }
-        if(datos.Reportes == 1){modulos.Reportes = permisos }
-        if(datos.Carga == 1){modulos.Carga = permisos}*/
+        modulos.AppVentas = (datos.AppVentas == 1)?{Permisos:permisos}:false;
         return modulos;
     }
     Apartar_documento(datos){
@@ -112,8 +100,9 @@ module.exports = class Usuarios {
     Guardar_nuevo_perfil(datos){
         return new Promise((resolve, reject)=>{
             let today =  moment(new Date()).format('YYYY-MM-DD');
-            let campos =  `Nombre_perfil, Fecha_insert, Clientes, Abonos, Mantenimientos, Cotizaciones, Altas, Egresos, Empleados, Nomina, Usuarios, Reportes, Carga`;
-            let valores = `'${datos.Nombre}','${today}',${datos.Clientes},${datos.Abonos},${datos.Mantenimientos},${datos.Cotizaciones},${datos.Altas},${datos.Egresos},${datos.Empleados},${datos.Nomina}, ${datos.Usuarios},${datos.Reportes},${datos.Carga}`;
+            let campos =  `Nombre_perfil,Fecha_insert,Peso,Pagina,Ventas,Cobranza,Finanzas,Catalogos,Gastos,Empleados,Usuarios,AppVentas`;
+            let valores = `'${datos.Nombre}','${today}',${datos.Peso},${datos.Pagina},${datos.Ventas},${datos.Cobranza},${datos.Finanzas},${datos.Catalogos},${datos.Gastos},${datos.Empleados},${datos.Usuarios}, ${datos.AppVentas}`;
+            console.log('qieruy',`INSERT INTO Perfiles (${campos}) VALUES (${valores});`);
             mysql.ejecutar(`INSERT INTO Perfiles (${campos}) VALUES (${valores});`).then((res)=>{
                 return resolve({Procesado: true, Operacion: 'El Perfil fue creado correctamente', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
@@ -145,13 +134,28 @@ module.exports = class Usuarios {
     }
     Actualizar_datos_usuario(datos){
         return new Promise((resolve, reject)=>{            
-            let update = (datos.Nombre || datos.Correo || datos.Password)?`SET`:``;
-            update += (datos.Nombre || datos.Nombre)?` Nombre = '${datos.Nombre}',`:``;
+            let update = ` SET `;
+            update += (datos.Nombre)?` Nombre = '${datos.Nombre}',`:``;
+            update += (datos.Perfil)?` Perfil = '${datos.Perfil}',`:``;
+            update += (datos.IdPerfil)?` IdPerfil = '${datos.IdPerfil}',`:``;
             update += (datos.Correo)?` Correo = '${datos.Correo}',`:``;
             update += (datos.Password)?` Password = '${datos.Password}',`:``;
             update = update.slice(0,-1);
             mysql.ejecutar(`UPDATE Usuarios ${update} WHERE IdUsuario= ${datos.IdUsuario};`).then((res)=>{
                 return resolve({Procesado: true, Operacion: 'Los Datos del usuario fueron actualizados exitosamente ', Tipo: 'success'});
+            }).catch(err => { console.log('err',err); return reject({Data: false, err })});
+        });
+    }
+    Actualizar_datos_empleado(datos){
+        return new Promise((resolve, reject)=>{            
+            let update = ` SET `;
+            update += (datos.Nombre)?` Nombre = '${datos.Nombre}',`:``;
+            update += (datos.Puesto)?` Puesto = '${datos.Puesto}',`:``;
+            update += (datos.Sueldo)?` Sueldo = ${datos.Sueldo},`:``;
+            update += (datos.Correo)?` Correo = '${datos.Correo}',`:``;
+            update = update.slice(0,-1);
+            mysql.ejecutar(`UPDATE Empleados ${update} WHERE IdEmpleado = ${datos.IdEmpleado};`).then((res)=>{
+                return resolve({Procesado: true, Operacion: 'Los Datos del empleado fueron actualizados exitosamente ', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
     }

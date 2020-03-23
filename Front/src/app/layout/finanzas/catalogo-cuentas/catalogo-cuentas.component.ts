@@ -2,6 +2,7 @@ import { Component, OnInit ,Output , EventEmitter , ViewChild} from '@angular/co
 import { routerTransition } from '../../../router.animations';
 import { CatalogosService } from '../../../shared/services/catalogos.service';
 import { VentasService } from '../../../shared/services/ventas.service';
+import { EstadisticasService } from '../../../shared/services/estadisticas.service'
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import swal from 'sweetalert2';
@@ -11,15 +12,15 @@ import * as moment from 'moment';
     templateUrl: './catalogo-cuentas.component.html',
     styleUrls: ['./catalogo-cuentas.component.scss'],
     animations: [routerTransition()],
-    providers: [CatalogosService, VentasService]
+    providers: [CatalogosService, VentasService,EstadisticasService]
 })
 
 export class CatalogoCuentasComponent implements OnInit {
     @ViewChild('datatableCuentas')datatableCuentas;
     cuentasEspeciales;datosCuentasEspeciales;vistaNuevaCuenta;datosOriginalesCuentas;vistaCentro;
-    nombreCuenta;numeroCuenta;saldoCuenta;fInicio;fFin;
+    nombreCuenta;numeroCuenta;saldoCuenta;fInicio;fFin;detalleCuenta;
     @Output() public nuevaOperacion = new EventEmitter();
-    constructor(private catalogosService : CatalogosService, private ventasService: VentasService) {
+    constructor(private catalogosService : CatalogosService, private ventasService: VentasService, private estadisticasService: EstadisticasService) {
         this._obtenerCuentasEspeciales();
         this.vistaNuevaCuenta = false;
         this.saldoCuenta = 0;
@@ -42,28 +43,30 @@ export class CatalogoCuentasComponent implements OnInit {
         }).catch(err=>{console.log('err',err);});
     }
     _movimientosMensuales(datosCuentas){
+        console.log('datoscuentas',datosCuentas);
         if(this.datosCuentasEspeciales[0]){
             this.datosCuentasEspeciales.forEach(de=>{
-                let movimientosCuentas = datosCuentas.filter(dc=>dc.IdCuenta == de.IdCuenta);
                 de.TotalDescuentos = 0;
                 de.TotalIngresos = 0;
-                if(movimientosCuentas[0]){
-                    let Gastos = movimientosCuentas.filter(mc=>mc.Tipo == 'Gastos');
-                    let Ingresos = movimientosCuentas.filter(mc=>mc.Tipo == 'Ingresos');
-                    if(Gastos[0]){
-                        Gastos.forEach(m=>{
-                            de.TotalDescuentos += m.Total;
-                        });
-                    }
-                    if(Ingresos[0]){
-                        Ingresos.forEach(m=>{
-                            de.TotalIngresos += m.Total;
-                        });
-                    }
+                let Gastos = (datosCuentas.DatosGastos)?datosCuentas.DatosGastos.filter(dg=>dg.IdCuenta == de.IdCuenta):[];
+                let Ventas = (datosCuentas.DatosVenta)?datosCuentas.DatosVenta.filter(dv=>dv.IdCuenta == de.IdCuenta):[];
+                console.log('Ventas',Ventas);
+                console.log('Gastos',Gastos);
+                if(Gastos[0]){
+                    Gastos.forEach(m=>{
+                        de.TotalDescuentos += m.Total;
+                    });
+                }
+                if(Ventas[0]){
+                    console.log('ventas',Ventas);
+                    Ventas.forEach(m=>{
+                        de.TotalIngresos += m.Importe;
+                    });
                 }
             });
-            if(datosCuentas[0]){
-            }
+
+            // if(datosCuentas[0]){
+            // }
         }
     }
     ngOnInit() {}
@@ -78,15 +81,14 @@ export class CatalogoCuentasComponent implements OnInit {
             let datosRestantes = res['Data'].filter(da=> da.Activa == 1);
             console.log('dats',datosRestantes);
             this.datosCuentasEspeciales = datosRestantes;
+            console.log('datssss',this.datosCuentasEspeciales);
             this.fInicio = moment().subtract('1','month').format('YYYY-MM-DD');
             this.fFin = moment().format('YYYY-MM-DD');
-            this.ventasService.obtenerMovimientosPeriodo({Fecha_inicio:this.fInicio,Fecha_fin:this.fFin }).then(detallesCuentas=>{
-                console.log('detallesCuentas',detallesCuentas);
-                if(detallesCuentas['Data']){
-                    this._movimientosMensuales(detallesCuentas['Data']);
-                    // detallesCuentas['Data'].forEach(d=>{
-                    // });
-                }
+            this.estadisticasService.obtenerReporteFinanzas({Fecha_inicio:this.fInicio,Fecha_fin:this.fFin }).then(detallesCuentas=>{
+                let datosCuentas = detallesCuentas['Data'];
+                this._movimientosMensuales(datosCuentas);
+                // detallesCuentas['Data'].forEach(d=>{
+                // });
             }).catch(err=>{
                 console.log('er',err);
             });            
@@ -98,17 +100,27 @@ export class CatalogoCuentasComponent implements OnInit {
     }
     obtenerCuentasInactivas(){
         this._limpiarPantallas();
-        this._delay(100).then(res=>{
+        this.catalogosService.obtenerCuentasEspeciales().then(res =>{
             this.vistaCentro = true;
-            console.log('dats',this.datosOriginalesCuentas);
-            let datosRestantes = this.datosOriginalesCuentas.filter(da=> da.Activa == 0);
+            let datosRestantes = res['Data'].filter(da=> da.Activa == 0);
             console.log('dats',datosRestantes);
-            if(!datosRestantes[0]){datosRestantes.push({Resultados: 'No Hay resultados disponibles'});}
-            this.datosCuentasEspeciales = {Opciones: {Activar:true,Eliminar: true} ,Datos:datosRestantes};
-            if(this.datatableCuentas != null){
-                this.datatableCuentas._reiniciarRegistros(this.datosCuentasEspeciales);
-            }
-        });
+            this.datosCuentasEspeciales = datosRestantes;
+            console.log('datssss',this.datosCuentasEspeciales);
+            this.fInicio = moment().subtract('1','month').format('YYYY-MM-DD');
+            this.fFin = moment().format('YYYY-MM-DD');
+            this.estadisticasService.obtenerReporteFinanzas({Fecha_inicio:this.fInicio,Fecha_fin:this.fFin }).then(detallesCuentas=>{
+                let datosCuentas = detallesCuentas['Data'];
+                this._movimientosMensuales(datosCuentas);
+                // detallesCuentas['Data'].forEach(d=>{
+                // });
+            }).catch(err=>{
+                console.log('er',err);
+            });            
+            // this.datosCuentasEspeciales = {Opciones: {Desactivar: true, Editar:true} ,Datos:datosRestantes};
+            // if(this.datatableCuentas != null){
+            //     this.datatableCuentas._reiniciarRegistros(this.datosCuentasEspeciales);
+            // }                        
+        }).catch(err=>{console.log('err',err);});
     }
     nuevaCuenta(){
         this._limpiarPantallas();
@@ -127,6 +139,15 @@ export class CatalogoCuentasComponent implements OnInit {
             this._obtenerCuentasEspeciales();
             this.obtenerCuentasActivas();
         }).catch(err=>{console.log('err',err);});
+    }
+    actualizarCuentaEspecial(){
+        if(this.detalleCuenta){
+            this.catalogosService.actualizarCuentaEspecial(this.detalleCuenta).then(res=>{
+                this._obtenerCuentasEspeciales();
+                this.obtenerCuentasActivas();
+                this.detalleCuenta = false;
+            }).catch(err=>{console.log('err',err);});
+        }
     }
     desactivarCuentaEspecial(obj){
         let datos_update = {Activa: '0', IdCuenta: obj.IdCuenta};

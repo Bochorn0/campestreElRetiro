@@ -20,9 +20,6 @@ module.exports = class Catalogos {
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
     }
-    obtener_movimientos_periodo(){
-
-    }
     Guardar_nuevo_ingreso(datos){
         return new Promise((resolve, reject)=>{
         //this.Obtener_folio_venta().then(fol=>{

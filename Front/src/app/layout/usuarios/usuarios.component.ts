@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { routerTransition } from '../../router.animations';
 import { CatalogosService } from '../../shared/services/catalogos.service';
-import { UsuariosService } from '../../shared/services/usuarios.service'
+import { UsuariosService } from '../../shared/services/usuarios.service';
+import { VentasService } from '../../shared/services/ventas.service';
+import {NgbActiveModal,NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import swal from 'sweetalert2';
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
@@ -12,28 +14,41 @@ var moment = require('moment');
     templateUrl: './usuarios.component.html',
     styleUrls: ['./usuarios.component.scss'],
     animations: [routerTransition()],
-    providers: [CatalogosService, UsuariosService]
+    providers: [CatalogosService, UsuariosService,VentasService]
 })
 export class UsuariosComponent implements OnInit {
     vistaCentro;catalogoPuestos;catalogoEmpleados;altaNuevoUsuario;datosUsuarios;datosPuestos;altaNuevoPuesto;Todos;
     //Formulario Usuarios
     uNombre;uCorreo;uPassword;uIdPerfil;sugerenciasEmpleados;visualizarSugerencias;
-    panelVisualizar;
+    panelVisualizar;usuarioActivo;objCorreoEnviar;
     //Formulario Puestos
-    pNombre;
-    Clientes;Abonos;Mantenimientos;Cotizaciones;Altas;Egresos;Empleados;Nomina;Usuarios;Reportes;Carga;
-    datosEmpleado;nombresEmpleados;
-    constructor(private catalogosService:CatalogosService, private usuariosService:UsuariosService) {
+    pNombre;activeModal;
+    Pagina;Ventas;Cobranza;Finanzas;Catalogos;Gastos;Empleados;Usuarios;AppVentas;
+    datosEmpleado;nombresEmpleados;usuarioEditar;
+
+    //EMPLEADOS
+    empladosActivos;altaEmpleado;mostrarNomina;
+    catalogoUsuarios;catalogoTerrenos;
+    totalNomina;nominaCalculada;horasLaboradas;comision;sueldoEmpleado;
+    bonos;descuentos;
+    //Alta nuevo empleado
+    nombre;fNacimiento;correo;sueldo;puesto;
+    empleadoEditar;
+    //Alta Nuevo Puesto
+
+    constructor(private catalogosService:CatalogosService, private usuariosService:UsuariosService, private ventasService:VentasService, private modalService: NgbModal) {
         this.panelVisualizar = '';
         this._catalogoPuestos();
         this._catalogoEmpleados();
         this.uIdPerfil = 0;
-        this.Clientes=this.Abonos=this.Mantenimientos=this.Cotizaciones=this.Altas=this.Egresos=this.Empleados=this.Nomina=this.Usuarios=this.Reportes=this.Carga=false;
-    }
-    _catalogoPuestos(){
-        this.catalogosService.obtenerPuestos().then(res=>{
-            this.catalogoPuestos =  res['Data'];
-        });
+        this.usuarioEditar = false;
+        this.Pagina=this.Ventas=this.Cobranza=this.Finanzas=this.Catalogos=this.Gastos=this.Empleados=this.Usuarios=this.AppVentas=false;
+
+        this._catalogoUsuarios();
+        this._catalogoTerrenos();
+        this.puesto = 0;
+        this.totalNomina  = this.horasLaboradas = this.comision = this.bonos = this.descuentos = 0;       
+        this.panelVisualizar = 'Ayuda';
     }
     _catalogoEmpleados(){
         this.catalogosService.obtenerEmpleados().then(res=>{
@@ -48,15 +63,6 @@ export class UsuariosComponent implements OnInit {
       text$.pipe( debounceTime(200), distinctUntilChanged(),
         map(term => term === ''?[]:this.nombresEmpleados.filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
     );
-    seleccionarEmpleado(selected,t){
-        this.datosEmpleado =  this.catalogoEmpleados.filter(ob=>ob.Nombre == selected.item.toString())[0];
-        this.visualizarSugerencias =  false;
-        this.sugerenciasEmpleados = false;
-        this.uNombre = this.datosEmpleado.Nombre;
-        this.uCorreo = this.datosEmpleado.Correo;
-        this.uPassword = this._randomPassword(12);
-    }
-    ngOnInit() {}
 
     //Usuario nuevo
     nuevoUsuario(){
@@ -66,12 +72,32 @@ export class UsuariosComponent implements OnInit {
             this.vistaCentro= true;
         });
     }
+    enviarAccesosModal(content){   
+        this.objCorreoEnviar = {
+            Para: `${this.usuarioActivo.Correo}`,
+            Mensaje:`Hola, Este correo es de parte de Campestre el Retiro para hacerte llegar tus accesos para el portal \n Entra en www.admin.campestreelretiro.com/login \n  E introduce los siguientes datos :   Usuario: "${this.usuarioActivo.Correo}" \n Password: "${this.usuarioActivo.Password}" `,
+            Asunto: `Accesos usuario`,
+            Adjunto: ''
+        };
+        this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
+    }
+    enviarCorreoAccesos(){
+        console.log('info',this.objCorreoEnviar);
+        if(this.objCorreoEnviar){
+            this.catalogosService.enviarCorreoCotizacion(this.objCorreoEnviar).then(res=>{
+                this.activeModal.dismiss();
+                this.obtenerUsuarios();
+            }).catch(err=>{console.log('err',err);})
+        }
+    }
     //Catalogo de usuarios
     obtenerUsuarios(){
         this._limpiarVariables();
         this.catalogosService.obtenerUsuarios().then(res =>{
-            let datosUsuarios = this._ordenarUsuarios(res['Data']);
-            this.datosUsuarios = datosUsuarios;
+            // let datosUsuarios = this._ordenarUsuarios(res['Data']);
+            // this.datosUsuarios = datosUsuarios;
+            this.datosUsuarios = res['Data'];
+            console.log('datosUsuarios',this.datosUsuarios);
 //            this.datosUsuarios = { Opciones:{Eliminar:true,Editar:true}, Datos:datosUsuarios};
 //            this.datosUsuarios = { Opciones:{Eliminar:true,Editar:true}, Columnas : ["Nombre", "Correo", "Fecha_creacion", "Password"] ,Datos:res['Data']};
             this.vistaCentro=true;
@@ -94,6 +120,11 @@ export class UsuariosComponent implements OnInit {
             });
         });
         return datosOrdenados;
+    }
+    guardarCambiosPerfiles(){
+        this.catalogosService.guardarCambiosPuestos(this.datosPuestos).then(res=>{
+            this.obtenerPuestos();
+        }).catch(err=>{console.log('err',err);});
     }
     editarUsuario(obj){
         console.log('obj',obj);
@@ -138,16 +169,40 @@ export class UsuariosComponent implements OnInit {
                 this.obtenerUsuarios();
         }).catch(err=>{console.log('err',err);});
     }
+    actualizarUsuario(){
+        let perf = this.catalogoPuestos.find(cp=>cp.IdPerfil == this.usuarioEditar.IdPerfil);
+        if(perf){
+            this.usuarioEditar.Nombre_perfil = perf.Nombre_perfil;
+        }
+        this.usuariosService.actualizarDatosUsuario(this.usuarioEditar).then(res=>{
+                this.obtenerUsuarios();
+                this._limpiarVariables();
+            }).catch(err=>{console.log('err',err);});
+    }
+    actualizarEmpleado(){
+        this.usuariosService.actualizarDatosEmpleado(this.empleadoEditar).then(res=>{
+                this.mostrarEmpleados({});
+                this._limpiarVariables();
+            }).catch(err=>{console.log('err',err);});
+    }
     //Guardar Perfil
     guardarNuevoPerfil(){
         let Datos = { Nombre: this.pNombre,
-            Clientes:this.Clientes,Abonos:this.Abonos,Mantenimientos:this.Mantenimientos,
-            Cotizaciones:this.Cotizaciones,Altas:this.Altas,Egresos:this.Egresos,Empleados:this.Empleados,
-            Nomina:this.Nomina,Usuarios:this.Usuarios,Reportes:this.Reportes,Carga:this.Carga
+            Peso: 10,
+            Pagina:this.Pagina,
+            Ventas:this.Ventas,
+            Cobranza:this.Cobranza,
+            Finanzas:this.Finanzas,
+            Catalogos:this.Catalogos,
+            Gastos:this.Gastos,
+            Empleados:this.Empleados,
+            Usuarios:this.Usuarios,
+            AppVentas:this.AppVentas
          };
             this.usuariosService.guardarNuevoPerfil(Datos).then(res =>{
                 let tipo = res['Tipo'];
                 swal('Exito', `${res['Operacion']}`, tipo);
+                this._limpiarVariables();
                 this.obtenerPuestos();
         }).catch(err=>{console.log('err',err);});
     }
@@ -208,13 +263,129 @@ export class UsuariosComponent implements OnInit {
         return pass;
     }
     seleccionarTodos(){
-        this.Clientes=this.Abonos=this.Mantenimientos=this.Cotizaciones=this.Altas=this.Egresos=this.Empleados=this.Nomina=this.Usuarios=this.Reportes=this.Carga=true;
+        //this.Clientes=this.Abonos=this.Mantenimientos=this.Cotizaciones=this.Altas=this.Egresos=this.Empleados=this.Nomina=this.Usuarios=this.Reportes=this.Carga=true;
+        this.Pagina=this.Ventas=this.Cobranza=this.Finanzas=this.Catalogos=this.Gastos=this.Empleados=this.Usuarios=this.AppVentas=true;
+    }
+
+    _catalogoTerrenos(){
+        this.catalogosService.obtenerTerrenos().then(res=>{
+            console.log('res',res);
+            this.catalogoTerrenos =  res['Data'];
+        });        
+    }
+    _catalogoUsuarios(){
+        this.catalogosService.obtenerUsuarios().then(res=>{
+            console.log('res',res);
+            this.catalogoUsuarios =  res['Data'];
+        });
+    }
+    _catalogoPuestos(){ 
+        this.catalogosService.obtenerPuestos().then(res=>{
+            this.catalogoPuestos =  res['Data'];
+        });
+    }
+    ngOnInit() {}
+    mostrarEmpleados(event){
+        this._limpiarVariables();
+        this.catalogosService.obtenerEmpleados().then(res =>{
+            this.vistaCentro = true;
+            this.empladosActivos = res['Data'];
+            this.panelVisualizar = 'Empleados';
+            //this.empladosActivos =  { Datos : res['Data']};
+        }).catch(err=>{this._limpiarVariables();});
+    }
+    nuevoEmpleado(){
+        this._limpiarVariables();
+        this._delay(100).then(res=>{
+            this.altaEmpleado =  (this.altaEmpleado)?false:true;
+            this.vistaCentro= true;
+        })
+    }
+    guardarEmpleadoNuevo(){
+        let Datos = {Nombre:this.nombre, Fecha_nacimiento:this.fNacimiento, Correo: this.correo,
+        Sueldo: this.sueldo, Puesto:this.puesto };
+        this.catalogosService.guardarNuevoEmpleado(Datos).then(res =>{
+            let tipo = res['Tipo'];
+            swal('Exito', `${res['Operacion']}`, tipo);
+            this.mostrarEmpleados(true);
+        }).catch(err=>{console.log('err',err);});
+    }
+    mostrarCalcularNomina(evento){
+        this._limpiarVariables();
+        this._delay(100).then(res=>{
+            this.mostrarNomina = true;
+            this.vistaCentro= true;
+        })
+    }
+    seleccionarEmpleado(selected,t){
+        this.datosEmpleado =  this.catalogoEmpleados.filter(ob=>ob.Nombre == selected.item.toString())[0];
+        this.datosEmpleado.DatosUsuario = this.catalogoUsuarios.filter(ob=>ob.IdEmpleado == this.datosEmpleado.IdEmpleado);
+        this.sueldoEmpleado = this.datosEmpleado.Sueldo;
+        console.log('datos empleado',this.datosEmpleado);
+        this.visualizarSugerencias =  false;
+        this.sugerenciasEmpleados = false;
+        this.uNombre = this.datosEmpleado.Nombre;
+        this.uCorreo = this.datosEmpleado.Correo;
+        this.uPassword = this._randomPassword(12);
+        if(this.datosEmpleado.DatosUsuario[0]){
+            this.ventasService.obtenerVentasPorEmpleado(this.datosEmpleado.DatosUsuario[0]).then(res=>{
+
+                res['Datos'].forEach(re=>{
+                    re.DatosTerreno = this.catalogoTerrenos.find(ct=>ct.IdTerreno ==  re.IdTerreno);
+                    console.log('re',re);
+                });
+                this.datosEmpleado.Ventas = res['Datos'];
+                this.datosEmpleado.Cobros = res['Datos'];
+            }).catch(err=>{console.log('err',err);});
+        }else{
+            this.datosEmpleado.Ventas = [];
+        }
+        this.horasLaboradas = 40;
+    }
+    calcularNominaEmpleado(){
+        let comisionesMonto = 0;
+        if(this.datosEmpleado.Ventas[0]){
+            let comisiones = this.datosEmpleado.Ventas.map((key)=>{
+                return {Importe: key.Importe, Comision: key.Comision, Monto: (key.Importe* (key.Comision/100))};
+            });
+            comisiones.forEach(c=>{
+                comisionesMonto += c.Monto
+            });
+        }
+        this.datosEmpleado.Sueldo = this.sueldoEmpleado;
+        this.datosEmpleado.Horas =  this.horasLaboradas;
+        this.datosEmpleado.Comisiones = comisionesMonto;
+        this.datosEmpleado.Bonos = this.bonos;
+        this.datosEmpleado.Descuentos = this.descuentos;
+        this.datosEmpleado.Descuentos_totales = this.descuentos;
+        if(this.horasLaboradas < 40){
+            let descontado_sueldo = (((40-this.horasLaboradas)*this.sueldoEmpleado)/40);
+            console.log('des',descontado_sueldo);
+            this.datosEmpleado.Descuentos_totales += descontado_sueldo;
+        }
+        this.totalNomina = ((this.horasLaboradas*this.sueldoEmpleado)/40)+comisionesMonto+this.bonos-this.descuentos;
+        this.datosEmpleado.Total = this.totalNomina;
+        this.nominaCalculada = true;
+    }
+    guardarNomina(){
+        let usuario = JSON.parse(localStorage.getItem('Datos'));
+        let datosNomina = {Usuario: usuario, Nomina: this.datosEmpleado};
+        this.catalogosService.guardarNominaEmpleado(datosNomina).then(res=>{
+            let tipo = res['Tipo'];
+            swal('Exito', `${res['Operacion']}`, tipo);
+            this._limpiarVariables();
+        }).catch(err=>{console.log('err',err);});
     }
     _limpiarVariables(){
-        this.vistaCentro = false;
-        this.vistaCentro = this.datosPuestos = this.datosUsuarios  = this.altaNuevoPuesto = this.altaNuevoUsuario = false;
-        this.panelVisualizar='';
-    }
+    this.mostrarNomina = this.vistaCentro  =  this.altaEmpleado = this.empladosActivos = this.fNacimiento  = this.nominaCalculada = false;
+    this.correo =  this.nombre = '';
+    this.panelVisualizar = '';
+    this.puesto = this.sueldo = 0;
+    this.datosEmpleado = this.sueldoEmpleado = this.descuentos = this.bonos = this.horasLaboradas = 0 ;
+    this.empleadoEditar = this.usuarioEditar = this.vistaCentro = false;
+    this.vistaCentro = this.datosPuestos = this.datosUsuarios  = this.altaNuevoPuesto = this.altaNuevoUsuario = false;
+    this.panelVisualizar='';
+    }    
     _delay(ms){
         return new Promise( resolve => setTimeout(resolve, ms) );
     }

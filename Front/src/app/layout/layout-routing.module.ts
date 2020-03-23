@@ -19,12 +19,12 @@ const routes: Routes = [
             { path: 'Pagina', loadChildren: './Pagina/Pagina.module#PaginaModule' },
             //{ path: 'Cuentas', loadChildren: './catalogo-cuentas/catalogo-cuentas.module#CatalogoCuentasModule' },            
             //{ path: 'Contratos', loadChildren: './contratos/contratos.module#ContratosModule' },
-            { path: 'Empleados', loadChildren: './empleados/empleados.module#EmpleadosModule' },
+            // { path: 'Empleados', loadChildren: './empleados/empleados.module#EmpleadosModule' },
             //{ path: 'ControlDocumentos', loadChildren: './documentos/documentos.module#DocumentosModule' },
             { path: 'Usuarios', loadChildren: './usuarios/usuarios.module#UsuariosModule' },
             { path: 'Catalogos', loadChildren: './catalogos/catalogos.module#CatalogosModule' },
-            { path: 'Reportes', loadChildren: './reportes/reportes.module#ReportesModule' },
-            { path: 'Carga', loadChildren: './carga/carga.module#CargaModule' }
+            // { path: 'Reportes', loadChildren: './reportes/reportes.module#ReportesModule' },
+            // { path: 'Carga', loadChildren: './carga/carga.module#CargaModule' }
         ]
     }
 ];

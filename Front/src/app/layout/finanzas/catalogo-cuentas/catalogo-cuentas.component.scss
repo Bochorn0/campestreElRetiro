@@ -26,9 +26,6 @@ div#sugerencias {
     border: 1px solid #ddd;
     padding: 20px;
 }
-.card-header{
-    color: #fff !important;
-}
 .example-form {
     min-width: 150px;
     max-width: 500px;
@@ -37,4 +34,23 @@ div#sugerencias {
   
 .example-full-width {
     width: 100%;
+}
+
+.tarjeta{
+    margin: 10px;
+}
+.rounded-circle{
+    border: 5px solid #ddd;
+    width: 70px;
+    margin: 0 auto;
+    padding: 15px;
+    height: 70px;
+}
+.tarjeta-perfil{
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+}
+.br-{
+    border-right: 1px solid #ddd;
 }
