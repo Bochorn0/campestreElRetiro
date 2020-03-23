@@ -39,9 +39,28 @@ export class PaginaComponent implements OnInit {
             console.log('err',err);
         });
     }
-    guardarCambiosInicio(){ 
+    obtenerContenidoOriginal(tipo){
+      this.websiteService.obtenerSeccionesPagina().then(res=>{
+        let result = JSON.parse(JSON.stringify(res));
+        if(result[0]){
+            console.log('result',result);
+            if(tipo == 'Inicio'){
+              this.websiteContent.Inicio = result.find(r=>r.Seccion == 'Inicio').Contenido;
+            }else if(tipo == 'Sobre'){
+              this.websiteContent.Sobre = result.find(r=>r.Seccion == 'Sobre').Contenido;
+            }else if(tipo == 'Noticias'){
+              this.websiteContent.Noticias = result.find(r=>r.Seccion == 'Noticias').Contenido;
+            }else if(tipo == 'Contacto'){
+              this.websiteContent.Contacto = result.find(r=>r.Seccion == 'Contacto').Contenido;  
+            }
+        }
+    }).catch(err=>{
+        console.log('err',err);
+    });
+    }
+    guardarCambiosPagina(pagina){ 
       let guardar = `CONTENIDO NUEVO`;
-      let datosModificar = {Tipo: 'Inicio',Contenido:guardar};
+      let datosModificar = {Tipo:pagina,Contenido:guardar};
       this.websiteService.guardarModificacionesWebsite(datosModificar).then(res=>{
         let result = JSON.parse(JSON.stringify(res));
         if(result[0]){
