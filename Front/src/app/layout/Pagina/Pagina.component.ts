@@ -40,7 +40,7 @@ export class PaginaComponent implements OnInit {
         });
     }
     obtenerContenidoOriginal(tipo){
-      this.websiteService.obtenerSeccionesPagina().then(res=>{
+      this.websiteService.obtenerCondenidoOriginal().then(res=>{
         let result = JSON.parse(JSON.stringify(res));
         if(result[0]){
             console.log('result',result);
@@ -59,13 +59,23 @@ export class PaginaComponent implements OnInit {
     });
     }
     guardarCambiosPagina(pagina){ 
-      let guardar = `CONTENIDO NUEVO`;
-      let datosModificar = {Tipo:pagina,Contenido:guardar};
+      let contenido = '';
+      if(pagina == 'Inicio'){
+        contenido = this.websiteContent.Inicio ;
+      }else if(pagina == 'Sobre'){
+        contenido = this.websiteContent.Sobre ;
+      }else if(pagina == 'Noticias'){
+        contenido = this.websiteContent.Noticias;
+      }else if(pagina == 'Contacto'){
+        contenido = this.websiteContent.Contacto;
+      }
+      let datosModificar = {Tipo:pagina,Contenido:contenido};
       this.websiteService.guardarModificacionesWebsite(datosModificar).then(res=>{
         let result = JSON.parse(JSON.stringify(res));
         if(result[0]){
             console.log('result',result);
         }
+        this.obtenerContenidosSecciones();
       }).catch(err=>{
           console.log('err',err);
       });

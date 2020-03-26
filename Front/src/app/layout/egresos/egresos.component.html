@@ -15,7 +15,7 @@
         </div>
         <div class="col-6 col-lg-3">
             <div class="form-group">
-                <button (click)="obtenerPlantillaGastos();" class="btn bg-secondary menu w-100 text-white"><i class="fa fa-cloud-download"></i> | Formato Gastos</button>
+                <button (click)="generarFormatoEgresos();" class="btn bg-secondary menu w-100 text-white"><i class="fa fa-cloud-download"></i> | Formato Gastos</button>
             </div>
         </div>
         <div class="col-6 col-lg-3">
@@ -208,7 +208,7 @@
                                     <input type="date" [(ngModel)]="fFin" (change)="filtrarGastosPorTipo();" class="form-control" >
                                 </div>
                             </div>
-                            <div class="card-body" id="pageGastos" *ngIf="gastosPorCategoria[0]">
+                            <div class="col-12"  id="pageGastos" *ngIf="gastosPorCategoria[0]">
                                 <div class="row " *ngFor="let s of gastosPorCategoria  | paginate: { itemsPerPage: 3, currentPage: pageGastos , id:'GastosId' }" class="borderPad">
                                     <div class="col-12" style="overflow:auto;" *ngIf="s.Gastos[0]">
                                         <h3>
@@ -218,8 +218,11 @@
                                             <tr style="background-color:#ddd;" ><th>Categoria</th><th>Folio</th><th>Fecha</th><th>Concepto</th><th>Importe</th></tr>
                                             <tr *ngFor="let ss of s.Gastos | paginate: { itemsPerPage: 5, currentPage: s.Pagina , id:s.Pagina }" >
                                                 <td>
-                                                    <i class="fa fa-address-book rounded-circle2 tarjeta-perfil"></i>
-                                                    {{ss.Subcategoria}}
+                                                    <div class="subcategoria">
+                                                        <!-- rounded-circle2 tarjeta-perfil -->
+                                                        <i class="fa fa-address-book "></i>
+                                                        {{ss.Subcategoria}}
+                                                    </div>
                                                 </td>
                                                 <td>{{ss.Folio}}</td>
                                                 <td>{{ss.Fecha.split('T').join(' ').split('.')[0]}}</td>
@@ -228,12 +231,12 @@
                                             </tr>
                                         </table>
                                     </div>
-                                    <div class=" col-12 text-center">
+                                    <div class=" col-12 text-right">
                                         <pagination-controls (pageChange)="s.Pagina = $event" id="{{s.Pagina}}"></pagination-controls>
                                     </div>
                                 </div>
                             </div>
-                            <div class=" col-12 text-right">
+                            <div class=" col-12 text-center">
                                 <br>
                                 <pagination-controls (pageChange)="pageGastos = $event" id="GastosId"></pagination-controls>
                             </div>

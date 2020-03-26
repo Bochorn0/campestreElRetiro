@@ -20,6 +20,14 @@ router.post('/obtenerContenidoSitioWeb', (req, res) => {
         res.status(400).send(error);
     })
 });
+router.post('/obtenerCondenidoOriginal', (req, res) => {
+    let objWebsite = new Website();
+    objWebsite.obtener_contenido_original_website(req.body).then((result) => {
+        res.status(200).send(result);
+    }).catch((error) => {
+        res.status(400).send(error);
+    })
+});
 router.post('/guardarModificacionesWeb', (req, res) => {
     let objWebsite = new Website();
     objWebsite.modificar_archivos_website(req.body).then((result) => {

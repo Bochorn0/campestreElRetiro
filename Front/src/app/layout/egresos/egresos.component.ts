@@ -4,6 +4,8 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { ContabilidadService } from '../../shared/services/contabilidad.service';
 import { CatalogosService } from '../../shared/services/catalogos.service';
 import {Observable} from 'rxjs';
+import * as XLSX from  'xlsx';
+import * as FileSaver from 'file-saver';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import swal from 'sweetalert2';
 import * as moment from 'moment';
@@ -68,6 +70,7 @@ export class EgresosComponent implements OnInit {
             });
             this.formaDePago =  nombresCuentas;*/
             this.formaDePago = datos;
+            console.log('formas',this.formaDePago);
         }).catch(err=>{console.log('err',err);});
     }
     _obtenerCatalogoGastos(){
@@ -424,6 +427,32 @@ export class EgresosComponent implements OnInit {
         }).catch(err=>{
             console.log('error al obtener plantilla', err);
         })
+    }
+    
+    generarFormatoEgresos(){
+        let datosGenerales = [];
+        datosGenerales.push(['Fecha','Cuenta','Categoría','Subcategorías','Descripción','USD','Ingreso/Gasto','Nota']);
+        datosGenerales.push(['2019/11/01','Efectivo','publicidad','empresa','Carlos Ramos','6000','Gasto','NOTA PRUEBA']);
+        let worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(datosGenerales);
+        let workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+        let excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        let datas: Blob = new Blob([excelBuffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'});
+        FileSaver.saveAs(datas, 'Formato_basico_comprador_marca_proveedor.xlsx');
+
+        // let nombre = "Plantilla_gastos_";
+        // let dwldLink = document.createElement("a");
+        // let url = 'data:application/vnd.ms-excel;base64,' + data;
+        // let isSafariBrowser = navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1;
+        // if (isSafariBrowser) {
+        //     dwldLink.setAttribute("target", "_blank");
+        // }
+        // dwldLink.setAttribute("href", url);
+        // dwldLink.setAttribute("download", `${nombre}${new Date().toLocaleDateString()}.xlsx`);
+        // dwldLink.style.visibility = "hidden";
+        // document.body.appendChild(dwldLink);
+        // dwldLink.click();
+        // document.body.removeChild(dwldLink);
+        
     }
     descargarPlantilla(data, nombre = "Plantilla_gastos_") {
         let dwldLink = document.createElement("a");

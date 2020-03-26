@@ -27,7 +27,7 @@ module.exports = class Gastos {
                     let compExt = `${datos.Adjunto.split(',')[0].split(';')[0].split('/')[1]}`;
                     let cont = new Buffer(datos.Adjunto.split(',')[1], "base64");
                     let path = `./shared/uploads/Gastos/`;
-                    let nomb =  `Gasto_${moment().format('YYYY-MM-DD')}.${compExt}`; 
+                    let nomb =  `Gasto_${moment().format('YYYY-MM-DD_HH-mm-ss')}.${compExt}`; 
                     return this._subirArchivo(path,nomb,cont,2097152);
                 }else{
                     return Promise.resolve(0);
@@ -38,8 +38,54 @@ module.exports = class Gastos {
                 let valores = `'${(datos.folioGasto)?datos.folioGasto:'GAS'}','${datos.FormaPago}',${datos.IdCuenta}, ${datos.Usuario.Datos.IdUsuario},'${datos.Responsable}','${(datos.Concepto)?datos.Concepto:'-'}','${(datos.Nota)?datos.Nota:'-'}','${(datos.Tipo)?datos.Tipo:'01'}',${datos.Total},'${datos.Categoria}','${datos.Subcategoria}',${datos.Archivo},'${(datos.Fecha_gasto)?`${datos.Fecha_gasto}`:`${moment().format('YYYY-MM-DD')}`}','${moment().format('YYYY-MM-DD HH:mm:ss')}'`;
                 return mysql.ejecutar(`INSERT INTO Gastos (${campos}) VALUES (${valores});`);
             }).then(result=>{
+                let movimientos = [{Tipo : 'Egreso', Total: datos.Total}];
+                return this._movimientoFinancieroEnCuentas(datos,movimientos ,datos.Usuario);
+            }).then(resu=>{
                 return resolve({Insertado: true});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
+        });
+    }
+    _movimientoFinancieroEnCuentas(cuenta, movimientos ,Usuario){
+        console.log('cuenta',cuenta);
+        console.log('movimientos',movimientos);
+        console.log('Usuario',Usuario);
+        let saldoOriginal; let saldoFinal;
+        return new Promise((resolve, reject)=>{
+            if(!cuenta.IdCuenta || !movimientos[0]){
+                return reject({errorMessage: 'Debes Introducir al menos un moviminto y los datos de la cuenta para continuar'});
+            }
+            console.log('queruy',`SELECT * FROM Cuentas_especiales WHERE IdCuenta = ${cuenta.IdCuenta};`);
+            return mysql.ejecutar(`SELECT * FROM Cuentas_especiales WHERE IdCuenta = ${cuenta.IdCuenta};`).then(datosC=>{
+                console.log('datosc',datosC);
+                saldoFinal = saldoOriginal = 0;
+                if(datosC[0] && movimientos[0]){
+                    saldoFinal = saldoOriginal = datosC[0].Saldo;
+                    movimientos.forEach(m=>{
+                        if(m.Tipo == 'Ingreso'){
+                            saldoFinal += m.Total;
+                        }else if(m.Tipo == 'Egreso'){
+                            saldoFinal -= m.Total
+                        }
+                    });
+                    return mysql.ejecutar(`Update Cuentas_especiales SET Saldo = ${saldoFinal} WHERE IdCuenta = ${cuenta.IdCuenta};`);
+                }else{
+                    return Promise.resolve({});
+                }
+            }).then(datosFin=>{
+                console.log('datosFin',datosFin);
+                if(saldoOriginal != saldoFinal){
+                    let campos = `IdCuenta, Movimiento,Fecha_insert,IdUsuario,NombreUsuario,Saldo_inicial,Saldo_final`;
+                    let valores = `${cuenta.IdCuenta},'Saldo Modificado de ${saldoOriginal} a ${saldoFinal} ','${moment().format('YYYY-MM-DD HH:mm:ss')}','${Usuario.Datos.IdUsuario}','${Usuario.Datos.Nombre}',${saldoOriginal},${saldoFinal} `;
+                    return mysql.ejecutar(`INSERT INTO Bitacora_cuentas_especiales(${campos}) VALUES (${valores});`);
+                }else{
+                    return Promise.resolve({});
+                }
+            }).then(datosFin=>{
+                return resolve({Procesado:true});
+            }).catch(err=>{
+                console.log('err',err);
+                return reject({errorMessage: 'Ocurrio un error al modificar los datos de la cuenta'},err);
+            });
         });
     }
     _subirArchivo(path,nombre,datos,maxSize=false, encode=false){
