@@ -1,0 +1,172 @@
+<div class="col-lg-12">
+    <div class="row" *ngIf="vistaCentro">
+        <div class="col-12">
+            <div class="form-group">
+                <button (click)="nuevaCuenta();" class="btn btn-success pull-right"><i class="fa fa-plus-circle"></i> | Nueva Cuenta</button>
+            </div>
+        </div>
+        <div class="col-xl-12 col-lg-12 col-xs-12">
+            <div class="card mb-3">
+                <div class="card-header bg-warning" >
+                    Cuentas Especiales
+                </div>
+                <div class="card-body">            
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <label class="switch">
+                                <input type="checkbox" [(ngModel)]="todasCuentas" (change)="obtenerCuentasActivas();" />
+                                <span class="slider round"></span>
+                            </label>        
+                            <b style="margin-top:2px;">
+                                Ver Todas las cuentas
+                            </b>
+                            
+                        </div>
+
+                        <!-- <div class="col-12 col-lg-4">
+                            <div class="form-group">
+                                <button (click)="obtenerCuentasActivas();" class="btn btn-primary w-100"><i clas="fa fa-address-card"></i> Cuentas Activas</button>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <div class="form-group">
+                                <button (click)="obtenerCuentasInactivas();" class="btn btn-danger w-100"><i clas="fa fa-credit-card"></i>  Cuentas Inactivas</button>
+                            </div>
+                        </div> -->
+                    </div>                    
+                    <div class="row" *ngIf="datosCuentasEspeciales && !detalleCuenta">
+                    <!-- <div class="col-xl-12 col-lg-12 col-xs-12">
+                        <div class="card mb-3">
+                            <div class="card-header bg-secondary" >
+                                Cuentas Especiales
+                            </div>
+                            <div class="card-body">
+                                <div class="row" *ngIf="datosCuentasEspeciales">
+                                    <div class="col-lg-12">
+                                        <app-datatables-general #datatableCuentas *ngIf="this.datosCuentasEspeciales" [datosDatatable]="datosCuentasEspeciales" (deactivate)="desactivarCuentaEspecial($event);" (edit)="editarElemento($event);" (activate)="activarCuentaEspecial($event);" (delete)="borrarCuentaEspecial($event);" ></app-datatables-general>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> -->
+                        <div class="col-12 col-lg-4" *ngFor="let c  of datosCuentasEspeciales">
+                            <a style="cursor: pointer;" (click)="detalleCuenta = c;">
+                                <div class="card b text-center" style="margin:10px;">
+                                    <div class="card-body" style="border:1px solid #ddd">
+                                        <div class="mb-2 img-fluid rounded-circle {{(c.Activa == 1)?'activ':'activ2'}} thumb64" > 
+                                            <i class="fa fa-bank fa-2x"></i>
+                                        </div>
+                                        <p class="h4 text-bold mb-0">{{c.Nombre}}</p>
+                                        <p>{{c.Numero}}</p>
+                                        <!-- <p>{{c.Saldo}}</p> -->
+                                    </div>
+                                    <div class="card-body" style="border: 1px solid #ddd;">
+                                        <div class="row">
+                                            <div class="col-4 br-" title="Descuentos Realizados desde {{fInicio}} a  {{fFin}}">
+                                                <em class="fa fa-minus-circle fa-fw text-danger"></em><br>
+                                                <strong> ${{c.TotalDescuentos}}</strong>
+                                            </div>
+                                            <div class="col-4 br-" title="Saldo Actual de la cuenta">
+                                                <em class="fa fa-money fa-fw text-info"></em><br>
+                                                <strong> ${{c.Saldo}}</strong>
+                                            </div>
+                                            <div class="col-4"  title="Ingresos Realizados desde {{fInicio}} a  {{fFin}}">
+                                                <em class="fa fa-plus-circle fa-fw text-primary"></em><br>
+                                                <strong> ${{c.TotalIngresos}}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- DETALLE CUENTA -->
+                    <div class="row" *ngIf="detalleCuenta">
+                        <div class="col-12" >
+                            <div class="card text-center ">
+                                <div class="card-header bg-default" >
+                                    Detalles Cuenta {{detalleCuenta.Nombre}}
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="label-form">Nombre</label>
+                                                <input type="text" class="form-control" [(ngModel)]="detalleCuenta.Nombre" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="label-form">Numero Cuenta</label>
+                                                <input type="text" class="form-control" [(ngModel)]="detalleCuenta.Numero" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="label-form">Saldo</label>
+                                                <input type="number" class="form-control" [(ngModel)]="detalleCuenta.Saldo" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="label-form">Activa</label><br>
+                                                <label class="switch">
+                                                    <input type="checkbox" [(ngModel)]="detalleCuenta.Activa">
+                                                    <span class="slider round"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <label class="label-form"><br></label><br>
+                                                <button class="btn btn-primary pull-right" (click)="actualizarCuentaEspecial();" > <i class="fa fa-save"></i> | Guardar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Formulario Cuentas -->
+                    <div class="row" *ngIf="vistaNuevaCuenta">
+                        <div class="col-xl-12 col-lg-12 col-xs-12">
+                            <div class="card mb-3">
+                                <div class="card-header bg-success text-white" >
+                                    Agregar Cuenta Nueva
+                                </div>
+                                <div class="card-body">
+                                    <div class="row" >
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label class="label-form"> Nombre Cuenta </label>
+                                                <input type="text" placeholder="CUENTA A NOMBRE DE: " [(ngModel)]="nombreCuenta" class="form-control" required />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label class="label-form"> Numero Cuenta </label>
+                                                <input type="text" placeholder="Numero de cuenta: " [(ngModel)]="numeroCuenta" class="form-control" required />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label class="label-form"> Saldo </label>
+                                                <input type="number" placeholder="Saldo de la cuenta: " [(ngModel)]="saldoCuenta" class="form-control" required />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12">
+                                            <div class="form-group">
+                                                <label class="label-form"> <br></label><br>
+                                                <button class="btn btn-primary pull-right" (click)="agregarNuevaCuenta();"><i class="fa fa-save"></i> | Guardar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

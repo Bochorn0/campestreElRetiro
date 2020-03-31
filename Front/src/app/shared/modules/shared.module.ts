@@ -6,6 +6,7 @@ import { HttpModule,Http, XHRBackend, RequestOptions } from '@angular/http';
 import { DatatableModule} from './datatables-general/datatables-general.module';
 import { CatalogoClientesModule} from './catalogos/catalogo-clientes/catalogo-clientes.module';
 import { CatalogoTerrenosModule} from './catalogos/catalogos-terrenos/catalogos.module';
+import { CatalogoCuentasModule} from './catalogos/catalogo-cuentas/catalogo-cuentas.module';
 import { VentasCotizadorModule} from './ventas/cotizador/cotizador.module';
 import { CotizadorMensualidadModule} from './ventas/cotizador-mensualidad/cotizador-mensualidad.module';
 import { CotizadorAnualidadModule} from './ventas/cotizador-anualidad/cotizador-anualidad.module';
@@ -15,6 +16,7 @@ import { FinanciamientoVentasModule} from './ventas/venta/venta.module';
 import { FormularioClientesModule } from './formularios/formulario-clientes/formulario-clientes.module';
 import { FormularioClientesSeparadoModule } from './formularios/formulario-clientes-separado/formulario-clientes-separado.module';
 import { StatModule} from './stat/stat.module';
+import { HomeInfoModule} from './home-info/home-info.module';
 import { PageHeaderModule } from './page-header/page-header.module';
 import { ChartsModule as Ng2Charts } from 'ng2-charts';
 import { NgbCarouselModule, NgbAlertModule, NgbTypeaheadModule,NgbTabsetModule ,NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
@@ -45,6 +47,7 @@ import { NgxSelectModule } from 'ngx-select-ex';
     ReactiveFormsModule,
     CatalogoClientesModule,
     CatalogoTerrenosModule,
+    CatalogoCuentasModule,
     VentasCotizadorModule,
     CotizadorMensualidadModule,
     CotizadorAnualidadModule,
@@ -56,6 +59,7 @@ import { NgxSelectModule } from 'ngx-select-ex';
     DatatableModule,
     HttpModule,
     StatModule,
+    HomeInfoModule,
     RouterModule,
     PageHeaderModule,
     Ng2Charts,
@@ -76,6 +80,7 @@ import { NgxSelectModule } from 'ngx-select-ex';
     ReactiveFormsModule,
     CatalogoClientesModule,
     CatalogoTerrenosModule,
+    CatalogoCuentasModule,
     VentasCotizadorModule,
     CotizadorMensualidadModule,
     CotizadorAnualidadModule,
@@ -87,6 +92,7 @@ import { NgxSelectModule } from 'ngx-select-ex';
     DatatableModule,
     HttpModule,
     StatModule,
+    HomeInfoModule,
     RouterModule,
     PageHeaderModule,
     Ng2Charts,

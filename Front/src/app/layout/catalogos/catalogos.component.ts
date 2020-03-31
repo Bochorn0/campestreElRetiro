@@ -15,7 +15,7 @@ import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 export class CatalogosComponent implements OnInit {
     catalogoTerrenos;catalogoCliente;ingresoNuevo;datosVenta;mantenimientoNuevo;datosMantenimiento;ingresosExtraNuevo;
     datosIngresosExtra =[];
-    clientesCatalogos;
+    clientesCatalogos;catalogoCuentas;
     frmSolicitud: FormGroup; // Formulario de solicitud
     frmCliente: FormGroup; // Formulario de solicitud
     datosTodos;datosTodosTotales;datosDetalle;detalleCliente;
@@ -24,7 +24,7 @@ export class CatalogosComponent implements OnInit {
     @ViewChild('datatableDetalles')datatableDetalles;
     checksTerrenos = [];textoBuscar;
     parcelas=[];lotes=[];etapas=[];estatusTodos=[]
-    parcelaFiltro;loteFiltro;etapaFiltro;estatusFiltro;
+    parcelaFiltro;loteFiltro;etapaFiltro;estatusFiltro;panelVisualizar;vistaCentro;
     constructor(private fb: FormBuilder, private catalogosService: CatalogosService) { 
         //this.parcelaFiltro = this.loteFiltro = this.etapaFiltro = 
         this.estatusFiltro = '0';
@@ -60,6 +60,7 @@ export class CatalogosComponent implements OnInit {
             'FileComprobante': null,
             'Terrenos': []
         });                
+        this.panelVisualizar = 'Ayuda';
     }
 
     filtrarParcelas = (text$: Observable<string>) =>
@@ -130,10 +131,17 @@ export class CatalogosComponent implements OnInit {
     verCatalogoTerrenos(event){
         this._limpiarVistas();
         this.catalogoTerrenos = true;
+        this.vistaCentro = true;
+    }
+    verCatalogoCuentas(){
+        this._limpiarVistas();
+        this.catalogoCuentas = true;
+        this.vistaCentro = true;
     }
     verCatalogoClientes(event){
         this._limpiarVistas();
         this.catalogosService.obtenerDatosTodos().then(res=>{
+            this.vistaCentro = true;
             this.catalogoCliente = true;
         }).catch(err=>{
             console.log('err',err);
@@ -147,7 +155,7 @@ export class CatalogosComponent implements OnInit {
             this.datosTodosTotales  = datos;
             this._recorrerFiltros(datos);
             this.datosTodos  =  { Datos: datos, Ordenes : {Saldo_credito:'',Saldo_certificado: '', Saldo_mantenimiento: '', Saldo_agua: ''}};
-            
+            this.vistaCentro = true;            
             /*if(this.datatableDatosTodos != null){
                 this.datatableDatosTodos._reiniciarRegistros(this.datosTodos);
             }*/
@@ -386,6 +394,7 @@ export class CatalogosComponent implements OnInit {
     _limpiarVistas(){
         // this.datosTodosTotales  = [];
         // this.datosTodos  =  { Datos: [], Ordenes : {Saldo_credito:'',Saldo_certificado: '', Saldo_mantenimiento: '', Saldo_agua: ''}};
-        this.datosTodos = this.detalleCliente =  this.datosDetalle =  this.ingresoNuevo = this.mantenimientoNuevo = this.datosMantenimiento = this.catalogoTerrenos = this.catalogoCliente = false;
+        this.catalogoCuentas = this.vistaCentro = this.datosTodos = this.detalleCliente =  this.datosDetalle =  this.ingresoNuevo = this.mantenimientoNuevo = this.datosMantenimiento = this.catalogoTerrenos = this.catalogoCliente = false;
+        this.panelVisualizar = '';
     }
 }

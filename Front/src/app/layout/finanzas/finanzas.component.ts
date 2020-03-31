@@ -13,10 +13,11 @@ import * as _ from 'lodash';
 })
 
 export class FinanzasComponent implements OnInit {
-verCatalogoCuentas; verEstadoFinanciero;vistaCentro;
+verCatalogoCuentas; verEstadoFinanciero;vistaCentro;panelVisualizar;
 constructor(private estadisticasService: EstadisticasService, private catalogosService : CatalogosService) {
-    this.verCatalogoCuentas = this.verEstadoFinanciero = false;
-
+//    this.verCatalogoCuentas = this.verEstadoFinanciero = false;
+    this.estadosFinancieros({});
+    this.panelVisualizar = 'Ayuda';
 }
 catalogoCuentas(){
     this._limpiarVista();
@@ -33,6 +34,7 @@ estadosFinancieros(event){
     });
 }
 _limpiarVista(){
+    this.panelVisualizar = '';
     this.verCatalogoCuentas = this.verEstadoFinanciero = this.vistaCentro = false;
 }
 _delay(ms){

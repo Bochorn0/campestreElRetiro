@@ -5,12 +5,12 @@
     <div class="row text-center">
         <div class="col-6 col-lg-3">
             <div class="form-group" >
-                <button (click)="obtenerGastos();" class="btn btn-primary w-100 text-white" ><i class="fa fa-trello"></i> | Gastos </button>
+                <button (click)="obtenerGastos();" class="btn bg-primary w-100 text-white" ><i class="fa fa-trello"></i> | Gastos </button>
             </div>
         </div>
         <div class="col-6 col-lg-3">    
             <div class="form-group">
-                <button (click)="verCatalogoCategorias();" class="btn bg-warning menu w-100 text-white" ><i class="fa fa-code-fork"></i> | Castegorias</button>
+                <button (click)="verCatalogoCategorias();" class="btn bg-warning menu w-100 text-white" ><i class="fa fa-code-fork"></i> | Categorias</button>
             </div>
         </div>
         <div class="col-6 col-lg-3">
@@ -29,6 +29,10 @@
         <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)"  formControlName="File" />
     </form>
     <hr>
+    <!-- SECCION DE AYUDA -->
+    <div *ngIf="panelVisualizar == 'Ayuda' ">
+        <app-home-info [label]="'Gastos'"></app-home-info>
+    </div>
     <!-- VISTA CENTRAL -->
     <div class="row" *ngIf="vistaCentro">
         <div class="col-12">
@@ -152,8 +156,8 @@
             <div class="row"  [@routerTransition]  *ngIf="panelVisualizar == 'Gastos'">
                 <div class="col-12">
                     <div class="form-group">
-                        <button (click)="nuevoGasto();" class="btn btn-success w-100 pull-right col-lg-3"><i class="fa fa-plus" style="margin-right:10px;"></i> Nuevo Gasto</button>
-                        <button *ngIf="this.chksGastos.length > 0" (click)="borrarMultiplesGastos(); col-lg-3" class="btn btn-danger-clasic w-100 pull-right" ><i class="fa fa-times"></i> Borrar Multiples </button>
+                        <button (click)="nuevoGasto();" class="btn btn-success pull-right "><i class="fa fa-plus" style="margin-right:10px;"></i> Nuevo Gasto</button>
+                        <button *ngIf="this.chksGastos.length > 0" (click)="borrarMultiplesGastos();" class="btn btn-danger-clasic  pull-right" ><i class="fa fa-times"></i> Borrar Multiples </button>
                         <br><br>
                     </div>
                 </div>
@@ -255,11 +259,17 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12 col-xl-3 col-lg-4">
-                                    <div class="d-flex mb-2" >
-                                        <button class="btn btn-sm btn-success" (click)="nuevaCat = !nuevaCat;">
-                                            <i class="fa fa-{{(nuevaCat)?'minus':'plus'}}-circle"></i> | Nueva Categoria
-                                        </button>
+                                    <!-- <div class="d-flex mb-2 col-12" > -->
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <button class="btn btn-sm btn-success w-100" (click)="nuevaCat = !nuevaCat;">
+                                                    <i class="fa fa-{{(nuevaCat)?'minus':'plus'}}-circle"></i> | Nueva Categoria
+                                                </button>
+                                            </div>                                                
+                                        </div>
                                     </div>
+                                    <!-- </div> -->
                                     <div class="form-group"  *ngIf="nuevaCat">
                                         <!-- <label class="label-form"> Nueva Categoria </label> -->
                                         <div class="input-group mb-3">
@@ -286,11 +296,18 @@
                                     </div>
                                 </div>
                                 <div class="col-12 col-xl-9 col-lg-8">
-                                    <div class="d-flex mb-2" >
-                                        <button class="btn btn-sm btn-success pull-right" (click)="nuevaSub = !nuevaSub;">
-                                            <i class="fa fa-{{(nuevaSub)?'minus':'plus'}}-circle"></i> | Nueva Subcategoria
-                                        </button>
+                                    <!-- <div class="d-flex mb-2" > -->
+                                    <div class="row">
+                                        <div class="col-12 col-xl-4">
+                                            <div class="form-group">
+                                                <button class="btn btn-sm btn-success w-100" (click)="nuevaSub = !nuevaSub;">
+                                                    <i class="fa fa-{{(nuevaSub)?'minus':'plus'}}-circle"></i> | Nueva Subcategoria
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="col-0  col-xs-8"></div>
                                     </div>
+                                    <!-- </div> -->
                                     <div class="form-group"  *ngIf="nuevaSub">
                                         <!-- <label class="label-form"> Nueva Categoria </label> -->
                                         <div class="input-group mb-3">

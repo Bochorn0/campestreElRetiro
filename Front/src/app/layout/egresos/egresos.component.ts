@@ -50,6 +50,7 @@ export class EgresosComponent implements OnInit {
         this.frmSolicitud = fb.group({
             'File': [null]
         });
+        this.panelVisualizar = 'Ayuda';
     }
     subcategorias = [];
     _obtenerCatalogoCategorias(){

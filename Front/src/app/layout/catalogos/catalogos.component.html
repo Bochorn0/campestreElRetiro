@@ -1,7 +1,180 @@
 <div [@routerTransition]>
     <app-page-header [heading]="'Catalogos'" [icon]="'fa-file'"></app-page-header>
     <hr>
-    <div class="row">
+    <!-- MENU PRINCIPAL -->
+    <div class="row text-center">
+        <div class="col-6 col-lg-3">
+            <div class="form-group" >
+                <button (click)="verCatalogoTerrenos($event);" class="btn bg-primary w-100 text-white" ><i class="fa fa-map"></i> | Terrenos </button>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="form-group">
+                <button (click)="verCatalogoClientes($event);" class="btn bg-secondary menu w-100 text-white"><i class="fa fa-users"></i> | Clientes</button>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">    
+            <div class="form-group">
+                <button (click)="verCatalogoCuentas();" class="btn bg-warning menu w-100 text-white" ><i class="fa fa-code-fork"></i> | Cuentas</button>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="form-group">
+                <button (click)="verDatosTodos();" class="btn bg-info menu w-100 text-white" ><i class="fa fa-book"></i> | Datos Todos</button>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <!-- SECCION DE AYUDA -->
+    <div *ngIf="panelVisualizar == 'Ayuda' ">
+        <app-home-info [label]="'Catalogos'"></app-home-info>
+    </div>
+    <!-- VISTA CENTRAL -->
+    <div class="row" *ngIf="vistaCentro">
+        <div class="col-12">
+            <!--Catalog de terrenos-->
+            <div class="row" *ngIf="catalogoTerrenos">
+                <div class="col-12">
+                    <app-catalogos-terrenos [@routerTransition]></app-catalogos-terrenos>
+                </div>
+            </div>
+            <!-- Catalogo Clientes-->
+            <div class="row" *ngIf="catalogoCuentas">
+                <div class="col-12">
+                    <app-catalogo-cuentas [@routerTransition]></app-catalogo-cuentas>        
+                </div>
+
+            </div>
+            <!--Catalog de clientes-->
+            <div class="row" *ngIf="catalogoCliente">
+                <div class="col-12" [@routerTransition]>
+                    <app-catalogo-clientes (vista)="catalogoClientes($event);" (nuevaOperacion)="nueva_operacion($event);" ></app-catalogo-clientes>
+                </div>
+            </div>
+            <!--Catalog de clientes--><!--[@routerTransition]-->
+            <div class="row" *ngIf="datosTodos && !detalleCliente && !datosDetalle"  style="overflow: auto;">
+                <div class="col-12">
+                    <br>
+                    <button class="btn btn-success float-right" (click)="generarNuevoCliente();"><i class="fa fa-plus-circle"></i> Nuevo </button>
+                    <br><br>
+                </div>
+                <div class="col-lg-4"> 
+                    <h4> Información General de Lotes </h4>
+                    <input type="text" class="form-control" (keyup)="buscarEn();" placeholder="Filtrar Clientes 'Nombre' 'Terreno' 'Estatus' " [(ngModel)]="textoBuscar">
+                </div>
+                <div class="col-lg-6"> 
+                    <div class="row">
+                            <div class="col-lg-4">
+                                <h4> Parcela </h4>
+                                <input  (keyup)="buscarEn();"   placeholder="Parcela:" type="text" class="form-control" [(ngModel)]="parcelaFiltro" [ngbTypeahead]="filtrarParcelas" (selectItem)="parcelaFiltro = $event.item; buscarEn();" [resultFormatter]="formatter" />
+                            </div>
+                            <div class="col-lg-4">
+                                <h4> Lote </h4>
+                                <input  (keyup)="buscarEn();"  placeholder="Lote:" type="text" class="form-control" [(ngModel)]="loteFiltro" [ngbTypeahead]="filtrarLotes" (selectItem)="loteFiltro = $event.item; buscarEn();"  [resultFormatter]="formatter" />
+                            </div>
+                            <div class="col-lg-4"> 
+                                <h4> Estapa </h4>
+                                <input (keyup)="buscarEn();"  placeholder="Etapa:" type="text" class="form-control" [(ngModel)]="etapaFiltro" [ngbTypeahead]="filtrarEtapas" (selectItem)="etapaFiltro = $event.item; buscarEn();" [resultFormatter]="formatter" />
+                            </div>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h4> Estatus </h4>
+                    <select  class="form-control" [(ngModel)]="estatusFiltro" (change)="buscarEn();" >
+                        <option value="0">Todos</option>
+                        <option  *ngFor="let e of estatusTodos;" value="{{e.Estatus}}">{{e.Estatus}}</option>
+                    </select>            
+                </div>
+                
+                <div class="col-lg-12" >
+                    <br>
+                    <table class="table table-striped  table-hover">
+                        <tr>
+                            <th>Cliente</th>
+        <!--                    <th># Terrenos</th>-->
+                            <th>Terrenos</th>
+                            <th>
+                                <b style="cursor:pointer;" (click)="cambiarOrden('Saldo_credito');">
+                                    Saldo del credito
+                                    <i  class="fa fa-care t-{{(datosTodos.Ordenes)?datosTodos.Ordenes.Saldo_credito:''}}"></i>
+                                </b>
+                            </th>
+                            <th>
+                                <b style="cursor:pointer;" (click)="cambiarOrden('Saldo_mantenimiento');">
+                                    Saldo de Mantenimiento
+                                    <i  class="fa fa-caret-{{(datosTodos.Ordenes)?datosTodos.Ordenes.Saldo_mantenimiento:''}}"></i>
+                                </b>
+                            </th>
+                            <th>
+                                <b style="cursor:pointer;" (click)="cambiarOrden('Estatus');">
+                                    Estatus
+                                    <i  class="fa fa-caret-{{(datosTodos.Ordenes)?datosTodos.Ordenes.Estatus:''}}"></i>
+                                </b>
+                            </th>
+        <!--                    <th>
+                                <b style="cursor:pointer;" (click)="cambiarOrden('Saldo_certificado');">
+                                    Saldo del Certificado
+                                    <i  class="fa fa-caret-{{(datosTodos.Ordenes)?datosTodos.Ordenes.Saldo_certificado:''}}"></i>
+                                </b>
+                            </th>
+
+                            <th>
+                                <b style="cursor:pointer;" (click)="cambiarOrden('Saldo_agua');">
+                                    Saldo de Agua
+                                    <i  class="fa fa-caret-{{(datosTodos.Ordenes)?datosTodos.Ordenes.Saldo_agua:''}}"></i>
+                                </b>
+                            </th>-->
+                            <th>Ajustes</th>
+                        </tr>
+                        <tr *ngFor="let d of datosTodos.Datos | paginate: { itemsPerPage: 10, currentPage: this.datosPage }">
+                            <td>{{d.Nombre}}</td>
+        <!--                    <td>{{d.Terrenos.length}}</td>-->
+                            <td>{{d.InfoTerrenos}}</td>
+                            <td>$ {{d.Saldo_credito |number }}</td>
+                            <td>$ {{d.Saldo_mantenimiento |number }}</td>
+                            <td>{{d.Estado}}</td>
+        <!--                    <td>$ {{d.Saldo_certificado | number}} </td>
+                            <td>$ {{d.Saldo_agua | number}} </td>-->
+                            <td>
+                                <button class="btn btn-info" style="color: #fff ;" (click)="this.datosDetalle = false; this.detalleCliente = d; "> Editar | <i class="fa fa-edit"></i> </button>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="text-right" >
+                        <pagination-controls (pageChange)="this.datosPage = $event" ></pagination-controls>
+                    </div>            
+                </div>
+            </div>
+            <div class="row" *ngIf="datosDetalle || detalleCliente">
+                <div class="col-lg-12">
+                    <button class="btn btn-primary pull-right" (click)="verDatosTodos();" >Ver Todos</button>
+                    <br><br>
+                </div>
+            </div>
+            <div class="row" *ngIf="detalleCliente && !datosDetalle">
+                <div class="col-lg-12" *ngIf="checksTerrenos.length > 0">
+                    <button class="btn btn-danger pull-right" (click)="confirmarEliminarRegistros();">Eliminar</button>
+                    <button class="btn btn-warning pull-right" (click)="verEditarCampos();">Editar</button>
+                </div>
+                <div class="col-lg-12" style="overflow: auto;">
+                    <app-formulario-clientes-separado [Nuevo]="true" [datosCliente]="detalleCliente" (vista)="this.detalleCliente = false" ></app-formulario-clientes-separado>
+                </div>
+            </div>
+            <div >
+                <!--Venta regular-->
+                <app-venta *ngIf="ingresoNuevo" [datosVenta]="datosVenta"  [@routerTransition]></app-venta>
+                <!--Catalogo Clientes-->
+                <app-catalogo-clientes *ngIf="clientesCatalogos" (vista)="catalogoClientes($event);" (nuevaOperacion)="nueva_operacion($event);" [@routerTransition]></app-catalogo-clientes>
+                <!--Mantenimiento-->
+                <app-mantenimiento *ngIf="mantenimientoNuevo" [datosMantenimiento]="datosMantenimiento" [@routerTransition]></app-mantenimiento>
+                <!--Ingresos Extra-->
+                <app-ingresos-extra *ngIf="ingresosExtraNuevo" [datosIngresosExtras]="datosIngresosExtra"  [@routerTransition]></app-ingresos-extra>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- <div class="row">
         <div class="col-xs-12 col-lg-4">
             <app-stat [bgClass]="'primary'" [icon]="'fa-map'" [label]="'Catalogo de Terrenos'" (event)="verCatalogoTerrenos($event);"></app-stat>
         </div>
@@ -11,181 +184,4 @@
         <div class="col-xs-12 col-lg-4">
             <app-stat [bgClass]="'info'" [icon]="'fa-book'" [label]="'Datos Cliente'" (event)="verDatosTodos();"></app-stat>
         </div>        
-    </div>
-    <hr />
-    <!--Catalog de terrenos-->
-    <div class="row" *ngIf="catalogoTerrenos">
-        <div class="col-lg-12">
-            <app-catalogos-terrenos [@routerTransition]></app-catalogos-terrenos>
-        </div>
-    </div>
-    <!--Catalog de clientes-->
-    <div class="row" *ngIf="catalogoCliente">
-        <div class="col-lg-12" [@routerTransition]>
-            <app-catalogo-clientes (vista)="catalogoClientes($event);" (nuevaOperacion)="nueva_operacion($event);" ></app-catalogo-clientes>
-        </div>
-    </div>
-    <!--Catalog de clientes--><!--[@routerTransition]-->
-    <div class="row" *ngIf="datosTodos && !detalleCliente && !datosDetalle"  style="overflow: auto;">
-        <div class="col-lg-12">
-            <br>
-            <button class="btn btn-success float-right" (click)="generarNuevoCliente();"><i class="fa fa-plus-circle"></i> Nuevo </button>
-            <br><br>
-        </div>
-        <div class="col-lg-4"> 
-            <h4> Información General de Lotes </h4>
-            <input type="text" class="form-control" (keyup)="buscarEn();" placeholder="Filtrar Clientes 'Nombre' 'Terreno' 'Estatus' " [(ngModel)]="textoBuscar">
-        </div>
-        <div class="col-lg-6"> 
-            <div class="row">
-                    <div class="col-lg-4">
-                        <h4> Parcela </h4>
-                        <input  (keyup)="buscarEn();"   placeholder="Parcela:" type="text" class="form-control" [(ngModel)]="parcelaFiltro" [ngbTypeahead]="filtrarParcelas" (selectItem)="parcelaFiltro = $event.item; buscarEn();" [resultFormatter]="formatter" />
-                        <!-- <select  class="form-control" [(ngModel)]="parcelaFiltro" (change)="filtrarTerrenos();" >
-                            <option value="0">Todas</option>
-                            <option  *ngFor="let e of parcelas;" value="{{e.parcela}}">{{e.parcela}}</option>
-                        </select> -->
-                    </div>
-                    <div class="col-lg-4">
-                        <h4> Lote </h4>
-                        <input  (keyup)="buscarEn();"  placeholder="Lote:" type="text" class="form-control" [(ngModel)]="loteFiltro" [ngbTypeahead]="filtrarLotes" (selectItem)="loteFiltro = $event.item; buscarEn();"  [resultFormatter]="formatter" />
-                        <!-- <select  class="form-control" [(ngModel)]="loteFiltro" (change)="filtrarTerrenos();" >
-                            <option value="0">Todos</option>
-                            <option  *ngFor="let e of lotes;" value="{{e.lote}}">{{e.lote}}</option>
-                        </select> -->
-                    </div>
-                    <div class="col-lg-4"> 
-                        <h4> Estapa </h4>
-                        <input (keyup)="buscarEn();"  placeholder="Etapa:" type="text" class="form-control" [(ngModel)]="etapaFiltro" [ngbTypeahead]="filtrarEtapas" (selectItem)="etapaFiltro = $event.item; buscarEn();" [resultFormatter]="formatter" />
-                        <!-- <select  class="form-control" [(ngModel)]="etapaFiltro" (change)="filtrarTerrenos();" >
-                            <option value="0">Todas</option>
-                            <option  *ngFor="let e of etapas;" value="{{e.etapa}}">{{e.etapa}}</option>
-                        </select> -->
-                    </div>     
-                <!-- <div class="col-lg-4">
-                    <h4> Parcela </h4>
-                    <select  class="form-control" [(ngModel)]="parcelaFiltro" (change)="buscarEn();" >
-                        <option value="0">Todas</option>
-                        <option  *ngFor="let e of parcelas;" value="{{e.parcela}}">{{e.parcela}}</option>
-                    </select>
-                </div>                                    
-                <div class="col-lg-4">
-                    <h4> Lote </h4>
-                    <select  class="form-control" [(ngModel)]="loteFiltro" (change)="buscarEn();" >
-                        <option value="0">Todos</option>
-                        <option  *ngFor="let e of lotes;" value="{{e.lote}}">{{e.lote}}</option>
-                    </select>
-                </div>
-                <div class="col-lg-4"> 
-                    <h4> Etapa </h4>
-                    <select  class="form-control" [(ngModel)]="etapaFiltro" (change)="buscarEn();" >
-                        <option value="0">Todas</option>
-                        <option  *ngFor="let e of etapas;" value="{{e.etapa}}">{{e.etapa}}</option>
-                    </select>
-                </div> -->
-            </div>
-        </div>
-        <div class="col-lg-2">
-            <h4> Estatus </h4>
-            <select  class="form-control" [(ngModel)]="estatusFiltro" (change)="buscarEn();" >
-                <option value="0">Todos</option>
-                <option  *ngFor="let e of estatusTodos;" value="{{e.Estatus}}">{{e.Estatus}}</option>
-            </select>            
-        </div>
-        
-        <div class="col-lg-12" >
-            <br>
-            <table class="table table-striped  table-hover">
-                <tr>
-                    <th>Cliente</th>
-<!--                    <th># Terrenos</th>-->
-                    <th>Terrenos</th>
-                    <th>
-                        <b style="cursor:pointer;" (click)="cambiarOrden('Saldo_credito');">
-                            Saldo del credito
-                            <i  class="fa fa-care t-{{(datosTodos.Ordenes)?datosTodos.Ordenes.Saldo_credito:''}}"></i>
-                        </b>
-                    </th>
-                    <th>
-                        <b style="cursor:pointer;" (click)="cambiarOrden('Saldo_mantenimiento');">
-                            Saldo de Mantenimiento
-                            <i  class="fa fa-caret-{{(datosTodos.Ordenes)?datosTodos.Ordenes.Saldo_mantenimiento:''}}"></i>
-                        </b>
-                    </th>
-                    <th>
-                        <b style="cursor:pointer;" (click)="cambiarOrden('Estatus');">
-                            Estatus
-                            <i  class="fa fa-caret-{{(datosTodos.Ordenes)?datosTodos.Ordenes.Estatus:''}}"></i>
-                        </b>
-                    </th>
-<!--                    <th>
-                        <b style="cursor:pointer;" (click)="cambiarOrden('Saldo_certificado');">
-                            Saldo del Certificado
-                            <i  class="fa fa-caret-{{(datosTodos.Ordenes)?datosTodos.Ordenes.Saldo_certificado:''}}"></i>
-                        </b>
-                    </th>
-
-                    <th>
-                        <b style="cursor:pointer;" (click)="cambiarOrden('Saldo_agua');">
-                            Saldo de Agua
-                            <i  class="fa fa-caret-{{(datosTodos.Ordenes)?datosTodos.Ordenes.Saldo_agua:''}}"></i>
-                        </b>
-                    </th>-->
-                    <th>Ajustes</th>
-                </tr>
-                <tr *ngFor="let d of datosTodos.Datos | paginate: { itemsPerPage: 10, currentPage: this.datosPage }">
-                    <td>{{d.Nombre}}</td>
-<!--                    <td>{{d.Terrenos.length}}</td>-->
-                    <td>{{d.InfoTerrenos}}</td>
-                    <td>$ {{d.Saldo_credito |number }}</td>
-                    <td>$ {{d.Saldo_mantenimiento |number }}</td>
-                    <td>{{d.Estado}}</td>
-<!--                    <td>$ {{d.Saldo_certificado | number}} </td>
-                    <td>$ {{d.Saldo_agua | number}} </td>-->
-                    <td>
-<!--                        <button class="btn btn-primary" style="color: #fff ;" (click)="this.detalleCliente = false; this.datosDetalle = d; "> Procesar | <i class="fa fa-arrow-right"></i> </button>-->
-                        <button class="btn btn-info" style="color: #fff ;" (click)="this.datosDetalle = false; this.detalleCliente = d; "> Editar | <i class="fa fa-edit"></i> </button>
-<!--                        <button class="btn btn-info" style="color: #fff ;" (click)="this.datosCliente = false; this.detalleCliente = {Opciones:{Editar:true, Eliminar: true},Datos:d.Terrenos};"> Editar | <i class="fa fa-edit"></i></button>-->
-                    </td>
-                </tr>
-            </table>
-            <div class="text-right" >
-                <pagination-controls (pageChange)="this.datosPage = $event" ></pagination-controls>
-            </div>            
-<!--            <app-datatables-general #datatableDatosTodos *ngIf="datosTodos" [datosDatatable]="datosTodos"  ></app-datatables-general>-->
-        </div>
-    </div>
-    <div class="row" *ngIf="datosDetalle || detalleCliente">
-        <div class="col-lg-12">
-            <button class="btn btn-primary pull-right" (click)="verDatosTodos();" >Ver Todos</button>
-<!--            <button class="btn btn-primary pull-right" (click)="this.datosDetalle = false; this.detalleCliente = false;" >Ver Todos</button>-->
-            <br><br>
-        </div>
-    </div>
-<!--    <div class="row" *ngIf="datosDetalle && !detalleCliente">
-        <div class="col-xs-12" style="overflow: auto;">
-            <app-formulario-clientes [datosCliente]="datosDetalle" ></app-formulario-clientes>
-        </div>
-    </div>-->
-    <div class="row" *ngIf="detalleCliente && !datosDetalle">
-        <div class="col-lg-12" *ngIf="checksTerrenos.length > 0">
-            <button class="btn btn-danger pull-right" (click)="confirmarEliminarRegistros();">Eliminar</button>
-            <button class="btn btn-warning pull-right" (click)="verEditarCampos();">Editar</button>
-        </div>
-        <div class="col-lg-12" style="overflow: auto;">
-            <app-formulario-clientes-separado [Nuevo]="true" [datosCliente]="detalleCliente" (vista)="this.detalleCliente = false" ></app-formulario-clientes-separado>
-<!--            <app-datatables-general #datatableDetalles *ngIf="detalleCliente" (checks)="asignarChecks($event);" (edit)="editarRegistro($event);" (delete)="eliminarRegistro($event);" [datosDatatable]="detalleCliente" ></app-datatables-general>-->
-        </div>
-    </div>
-    <div >
-        <!--Venta regular-->
-        <app-venta *ngIf="ingresoNuevo" [datosVenta]="datosVenta"  [@routerTransition]></app-venta>
-        <!--Catalogo Clientes-->
-        <app-catalogo-clientes *ngIf="clientesCatalogos" (vista)="catalogoClientes($event);" (nuevaOperacion)="nueva_operacion($event);" [@routerTransition]></app-catalogo-clientes>
-        <!--Mantenimiento-->
-        <app-mantenimiento *ngIf="mantenimientoNuevo" [datosMantenimiento]="datosMantenimiento" [@routerTransition]></app-mantenimiento>
-        <!--Ingresos Extra-->
-        <app-ingresos-extra *ngIf="ingresosExtraNuevo" [datosIngresosExtras]="datosIngresosExtra"  [@routerTransition]></app-ingresos-extra>
-    </div>
-
-</div>
+    </div> -->

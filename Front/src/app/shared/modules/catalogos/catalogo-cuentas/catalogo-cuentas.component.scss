@@ -40,11 +40,17 @@ div#sugerencias {
     margin: 10px;
 }
 .rounded-circle{
-    border: 5px solid #ddd;
     width: 70px;
     margin: 0 auto;
     padding: 15px;
     height: 70px;
+}
+.activ{
+
+    border: 5px solid #2196F3 !important;
+}
+.activ2{
+    border: 5px solid #ddd !important;
 }
 .tarjeta-perfil{
     padding: 20px;

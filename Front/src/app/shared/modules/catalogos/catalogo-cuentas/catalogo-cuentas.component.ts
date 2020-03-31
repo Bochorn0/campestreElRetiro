@@ -1,8 +1,8 @@
 import { Component, OnInit ,Output , EventEmitter , ViewChild} from '@angular/core';
-import { routerTransition } from '../../../router.animations';
-import { CatalogosService } from '../../../shared/services/catalogos.service';
-import { VentasService } from '../../../shared/services/ventas.service';
-import { EstadisticasService } from '../../../shared/services/estadisticas.service'
+import { routerTransition } from '../../../../router.animations';
+import { CatalogosService } from '../../../../shared/services/catalogos.service';
+import { VentasService } from '../../../../shared/services/ventas.service';
+import { EstadisticasService } from '../../../../shared/services/estadisticas.service'
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import swal from 'sweetalert2';
@@ -18,7 +18,7 @@ import * as moment from 'moment';
 export class CatalogoCuentasComponent implements OnInit {
     @ViewChild('datatableCuentas')datatableCuentas;
     cuentasEspeciales;datosCuentasEspeciales;vistaNuevaCuenta;datosOriginalesCuentas;vistaCentro;
-    nombreCuenta;numeroCuenta;saldoCuenta;fInicio;fFin;detalleCuenta;
+    nombreCuenta;numeroCuenta;saldoCuenta;fInicio;fFin;detalleCuenta;todasCuentas;
     @Output() public nuevaOperacion = new EventEmitter();
     constructor(private catalogosService : CatalogosService, private ventasService: VentasService, private estadisticasService: EstadisticasService) {
         this._obtenerCuentasEspeciales();
@@ -78,7 +78,10 @@ export class CatalogoCuentasComponent implements OnInit {
         this._limpiarPantallas();
         this.catalogosService.obtenerCuentasEspeciales().then(res =>{
             this.vistaCentro = true;
-            let datosRestantes = res['Data'].filter(da=> da.Activa == 1);
+            let datosRestantes = res['Data'];
+            if(!this.todasCuentas){
+                datosRestantes =  datosRestantes.filter(da=> da.Activa == 1);
+            }
             console.log('dats',datosRestantes);
             this.datosCuentasEspeciales = datosRestantes;
             console.log('datssss',this.datosCuentasEspeciales);

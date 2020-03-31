@@ -1,0 +1,20 @@
+<div class="row">
+    <div class="col-12 text-center">
+        <!-- style="width: 70%; margin: 0 auto;" -->
+        <div class="card card-default">
+            <div clasS="card-body">
+                <h2>Bienvenido al apartado de {{label}}</h2>
+                <br>
+                <p>
+                    Para aprender como utilizar este apartado debes descargar el manual de esta sección y seguir las reglas de los diagramas relacionados.
+                    <br><br>
+                    <button class="btn btn-info" (click)=downloadManual(label);>
+                        <i class="fa fa-cloud-download"></i> |  Manual de {{label}}
+                    </button>
+                    <br><br>
+                    <b>Tambien puedes solicitar ayuda al siguiente correo <a href="mailto:luisfernandocordova.24@gmail.com">Luis Cordova</a></b>
+                </p>                    
+            </div>
+        </div>
+    </div>
+</div>
