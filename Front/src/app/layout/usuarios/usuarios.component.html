@@ -48,7 +48,7 @@
                                 <div class="col-12 col-sm-12 col-md-6 col-xl-4" *ngFor="let d of this.empladosActivos  | paginate: { itemsPerPage: 6, currentPage: pageEmpleados, id:'EmpleadosId' }">
                                     <div class="card card-default tarjeta">
                                         <div class="card-body text-center">
-                                            <div class="mb-2 img-fluid rounded-circle thumb64" > <i class="fa fa-user fa-2x"></i></div>
+                                            <div class="mb-2 img-fluid rounded-circle thumb64 {{(d.Activa == 1)?'activ':'activ2'}}" > <i class="fa fa-user fa-2x"></i></div>
                                             <h4>{{d.Nombre}}</h4>
                                             <a class="" (click)="detUsuario = dr">
                                                 <b>{{d.Puesto}}</b>

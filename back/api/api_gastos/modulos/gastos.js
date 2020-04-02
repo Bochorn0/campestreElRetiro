@@ -46,21 +46,18 @@ module.exports = class Gastos {
         });
     }
     _movimientoFinancieroEnCuentas(cuenta, movimientos ,Usuario){
-        console.log('cuenta',cuenta);
-        console.log('movimientos',movimientos);
-        console.log('Usuario',Usuario);
-        let saldoOriginal; let saldoFinal;
+        let saldoOriginal; let saldoFinal; let Tipo;
         return new Promise((resolve, reject)=>{
             if(!cuenta.IdCuenta || !movimientos[0]){
                 return reject({errorMessage: 'Debes Introducir al menos un moviminto y los datos de la cuenta para continuar'});
             }
-            console.log('queruy',`SELECT * FROM Cuentas_especiales WHERE IdCuenta = ${cuenta.IdCuenta};`);
             return mysql.ejecutar(`SELECT * FROM Cuentas_especiales WHERE IdCuenta = ${cuenta.IdCuenta};`).then(datosC=>{
                 console.log('datosc',datosC);
                 saldoFinal = saldoOriginal = 0;
                 if(datosC[0] && movimientos[0]){
                     saldoFinal = saldoOriginal = datosC[0].Saldo;
                     movimientos.forEach(m=>{
+                        Tipo = m.Tipo;
                         if(m.Tipo == 'Ingreso'){
                             saldoFinal += m.Total;
                         }else if(m.Tipo == 'Egreso'){
@@ -72,10 +69,9 @@ module.exports = class Gastos {
                     return Promise.resolve({});
                 }
             }).then(datosFin=>{
-                console.log('datosFin',datosFin);
                 if(saldoOriginal != saldoFinal){
-                    let campos = `IdCuenta, Movimiento,Fecha_insert,IdUsuario,NombreUsuario,Saldo_inicial,Saldo_final`;
-                    let valores = `${cuenta.IdCuenta},'Saldo Modificado de ${saldoOriginal} a ${saldoFinal} ','${moment().format('YYYY-MM-DD HH:mm:ss')}','${Usuario.Datos.IdUsuario}','${Usuario.Datos.Nombre}',${saldoOriginal},${saldoFinal} `;
+                    let campos = `IdCuenta, Movimiento,Tipo,Fecha_insert,IdUsuario,NombreUsuario,Saldo_inicial,Saldo_final`;
+                    let valores = `${cuenta.IdCuenta},'Saldo Modificado de ${saldoOriginal} a ${saldoFinal} ','${Tipo}','${moment().format('YYYY-MM-DD HH:mm:ss')}','${Usuario.Datos.IdUsuario}','${Usuario.Datos.Nombre}',${saldoOriginal},${saldoFinal} `;
                     return mysql.ejecutar(`INSERT INTO Bitacora_cuentas_especiales(${campos}) VALUES (${valores});`);
                 }else{
                     return Promise.resolve({});

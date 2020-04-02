@@ -35,7 +35,7 @@ module.exports = class Catalogos {
             return new Promise((resO, rejE)=>{
                 let cambiosConceptos = [];
                 datos.DatosVenta.ConceptosPagados.forEach(con=>{
-                    cambiosConceptos.push(this._actualizacionesPortipoDeMovimiento(datos,con));
+                    cambiosConceptos.push(this.aplicarMovimientoPorConcepto(datos,con));
                 });
                 cambiosConceptos.reduce((Cam, current) => {
                     return Cam.then(results => {
@@ -55,8 +55,24 @@ module.exports = class Catalogos {
             console.log('err',err); return reject({Data: false, err })});
         });
     }
+    aplicarMovimientoPorConcepto(datos,concepto){
+        return new Promise((resolve, reject)=>{
+        let result;
+            return this._actualizacionesPortipoDeMovimiento(datos,concepto).then(res=>{
+                result = res;
+                let movimientos = [{Tipo : 'Ingreso', Total: concepto.Importe}];
+                return this._movimientoFinancieroEnCuentas(datos.DatosVenta,movimientos ,datos.DatosUsuario);
+            }).then(resu=>{                
+                return resolve(result);
+            }).catch(err=>{
+                return reject(err);
+            });
+        });
+    }
     _actualizacionesPortipoDeMovimiento(datos,concepto){
         return new Promise((resolve, reject)=>{
+            console.log('datos',datos);
+            console.log('concepto',concepto);
             switch(concepto.TipoMovimiento){
                 case '01': return resolve(this._ventaAbono(datos,concepto)); break;
                 case '02': return resolve(this._ventaEnganche(datos,concepto)); break;
@@ -91,8 +107,10 @@ module.exports = class Catalogos {
                 datos.DatosCliente.Saldo_credito = restanteCredito;
                 datos.DatosCliente.Saldo_adeudo = saldo_a_favor;
                 return mysql.ejecutar(`Update Clientes SET ${updateClientes} WHERE IdCliente = ${datos.DatosCliente.IdCliente};`);
-
             }).then((actualizadoCliente)=>{
+                let movimientos = [{Tipo : 'Ingreso', Total: concepto.Importe}];
+                return this._movimientoFinancieroEnCuentas(datos.DatosVenta,movimientos ,datos.DatosUsuario);
+            }).then(resu=>{
                 return resolve({Concepto:concepto, Procesado: true});
             }).catch(err=>{ return reject({Concepto:concepto, Procesado: false}) });
         });
@@ -335,26 +353,38 @@ module.exports = class Catalogos {
             }).catch(err=>{ return reject({Concepto:concepto, Procesado: false}) });
         });
     }
-    _movimientoFinancieroEnCuentas(cuenta, movimientos,Usuario){
-        let saldoOriginal; let saldoFinal;
+
+    _movimientoFinancieroEnCuentas(cuenta, movimientos ,Usuario){
+        console.log('cuenta',cuenta);
+        console.log('movimientos',movimientos);
+        console.log('Usuario',Usuario);
+        let saldoOriginal; let saldoFinal;let Tipo;
         return new Promise((resolve, reject)=>{
             if(!cuenta.IdCuenta || !movimientos[0]){
                 return reject({errorMessage: 'Debes Introducir al menos un moviminto y los datos de la cuenta para continuar'});
             }
             return mysql.ejecutar(`SELECT * FROM Cuentas_especiales WHERE IdCuenta = ${cuenta.IdCuenta};`).then(datosC=>{
-                saldoFinal = saldoOriginal = datosC.Saldo;
-                movimientos.forEach(m=>{
-                    if(m.Tipo == 'Ingreso'){
-                        saldoFinal += m.Total;
-                    }else if(m.Tipo == 'Egreso'){
-                        saldoFinal -= m.Total
-                    }
-                });
-                return mysql.ejecutar(`Update Cuentas_especiales SET Saldo = ${saldoCuenta} WHERE IdCuenta = ${cuenta.IdCuenta};`);
+                console.log('datosc',datosC);
+                saldoFinal = saldoOriginal = 0;
+                if(datosC[0] && movimientos[0]){
+                    saldoFinal = saldoOriginal = datosC[0].Saldo;
+                    movimientos.forEach(m=>{
+                        Tipo = m.Tipo;
+                        if(m.Tipo == 'Ingreso'){
+                            saldoFinal += m.Total;
+                        }else if(m.Tipo == 'Egreso'){
+                            saldoFinal -= m.Total
+                        }
+                    });
+                    return mysql.ejecutar(`Update Cuentas_especiales SET Saldo = ${saldoFinal} WHERE IdCuenta = ${cuenta.IdCuenta};`);
+                }else{
+                    return Promise.resolve({});
+                }
             }).then(datosFin=>{
+                console.log('datosFin',datosFin);
                 if(saldoOriginal != saldoFinal){
-                    let campos = `IdCuenta, Movimiento,Fecha_insert,Usuario,NombreUsuario`;
-                    let valores = `${cuenta.IdCuenta}.'Saldo Modificado de ${saldoOriginal} a ${saldoFinal} ','${moment().format('YYYY-MM-DD HH:mm:ss')}','${Usuario.Datos.Usuario}','${Usuario.Datos.Nombre}' `;
+                    let campos = `IdCuenta, Movimiento,Tipo,Fecha_insert,IdUsuario,NombreUsuario,Saldo_inicial,Saldo_final`;
+                    let valores = `${cuenta.IdCuenta},'Saldo Modificado de ${saldoOriginal} a ${saldoFinal} ','${Tipo}','${moment().format('YYYY-MM-DD HH:mm:ss')}','${Usuario.Datos.IdUsuario}','${Usuario.Datos.Nombre}',${saldoOriginal},${saldoFinal} `;
                     return mysql.ejecutar(`INSERT INTO Bitacora_cuentas_especiales(${campos}) VALUES (${valores});`);
                 }else{
                     return Promise.resolve({});
@@ -362,6 +392,7 @@ module.exports = class Catalogos {
             }).then(datosFin=>{
                 return resolve({Procesado:true});
             }).catch(err=>{
+                console.log('err',err);
                 return reject({errorMessage: 'Ocurrio un error al modificar los datos de la cuenta'},err);
             });
         });
