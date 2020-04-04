@@ -25,6 +25,10 @@
         </div>
     </div>
     <hr />
+    <!-- SECCION DE AYUDA -->
+    <div *ngIf="panelVisualizar == 'Ayuda' ">
+        <app-home-info [label]="'Ventas'"></app-home-info>
+    </div>
     <div *ngIf="vistaCentro">
         <!--Cotizaciones-->
         <app-cotizador *ngIf="cotizacionNueva" (vista)="nuevoCliente();" [@routerTransition]></app-cotizador>

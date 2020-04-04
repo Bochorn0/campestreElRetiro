@@ -30,6 +30,10 @@
         </div>
     </div>
     <hr />
+    <!-- SECCION DE AYUDA -->
+    <div *ngIf="panelVisualizar == 'Ayuda' ">
+        <app-home-info [label]="'Inicio'"></app-home-info>
+    </div>
     <div class="row" *ngIf="this.datosDashboard">
         <div class="col-xl-12 col-lg-12">
             <app-datatables-general *ngIf="this.datosDashboard" [datosDatatable]="this.datosDashboard"></app-datatables-general>

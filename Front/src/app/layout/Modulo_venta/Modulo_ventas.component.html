@@ -58,7 +58,7 @@
                             <br/>
                             <br/>
                             <button (click)="asignarTerreno(a);" style="margin: 10px;" class="btn btn-info col-6"> Apartar Terreno <i class="fa fa-shopping-cart"></i> </button>
-                            <button class="btn btn-warning col-6 " style="margin: 10px;"  (click)="abrirModal(modalTerrenosLat); terrenoActual = a; modalDatos = {Tipo: 'Modal Terrenos', Clase: 'bg-info', Titulo: 'Mapa del Terreno'};"><i class="fa fa-map"></i> Datos y Ubicación</button>
+                            <button class="btn bg-warning col-6  text-white" style="margin: 10px;"  (click)="abrirModal(modalTerrenosLat); terrenoActual = a; modalDatos = {Tipo: 'Modal Terrenos', Clase: 'bg-info', Titulo: 'Mapa del Terreno'};"><i class="fa fa-map"></i> Datos y Ubicación</button>
                         </div>
                     </div>
                 </div>
@@ -307,7 +307,7 @@
     </div>
     <div class="modal-body">
         <div class="row">
-            <div class="col-sm-12" *ngIf="terrenoActual.Latitud && terrenoActual.Longitud">
+            <div class="col-sm-12">
                 <agm-map [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [zoom]="18" >
                     <agm-marker [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [label]="'M'"></agm-marker>
                 </agm-map>

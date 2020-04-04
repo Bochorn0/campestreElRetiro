@@ -91,8 +91,15 @@ router.post('/actualizarDatosEmpleado', (req, res) => {
     }).catch((error) => {
         res.status(400).send(error);
     })
+}); 
+router.post('/obtenerArchivoManual', (req, res) => {
+    let objUsuarios = new Usuarios();
+    objUsuarios.Obtener_archivo_manual(req.body).then((result) => {
+        res.status(200).send(result);
+    }).catch((error) => {
+        res.status(400).send(error);
+    })
 });
-
 
 
 

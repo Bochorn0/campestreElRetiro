@@ -14,10 +14,11 @@ import * as _ from 'lodash';
 export class CobranzaComponent implements OnInit {
 datosMantenimiento;ingresoNuevo;
 vistaCentro;clientesCatalogos;mantenimientoNuevo;cotizacionNueva;
-datosVenta;datosCotizador;ingresosExtraNuevo;
+datosVenta;datosCotizador;ingresosExtraNuevo;panelVisualizar;
 @Output() public contratos = new EventEmitter();
 constructor() {
-    this.ventaRegular();
+    this.panelVisualizar = 'Ayuda';
+//    this.ventaRegular();
 //    this.nuevoIngresoExtra();
 }
 ngOnInit() {}
@@ -64,6 +65,7 @@ nueva_operacion(evento){
     });
 }
 _limpiarVistaYVariables(){
+    this.panelVisualizar = '';
     this.vistaCentro = this.clientesCatalogos = this.ingresoNuevo = this.mantenimientoNuevo = this.datosMantenimiento = this.cotizacionNueva =  this.ingresosExtraNuevo = false;
 }
 _delay(ms){

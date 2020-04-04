@@ -16,11 +16,13 @@ export class VentasComponent implements OnInit {
     @ViewChild('contratoGenerado')contratoGenerado;
     clienteNuevo;datosContrato;cotizacionNueva;
     vistaCentro;clientesCatalogos;detalleCliente;mostrarProspectos;
+    panelVisualizar;
     @Output() public contratos = new EventEmitter();
     constructor() {
 
         //this.nuevoMantenimiento();
         this.datosContrato = false;
+        this.panelVisualizar = 'Ayuda';
     }
     ngOnInit() {}
     catalogoClientes(){
@@ -71,6 +73,7 @@ export class VentasComponent implements OnInit {
         });
     }
     _limpiarVistaYVariables(){
+        this.panelVisualizar=  '';
         this.mostrarProspectos = this.detalleCliente = this.vistaCentro = this.clientesCatalogos = this.datosContrato = this.clienteNuevo = this.cotizacionNueva  = false;
     }
     _delay(ms){

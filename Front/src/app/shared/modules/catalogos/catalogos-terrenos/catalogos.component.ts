@@ -6,6 +6,7 @@ import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import swal from 'sweetalert2';
 import * as moment from 'moment';
+import {NgbActiveModal,NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 
 
 
@@ -21,33 +22,17 @@ export class CatalogosTerrenosComponent implements OnInit {
     terrenosTodos;datosTerrenos;vistaCentro;
     chksTerrenos = [];parcelas = []; etapas=[]; lotes = []; estatusTodos = [];
     parcelaFiltro;loteFiltro;etapaFiltro;estatusFiltro;
-    detalleTerrenos;textoTerreno;
+    detalleTerrenos;textoTerreno;activeModal;modalDatos;terrenoActual;
     @ViewChild('datatableTerrenos')datatableTerrenos;
     frmSolicitud: FormGroup; // Formulario de solicitud
-    constructor(private catalogosService : CatalogosService,private fb: FormBuilder) {
+    constructor(private catalogosService : CatalogosService,private fb: FormBuilder,private modalService: NgbModal) {
         this.frmSolicitud = fb.group({
             'File': [null]
         });
 //        this.parcelaFiltro = this.loteFiltro =this.etapaFiltro = 
 this.estatusFiltro = '0';
         this.verCatalogoTerrenos({});
-    }
-
-    // <!-- <input id="typeahead-format" (keyup)="campoNombre();"  placeholder="Encontrar por nombre del cliente:" type="text" class="form-control" [(ngModel)]="nombreCliente" [ngbTypeahead]="filtrarCliente" (selectItem)="detalleCliente($event.item);" [resultFormatter]="formatter" /> -->
-    filtrarParcelas = (text$: Observable<string>) =>
-    
-    text$.pipe( debounceTime(200), distinctUntilChanged(),
-        map(term => term === ''?[]:this.parcelas.map(o=>o.parcela).filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
-    );    
-    filtrarLotes = (text$: Observable<string>) =>
-    text$.pipe( debounceTime(200), distinctUntilChanged(),
-        map(term => term === ''?[]:this.lotes.map(o=>o.lote).filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
-    );    
-    filtrarEtapas = (text$: Observable<string>) =>
-    text$.pipe( debounceTime(200), distinctUntilChanged(),
-        map(term => term === ''?[]:this.etapas.map(o=>o.etapa).filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
-    );    
-            
+    }            
     ngOnInit() { }
     obtenerContratosActivos(event){
         this._limpiarVariables();
@@ -57,6 +42,12 @@ this.estatusFiltro = '0';
             this.contratosActivos =  { Datos : res['Data']};
         }).catch(err=>{this._limpiarVariables();});
     }
+    abrirModal(content){ 
+        console.log('terreno actual',this.terrenoActual);
+        // this.terrenoActual.Latitud = `${this.terrenoActual.Latitud}`
+        // this.terrenoActual.Longitud = `${this.terrenoActual.Longitud}`
+        this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
+    }
     filtrarTerrenos(){
         let filtrados = this.terrenosTodos;
         console.log('filtrados',filtrados);
@@ -65,16 +56,22 @@ this.estatusFiltro = '0';
             let coincidencias = [];
             filtrados.forEach((dat)=>{
                 let validado = false;
-                if(dat.Etapa.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                if(`${dat.etapa}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
                     validado = true;
                 }
-                if(dat.Parcela.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                if(`${dat.parcela}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
                     validado = true;
                 }
-                if(dat.Pertenece.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                if(`${dat.Pertenece}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
                     validado = true;
                 }
-                if(dat.Lote.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                if(`${dat.Original}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.Estado}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.lote}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
                     validado = true;
                 }
                 if(validado){ coincidencias.push(dat);}
@@ -82,9 +79,9 @@ this.estatusFiltro = '0';
             filtrados = (coincidencias[0])?coincidencias:filtrados;
         }
         console.log('parcelas',this.parcelas);
-        filtrados = (this.parcelas.find(o=>o.parcela == `${this.parcelaFiltro}`))?filtrados.filter(f=>f.Parcela == `${this.parcelaFiltro}`):filtrados;
-        filtrados = (this.lotes.find(o=>o.lote == `${this.loteFiltro}`))?filtrados.filter(f=>f.Lote == `${this.loteFiltro}`):filtrados;
-        filtrados = (this.etapas.find(o=>o.etapa == `${this.etapaFiltro}`))?filtrados.filter(f=>f.Etapa == `${this.etapaFiltro}`):filtrados;
+        filtrados = (this.parcelaFiltro != 'TODOS' && this.parcelas.find(o=>o.parcela == `${this.parcelaFiltro}`))?filtrados.filter(f=>f.parcela == `${this.parcelaFiltro}`):filtrados;
+        filtrados = (this.loteFiltro != 'TODOS' && this.lotes.find(o=>o.lote == `${this.loteFiltro}`))?filtrados.filter(f=>f.lote == `${this.loteFiltro}`):filtrados;
+        filtrados = (this.etapaFiltro != 'TODOS' && this.etapas.find(o=>o.etapa == `${this.etapaFiltro}`))?filtrados.filter(f=>f.etapa == `${this.etapaFiltro}`):filtrados;
         filtrados = (this.estatusFiltro != '0')?filtrados.filter(f=>f.Estado == this.estatusFiltro):filtrados;
         //console.log('filtrados',filtrados);
         /*
@@ -101,10 +98,12 @@ this.estatusFiltro = '0';
         }
 
     }
-    detalleTerreno(ter){
-        this.detalleTerrenos = false;
-        this.detalleTerrenos =  ter;
+    cambiarCoordenadas(event){
+        console.log('event',event);
+        this.detalleTerrenos.Latitud = event.coords.lat;
+        this.detalleTerrenos.Longitud = event.coords.lng;
     }
+
     guardarCambiosTerreno(){
         console.log('guardar datos',this.detalleTerrenos);
         if(!this.detalleTerrenos.Asignado){
@@ -127,8 +126,9 @@ this.estatusFiltro = '0';
     verCatalogoTerrenos(event){
         console.log('entro',event);
         this.catalogosService.obtenerTerrenos().then(res=>{
-            let datos = this._ordenarDatosTerrenos(res['Data']);
-            
+            //let datos = this._ordenarDatosTerrenos(res['Data']);
+            let datos = res['Data'];
+            console.log('datos',datos);
             this._recorrerFiltros(datos);
             // console.log('par',this.parcelas);
             // console.log('lot',this.lotes);
@@ -279,20 +279,24 @@ this.estatusFiltro = '0';
     }
     _recorrerFiltros(datos){
         this.parcelas = []; this.lotes = []; this.etapas = []; this.estatusTodos = [];
+        this.parcelas.push({parcela:'TODOS'});
+        this.lotes.push({lote:'TODOS'});
+        this.etapas.push({etapa:'TODOS'});
+        
         console.log('dat para fil',datos);
         if(datos){
             datos.forEach(d=>{        
-                let existePar = this.parcelas.find(pa=>pa.parcela == d.Parcela);
+                let existePar = this.parcelas.find(pa=>pa.parcela == d.parcela);
                 if(!existePar){
-                    this.parcelas.push({parcela:d.Parcela});
+                    this.parcelas.push({parcela:d.parcela});
                 }
-                let existeEta = this.etapas.find(pa=>pa.etapa == d.Etapa);
+                let existeEta = this.etapas.find(pa=>pa.etapa == d.etapa);
                 if(!existeEta){
-                    this.etapas.push({etapa:d.Etapa});
+                    this.etapas.push({etapa:d.etapa});
                 }
-                let existeLot = this.lotes.find(pa=>pa.lote == d.Lote);
+                let existeLot = this.lotes.find(pa=>pa.lote == d.lote);
                 if(!existeLot){
-                    this.lotes.push({lote:d.Lote});
+                    this.lotes.push({lote:d.lote});
                 }
                 let existeEst = this.estatusTodos.find(pa=>pa.Estatus == d.Estado);
                 if(!existeEst){
@@ -303,12 +307,12 @@ this.estatusFiltro = '0';
     }
     _ordenarDatosTerrenos(datos){
         let datosOrdenados = [];
-        if(datos){
-            datos.forEach(d=>{
-                datosOrdenados.push({ IdTerreno: d.IdTerreno, Etapa :d.etapa, Lote: d.lote, Parcela: d.parcela, Superficie:d.Superficie,
-                Pertenece:d.Pertenece, Original: d.Original, Estado: d.Estado, Asignado: d.Asignado, Activo: d.Activo, ObjCompleto:d});
-            });
-        }
+        // if(datos){
+        //     datos.forEach(d=>{
+        //         datosOrdenados.push({ IdTerreno: d.IdTerreno, Etapa :d.etapa, Lote: d.lote, Parcela: d.parcela, Superficie:d.Superficie,
+        //         Pertenece:d.Pertenece, Original: d.Original, Estado: d.Estado, Asignado: d.Asignado, Activo: d.Activo, ObjCompleto:d});
+        //     });
+        // }
         return datosOrdenados;
     }
     _limpiarVariables(){

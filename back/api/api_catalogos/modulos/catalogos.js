@@ -509,12 +509,15 @@ module.exports = class Catalogos {
     }
     Actualizar_terreno(datos){
         return new Promise((resolve, reject)=>{            
-            let update = (datos.Lote || datos.Parcela || datos.Etapa || datos.Superficie)?`SET`:``;
+            let update = ` SET `;
+//            let update = (datos.Lote || datos.Parcela || datos.Etapa || datos.Superficie)?`SET`:``;
             update += (datos.Lote )?` lote = '${datos.Lote}',`:``;
             update += (datos.Etapa )?` etapa = '${datos.Etapa}',`:``;
             update += (datos.Parcela )?` parcela = '${datos.Parcela}',`:``;
             update += (datos.Superficie )?` superficie = '${datos.Superficie}',`:``;
             update += (datos.Pertenece )?` Pertenece = '${datos.Pertenece}',`:``;
+            update += (datos.Latitud )?` Latitud = '${datos.Latitud}',`:``;
+            update += (datos.Longitud )?` Longitud = '${datos.Longitud}',`:``;
             update += (datos.Estado )?` Estado = '${datos.Estado}',`:``;
             update += (!datos.Asignado || datos.Asignado == 0 )?` Asignado = 0,`:(datos.Asignado)?` Asignado = 1,`:'';
             update += (!datos.Activo || datos.Activo == 0 )?` Activo = 0,`:(datos.Activo)?` Activo = 1,`:'';

@@ -119,7 +119,7 @@ export class CatalogoClientesComponent implements OnInit {
                     }
                 });
             }
-            console.log('Terren',Terren);
+//            console.log('Terren',Terren);
             this._recorrerFiltros(Terren);
             this.clientesTodos =  filtrados;
         }

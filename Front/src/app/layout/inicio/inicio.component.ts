@@ -14,6 +14,7 @@ export class InicioComponent implements OnInit {
     public alerts: Array<any> = [];
     reporteActivo;reportesIngresos;reportesGastos;reportesCartera;reportesClientes;
     ingresosChart;gastosChart;carteraChart;clientesChart;datosUsuario;datosDashboard;
+    panelVisualizar;
     @ViewChild('datatableClientes')datatableClientes;
     @ViewChild('datatableCartera')datatableCartera;
     @ViewChild('datatableGastos')datatableGastos;
@@ -25,6 +26,7 @@ export class InicioComponent implements OnInit {
         if(this.datosUsuario.Perfil == 'Vendedor'){
             this.router.navigate(['/ModuloVentas/']);            
         }
+        this.panelVisualizar = 'Ayuda';
     }
     ngOnInit() {}
     

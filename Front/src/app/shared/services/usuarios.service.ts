@@ -57,4 +57,9 @@ export class UsuariosService {
       return Promise.resolve(response);
     }).catch(err => { return Promise.reject(err); });
   }
+  obtenerManual(datos){
+    return this.api.post(`/usuarios/obtenerArchivoManual`,datos).then(response => {
+      return Promise.resolve(response);
+    }).catch(err => { return Promise.reject(err); });
+  }
 }

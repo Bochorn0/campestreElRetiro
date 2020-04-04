@@ -25,7 +25,8 @@
                     </div>
                     <div class="col-6 col-lg-3">
                         <h4> Parcela </h4>
-                        <input  (keyup)="filtrarTerrenos();"   placeholder="Parcela:" type="text" class="form-control" [(ngModel)]="parcelaFiltro" [ngbTypeahead]="filtrarParcelas" (selectItem)="parcelaFiltro = $event.item; filtrarTerrenos();" [resultFormatter]="formatter" />
+                        <ngx-select [items]="parcelas" optionValueField="parcela" placeholder="Parcela:" (select)="filtrarTerrenos();" [(ngModel)]="parcelaFiltro"></ngx-select>
+                        <!-- <input  (keyup)="filtrarTerrenos();"   placeholder="Parcela:" type="text" class="form-control" [(ngModel)]="parcelaFiltro" [ngbTypeahead]="filtrarParcelas" (selectItem)="parcelaFiltro = $event.item; filtrarTerrenos();" [resultFormatter]="formatter" /> -->
                         <!-- <select  class="form-control" [(ngModel)]="parcelaFiltro" (change)="filtrarTerrenos();" >
                             <option value="0">Todas</option>
                             <option  *ngFor="let e of parcelas;" value="{{e.parcela}}">{{e.parcela}}</option>
@@ -33,7 +34,8 @@
                     </div>
                     <div class="col-6 col-lg-3">
                         <h4> Lote </h4>
-                        <input  (keyup)="filtrarTerrenos();"  placeholder="Lote:" type="text" class="form-control" [(ngModel)]="loteFiltro" [ngbTypeahead]="filtrarLotes" (selectItem)="loteFiltro = $event.item; filtrarTerrenos();"  [resultFormatter]="formatter" />
+                        <ngx-select [items]="lotes" optionValueField="lote" placeholder="Lote:" (select)="filtrarTerrenos();" [(ngModel)]="loteFiltro"></ngx-select>
+                        <!-- <input  (keyup)="filtrarTerrenos();"  placeholder="Lote:" type="text" class="form-control" [(ngModel)]="loteFiltro" [ngbTypeahead]="filtrarLotes" (selectItem)="loteFiltro = $event.item; filtrarTerrenos();"  [resultFormatter]="formatter" /> -->
                         <!-- <select  class="form-control" [(ngModel)]="loteFiltro" (change)="filtrarTerrenos();" >
                             <option value="0">Todos</option>
                             <option  *ngFor="let e of lotes;" value="{{e.lote}}">{{e.lote}}</option>
@@ -41,7 +43,8 @@
                     </div>
                     <div class="col-6 col-lg-3"> 
                         <h4> Estapa </h4>
-                        <input (keyup)="filtrarTerrenos();"  placeholder="Etapa:" type="text" class="form-control" [(ngModel)]="etapaFiltro" [ngbTypeahead]="filtrarEtapas" (selectItem)="etapaFiltro = $event.item; filtrarTerrenos();" [resultFormatter]="formatter" />
+                        <ngx-select [items]="etapas" optionValueField="etapa" placeholder="Etapa:" (select)="filtrarTerrenos();" [(ngModel)]="etapaFiltro"></ngx-select>                        
+                        <!-- <input (keyup)="filtrarTerrenos();"  placeholder="Etapa:" type="text" class="form-control" [(ngModel)]="etapaFiltro" [ngbTypeahead]="filtrarEtapas" (selectItem)="etapaFiltro = $event.item; filtrarTerrenos();" [resultFormatter]="formatter" /> -->
                         <!-- <select  class="form-control" [(ngModel)]="etapaFiltro" (change)="filtrarTerrenos();" >
                             <option value="0">Todas</option>
                             <option  *ngFor="let e of etapas;" value="{{e.etapa}}">{{e.etapa}}</option>

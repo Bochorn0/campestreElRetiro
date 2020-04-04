@@ -6,12 +6,14 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { NgbTypeaheadModule , NgbTabsetModule} from '@ng-bootstrap/ng-bootstrap';
 import { DatatableModule} from '../../datatables-general/datatables-general.module';
 import { StatModule} from '../../stat/stat.module';
+import {  } from '../../stat/stat.module';
 import { PageHeaderModule } from '../../page-header/page-header.module';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { CatalogoClientesComponent } from './catalogo-clientes.component';
 import { FormularioClientesSeparadoModule } from '../../formularios/formulario-clientes-separado/formulario-clientes-separado.module';
+import { NgxSelectModule } from 'ngx-select-ex';
 @NgModule({
-    imports: [CommonModule, RouterModule, FormsModule,DatatableModule,StatModule,PageHeaderModule,ReactiveFormsModule, NgxPaginationModule,    NgbTypeaheadModule, FroalaEditorModule, FroalaViewModule, NgbTabsetModule,FormularioClientesSeparadoModule],
+    imports: [CommonModule, RouterModule, FormsModule,DatatableModule,StatModule,PageHeaderModule,ReactiveFormsModule, NgxPaginationModule,    NgbTypeaheadModule, FroalaEditorModule, FroalaViewModule, NgbTabsetModule,FormularioClientesSeparadoModule,NgxSelectModule],
     declarations: [CatalogoClientesComponent],
     exports: [CatalogoClientesComponent] 
 })

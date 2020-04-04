@@ -16,7 +16,7 @@ export class FinanzasComponent implements OnInit {
 verCatalogoCuentas; verEstadoFinanciero;vistaCentro;panelVisualizar;
 constructor(private estadisticasService: EstadisticasService, private catalogosService : CatalogosService) {
 //    this.verCatalogoCuentas = this.verEstadoFinanciero = false;
-    this.estadosFinancieros({});
+    //this.estadosFinancieros({});
     this.panelVisualizar = 'Ayuda';
 }
 catalogoCuentas(){

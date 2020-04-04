@@ -26,7 +26,8 @@ export class EgresosComponent implements OnInit {
     formularioCatalogoCategorias;catalogoCategorias;notaGasto;
     file_archivo;subcategoriasFiltro;subcategoria_;categoria_;categoriasFiltro;fechaGasto;
     nuevaCat;nuevaSub;nombreSubcategoria;gastosPorCategoria;
-    panelVisualizar;
+    panelVisualizar;filtrosGastos;
+    categoriasSelect = [];subcategoriasSelect = [];
     @ViewChild('datatableGastos')datatableGastos;
     @ViewChild('datatableCategorias')datatableCategorias;
     @ViewChild('datatableSubcategorias')datatableSubcategorias;
@@ -41,8 +42,8 @@ export class EgresosComponent implements OnInit {
         this.formularioCatalogoCategorias = false;
         this.tipoGastoFiltro = this.categoriaGasto = this.subcategoriaGasto = this.fuenteGasto = "0";
         this.categoria_ = this.subcategoria_ = this.idCategoriaPadre = this.subcategoriaGasto = 0;
-        this.fInicio = `${moment().format('YYYY')}-01-01`;
-        this.fFin =  moment().format('YYYY-MM-DD');
+        // this.fInicio = `${moment().format('YYYY')}-01-01`;
+        // this.fFin =  moment().format('YYYY-MM-DD');
         this._obtenerEmpleados();
         //this._obtenerCatalogoGastos();
         this._formasDePago();
@@ -94,10 +95,10 @@ export class EgresosComponent implements OnInit {
             });
         }).catch(err=>{this._limpiarVistaYVariables();});
     }
-    filtrarGastos = (text$: Observable<string>) =>
-    text$.pipe( debounceTime(200), distinctUntilChanged(),
-      map(term => term === ''?[]:this.tiposGastos.filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
-    );
+    // filtrarGastos = (text$: Observable<string>) =>
+    // text$.pipe( debounceTime(200), distinctUntilChanged(),
+    //   map(term => term === ''?[]:this.tiposGastos.filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
+    // );
     filtrarFuentes = (text$: Observable<string>) =>
     text$.pipe( debounceTime(200), distinctUntilChanged(),
       map(term => term === ''?[]:this.formaDePago.filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
@@ -221,11 +222,11 @@ export class EgresosComponent implements OnInit {
     obtenerGastos(){
         this._limpiarVistaYVariables();
         this.contabilidadService.obtenerGastos().then(res =>{
-            this.gastosTodos = res['Data'];
+//            this.gastosTodos = res['Data'];
             this.panelVisualizar = 'Gastos';
             //(let gastosOrdenados = (res['Data'])?this._ordenarDatosGastos(res['Data']):[{Resultados:'No existen Gastos registrados'}];
             let gastosOrdenados = (res['Data'])?this._ordenarDatosGastos(res['Data']):[];
-            this.datosGastos = gastosOrdenados;
+            this.gastosTodos = this.datosGastos = gastosOrdenados;
             this.gastosPorCategoria  = this._gastosPorCategoria(gastosOrdenados);
             console.log('datos',this.datosGastos);
             // this.datosGastos = { Opciones:{Eliminar:true, Seleccionar: true}, Datos: gastosOrdenados};
@@ -240,23 +241,19 @@ export class EgresosComponent implements OnInit {
     }
     _ordenarDatosGastos(datos){
         let datosOrdenados = [];
-        if(datos.lengt > 1){
-            let arrayFechas = datos.map((d) => moment(d.Fecha_gasto));
+        if(datos.length > 1){
+            let arrayFechas = datos.map( (d) => moment(d.Fecha_gasto));
             let str = ``;
+            console.log('array fechas',arrayFechas);
             arrayFechas.forEach(a=>{
                 str += `${a},`;
             })
             this.fInicio = moment.min(arrayFechas).format('YYYY-MM-DD');
             this.fFin = moment.max(arrayFechas).format('YYYY-MM-DD');
         }
-        this.catalogoGastos  = [];
         this.categoriasFiltro = [];
         this.subcategoriasFiltro = [];
-        this.totalGastoAcumulado = 0;
         datos.forEach(d=>{
-            this.totalGastoAcumulado += d.Total;
-            let exis = this.catalogoGastos.find(ob=>ob.Tipo == d.Tipo);
-            if(!exis){ this.catalogoGastos.push({Tipo:`${d.Tipo}`});}
             let exis_c = this.categoriasFiltro.find(ob=>ob.Categoria == d.Categoria);
             if(!exis_c){ this.categoriasFiltro.push({Categoria:`${d.Categoria}`});}
             let exis_s = this.subcategoriasFiltro.find(ob=>ob.Subcategoria == d.Subcategoria);
@@ -277,7 +274,12 @@ export class EgresosComponent implements OnInit {
     }
     _gastosPorCategoria(datos){
         let datosOrdenados = [];
+        this.subcategoriasFiltro = [];
+        this.totalGastoAcumulado = 0;
         datos.forEach(d=>{
+            this.totalGastoAcumulado += d.Total;
+            let exis_s = this.subcategoriasFiltro.find(ob=>ob.Subcategoria == d.Subcategoria);
+            if(!exis_s){ this.subcategoriasFiltro.push({Subcategoria:`${d.Subcategoria}`});}
             let existe =  datosOrdenados.find(dd=>dd.Categoria == d.Categoria);
             if(!existe){
                 datosOrdenados.push({Categoria: d.Categoria, Pagina:d.Categoria, IdCategoria : d.IdCategoria, Gastos : datos.filter(dd=>dd.Categoria == d.Categoria)});
@@ -307,25 +309,51 @@ export class EgresosComponent implements OnInit {
             swal('Error','Debes seleccionar al menos un gasto para usar este boton', 'error');
         }
     }
-    filtrarGastosPorTipo(){
+    filtrarGastos(){
         let restantes = this.gastosTodos;
-        console.log('restantes',restantes);
-        restantes = (this.fInicio)?restantes.filter(ob=>ob.Fecha_gasto.split('T')[0] >=  this.fInicio):restantes;
-        console.log('restantes',restantes);
-        restantes = (this.fFin)?restantes.filter(ob=>ob.Fecha_gasto.split('T')[0] <=  this.fFin):restantes;
-        console.log('restantes',restantes);
-        restantes = (this.categoria_ != 0)?restantes.filter(ob=>ob.Categoria ==  this.categoria_):restantes;
-        console.log('restantes',restantes);
-        restantes = (this.subcategoria_ != 0)?restantes.filter(ob=>ob.Subcategoria ==  this.subcategoria_):restantes;
-        console.log('restantes',restantes);
-        
-        this.datosGastos = { Opciones:{Eliminar:true}, Datos: this._ordenarDatosGastos(restantes)};
-        console.log('datosGastos',this.datosGastos);
-        
-        if(this.datatableGastos != null){
-            this.datatableGastos._reiniciarRegistros(this.datosGastos);
+        restantes = (this.fInicio)?restantes.filter(ob=> moment(ob.Fecha).format('YYYY-MM-DD') >=  this.fInicio):restantes;
+        restantes = (this.fFin)?restantes.filter(ob=> moment(ob.Fecha).format('YYYY-MM-DD') <=  this.fFin):restantes;
+        console.log('categoriasSelect',this.categoriasSelect);
+        let subcategos_permitidas = [];
+        if(this.categoriasSelect[0]){
+            let filtradosCategorias = [];
+            this.categoriasSelect.forEach(c=>{
+                restantes.forEach(g=>{
+                    if(g.Categoria == c){
+                        filtradosCategorias.push(g);
+                    }
+                });
+            });
+            restantes = filtradosCategorias;
+            subcategos_permitidas = restantes.map((sp)=>sp.Subcategoria);
+            if(this.subcategoriasSelect[0]){
+                this.subcategoriasSelect.forEach(ss=>{
+                    if(!subcategos_permitidas.find(sp=>sp == ss)){
+                        this.subcategoriasSelect = [];
+                    }
+                });
+            }
         }
-        this.datosGastos = { Opciones:{Eliminar:true}, Datos: this._ordenarDatosGastos(restantes)};
+        console.log('subcategorias',this.subcategoriasSelect);
+        if(this.subcategoriasSelect[0]){
+            let filtradosCategorias = [];
+            this.subcategoriasSelect.forEach(s=>{
+                restantes.forEach(g=>{
+                    if(g.Subcategoria == s){
+                        filtradosCategorias.push(g);
+                    }
+                });
+            });
+            restantes = filtradosCategorias;
+        }
+        this.gastosPorCategoria = this._gastosPorCategoria(restantes);
+        // this.datosGastos = { Opciones:{Eliminar:true}, Datos: this._ordenarDatosGastos(restantes)};
+        // console.log('datosGastos',this.datosGastos);
+        
+        // if(this.datatableGastos != null){
+        //     this.datatableGastos._reiniciarRegistros(this.datosGastos);
+        // }
+        // this.datosGastos = { Opciones:{Eliminar:true}, Datos: this._ordenarDatosGastos(restantes)};
     }
     _limpiarVistaYVariables(){ 
         this.verCategorias = this.categoriaAlta = this.subcategoriaAlta = this.vistaCentro = this.datosGastos = this.altaNuevoGasto =  this.formularioCatalogoCategorias = false ;
@@ -333,6 +361,23 @@ export class EgresosComponent implements OnInit {
           
         this.responsable = this.fuenteGasto = this.categoriaGasto = this.subcategoriaGasto = this.totalGasto = this.idCategoriaPadre = 0;
 
+    }
+    activarTodosChk(s){
+//        console.log('s',s);
+        s.Gastos.map(g=>g.Chk = s.ChkTodos);
+        this.cambiarChkGastos();
+    }
+    cambiarChkGastos(){
+//        console.log('gastosPorCategoria',this.gastosPorCategoria);
+        this.chksGastos = [];
+        this.gastosPorCategoria.forEach(g=>{
+            g.Gastos.forEach(gg=>{
+                if(gg.Chk){
+                    this.chksGastos.push(gg);
+                }
+            });
+        });
+        console.log('gastos',this.chksGastos);
     }
     borrarGasto(obj){
         this.contabilidadService.borrarGasto(obj).then( res=>{
@@ -378,7 +423,7 @@ export class EgresosComponent implements OnInit {
         datos.forEach(d=>{
             let existe =  datosOrdenados.find(dd=>dd.Categoria == d.Categoria);
             if(!existe){
-                datosOrdenados.push({Categoria: d.Categoria, IdCategoria : d.IdCategoria, Subcategorias : datos.filter(dd=>dd.IdCategoria == d.IdCategoria)});
+                datosOrdenados.push({Categoria: d.Categoria, Subcategorias : datos.filter(dd=>dd.IdCategoria == d.IdCategoria)});
             }
         });
         return datosOrdenados;

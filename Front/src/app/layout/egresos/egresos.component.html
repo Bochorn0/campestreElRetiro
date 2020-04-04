@@ -20,7 +20,7 @@
         </div>
         <div class="col-6 col-lg-3">
             <div class="form-group">
-                <button (click)="subirArchivo.click();" class="btn bg-danger menu w-100 text-white" ><i class="fa fa-cloud-upload"></i> | Importar Gastos</button>
+                <button (click)="subirArchivo.click();" class="btn bg-orange menu w-100 text-white" ><i class="fa fa-cloud-upload"></i> | Importar Gastos</button>
             </div>
         </div>
     </div>
@@ -155,11 +155,21 @@
             <!-- PANEL DE GASTOS -->
             <div class="row"  [@routerTransition]  *ngIf="panelVisualizar == 'Gastos'">
                 <div class="col-12">
-                    <div class="form-group">
-                        <button (click)="nuevoGasto();" class="btn btn-success pull-right "><i class="fa fa-plus" style="margin-right:10px;"></i> Nuevo Gasto</button>
-                        <button *ngIf="this.chksGastos.length > 0" (click)="borrarMultiplesGastos();" class="btn btn-danger-clasic  pull-right" ><i class="fa fa-times"></i> Borrar Multiples </button>
-                        <br><br>
+                    <div class="row">
+                        <div class="col-0 col-lg-3"></div>
+                        <div class="col-0 col-lg-3"></div>
+                        <div class="col-6 col-lg-3">
+                            <div class="form-group" >
+                                <button *ngIf="this.chksGastos.length > 0" (click)="borrarMultiplesGastos();" class="btn bg-danger w-100 " ><i class="fa fa-times"></i> Borrar Multiples </button>
+                            </div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <div class="form-group" >
+                                <button (click)="nuevoGasto();" class="btn btn-success pull-right w-100"><i class="fa fa-plus" ></i> |  Nuevo Gasto</button>
+                            </div>
+                        </div>                                                
                     </div>
+                    <br>
                 </div>
                 <div class="col-xs-12 col-lg-12 col-xl-12" *ngIf="datosGastos">
                     <div class="card-header bg-primary">
@@ -167,60 +177,53 @@
                     </div>
                     <div class="card-body table-responsive">
                         <div class="row">
-<!--                            <div class="col-lg-4" *ngIf="catalogoGastos && datosGastos.Datos.length > 0">
+                            <div class="col-12 text-center">
+                                <label class="switch ">
+                                    <input type="checkbox" [(ngModel)]="filtrosGastos" />
+                                    <span class="slider round"></span>
+                                </label>
+                                <b style="vertical-align: sub;"> Mostar Filtros</b>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="filtrosGastos">
+                            <div class="col-12 col-lg-6" *ngIf="categoriasFiltro">
                                 <div class="form-group">
-                                    <label class="label-form"> Por Tipo de Gasto </label>
-                                    <select class="form-control" (change)="filtrarGastosPorTipo();" [(ngModel)]="tipoGastoFiltro" >
-                                        <option value="0">Selecciona el tipo</option>
-                                        <option *ngFor="let gas of catalogoGastos" value="{{gas.Tipo}}">{{gas.Tipo}}</option>
-                                    </select>
+                                    <label class="label-form"> Seleccionar Categorias  </label>
+                                    <ngx-select [items]="categoriasFiltro" optionValueField="Categoria" [multiple]="true" placeholder="Categoria:" (remove)="filtrarGastos();" (select)="filtrarGastos();" [(ngModel)]="categoriasSelect"></ngx-select>
                                 </div>
-                            </div>-->
-                            <!--&& datosGastos.Datos.length > 0-->
-                            <div class="col-lg-3" *ngIf="categoriasFiltro">
+                            </div>
+                            <div class="col-12 col-lg-6" *ngIf="subcategoriasFiltro ">
                                 <div class="form-group">
-                                    <label class="label-form"> Por Categoria </label>
-<!--                                    <select class="form-control" (change)="filtrarGastosPorTipo();" [(ngModel)]="tipoGastoFiltro" >
-                                        <option value="0">Selecciona el tipo</option>
-                                        <option *ngFor="let gas of catalogoGastos" value="{{gas.Tipo}}">{{gas.Tipo}}</option>
-                                    </select>-->
-                                    <select type="text" (change)="filtrarGastosPorTipo(); " [(ngModel)]="categoria_"  class="form-control" >
-                                        <option value="0">Todas</option>
-                                        <option *ngFor="let c of categoriasFiltro" value="{{c.Categoria}}">{{c.Categoria}}</option>
-                                    </select>
+                                    <label class="label-form"> Seleccionar Subcategorias </label>
+                                    <ngx-select [items]="subcategoriasFiltro" optionValueField="Subcategoria" [multiple]="true" placeholder="Subcategoria:" (remove)="filtrarGastos();" (select)="filtrarGastos();" [(ngModel)]="subcategoriasSelect"></ngx-select>                                    
                                 </div>
-                            </div><!--&& datosGastos.Datos.length > 0-->
-                            <div class="col-lg-3" *ngIf="subcategoriasFiltro ">
-                                    <div class="form-group">
-                                        <label class="label-form"> Por Subcategoria </label>
-                                        <select type="text" (change)="filtrarGastosPorTipo();" [(ngModel)]="subcategoria_"  class="form-control" >
-                                            <option value="0">Todas</option>
-                                            <option *ngFor="let c of subcategoriasFiltro" value="{{c.Subcategoria}}">{{c.Subcategoria}}</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                            <div class="col-lg-3" *ngIf="datosGastos">
+                            </div>
+                            <div class="col-12 col-lg-6">
                                 <div class="form-group">
                                     <label class="label-form"> Fecha inicio </label>
-                                    <input type="date" [(ngModel)]="fInicio" (change)="filtrarGastosPorTipo();" class="form-control" >
+                                    <input type="date" [(ngModel)]="fInicio" (change)="filtrarGastos();" class="form-control" >
                                 </div>
                             </div>
-                            <div class="col-lg-3" *ngIf="datosGastos">
+                            <div class="col-12 col-lg-6">
                                 <div class="form-group">
                                     <label class="label-form"> Fecha fin </label>
-                                    <input type="date" [(ngModel)]="fFin" (change)="filtrarGastosPorTipo();" class="form-control" >
+                                    <input type="date" [(ngModel)]="fFin" (change)="filtrarGastos();" class="form-control" >
                                 </div>
                             </div>
-                            <div class="col-12"  id="pageGastos" *ngIf="gastosPorCategoria[0]">
+                        </div>
+                        <div class="row"  *ngIf="gastosPorCategoria[0]" >
+                            <div class="col-12"  id="pageGastos">
                                 <div class="row " *ngFor="let s of gastosPorCategoria  | paginate: { itemsPerPage: 3, currentPage: pageGastos , id:'GastosId' }" class="borderPad">
                                     <div class="col-12" style="overflow:auto;" *ngIf="s.Gastos[0]">
                                         <h3>
                                             {{s.Categoria}}
                                         </h3>
                                         <table class="table table-striped" id="{{s.Pagina}}">
-                                            <tr style="background-color:#ddd;" ><th>Categoria</th><th>Folio</th><th>Fecha</th><th>Concepto</th><th>Importe</th></tr>
+                                            <tr style="background-color:#ddd;" ><th><input type="checkbox" [(ngModel)]="s.ChkTodos" (change)="activarTodosChk(s);"/> </th><th>Categoria</th><th>Folio</th><th>Fecha</th><th>Concepto</th><th>Importe</th></tr>
                                             <tr *ngFor="let ss of s.Gastos | paginate: { itemsPerPage: 5, currentPage: s.Pagina , id:s.Pagina }" >
+                                                <td>
+                                                    <input type="checkbox" [(ngModel)]="ss.Chk" (change)="cambiarChkGastos();"/>
+                                                </td>
                                                 <td>
                                                     <div class="subcategoria">
                                                         <!-- rounded-circle2 tarjeta-perfil -->

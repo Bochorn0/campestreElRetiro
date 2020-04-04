@@ -1,6 +1,7 @@
 
 const mysql =  require("../../../shared/db/mysql_driver");
 const moment =  require ('moment');
+const fs =  require('fs-extra');
 module.exports = class Usuarios {
     Base(solicitud){
         return new Promise((resolve, reject)=>{
@@ -177,6 +178,17 @@ module.exports = class Usuarios {
             mysql.ejecutar(`UPDATE Perfiles ${update} WHERE IdPerfil = ${datos.IdPerfil};`).then((res)=>{
                 return resolve({Procesado: true, Operacion: 'Los Datos del Perfil fueron actualizados exitosamente ', Tipo: 'success'});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
+        });
+    }
+    Obtener_archivo_manual(datos){
+        console.log('datos',datos);
+        return new Promise((resolve, reject) => {
+            let path = `./shared/Manuales/${datos.Nombre}.docx`;
+//            let path = `./shared/Manuales/Plantilla_gastos.xlsx`;
+            console.log('path',path);
+            let cont = fs.readFileSync(path);
+            console.log('cont',cont);
+            return resolve({String:cont.toString('base64')});
         });
     }
 }

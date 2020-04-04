@@ -24,6 +24,10 @@
         </div>
     </div>
     <hr />
+    <!-- SECCION DE AYUDA -->
+    <div *ngIf="panelVisualizar == 'Ayuda' ">
+        <app-home-info [label]="'Cobranza'"></app-home-info>
+    </div>
     <div *ngIf="vistaCentro">
         <!--Venta regular-->
         <app-venta *ngIf="ingresoNuevo" [datosVenta]="datosVenta"  [@routerTransition]></app-venta>
