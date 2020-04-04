@@ -593,7 +593,7 @@ module.exports = class Catalogos {
         });
     }
     _crearDirectorioCliente(datos){
-        let path = `./shared/uploads/${datos.Nombre}`;
+        let path = `${process.env.Shared}uploads/${datos.Nombre}`;
         (!fs.existsSync(path))?fs.mkdirpSync(path):'';
     }
     _guardarAnualidadesCliente(conexion,datos,datosTerreno){
@@ -758,13 +758,13 @@ module.exports = class Catalogos {
             if(datos.Comprobante && datos.FotoIfe){
                 let compExt = `${datos.Comprobante.split(',')[0].split(';')[0].split('/')[1]}`;
                 let compCont = new Buffer(datos.Comprobante.split(',')[1], "base64");
-                let compPath = `./shared/uploads/${datos.Nombre}/`;
+                let compPath = `${process.env.Shared}uploads/${datos.Nombre}/`;
                 let compNombre =  `Domicilio_${datos.Nombre}.${compExt}`;
                 this._subirArchivo(compPath,compNombre,compCont,2097152).then(res=>{
                     archivos.IdComprobante = (res && !res.err)?res:0;
                     let ifeExt = `${datos.FotoIfe.split(',')[0].split(';')[0].split('/')[1]}`;
                     let ifeCont = new Buffer(datos.FotoIfe.split(',')[1], "base64");
-                    let ifePath = `./shared/uploads/${datos.Nombre}/`;
+                    let ifePath = `${process.env.Shared}uploads/${datos.Nombre}/`;
                     let ifeNombre =  `Ife_${datos.Nombre}.${ifeExt}`;
                     return this._subirArchivo(ifePath,ifeNombre,ifeCont,2097152);
                 }).then(result=>{
@@ -772,7 +772,7 @@ module.exports = class Catalogos {
                     return resolve(archivos);
                 }).catch(err=>{console.log('err',err); return resolve({Error:err}) });
             }else{
-                let pa = `./shared/uploads/${datos.Nombre}/`;
+                let pa = `${process.env.Shared}uploads/${datos.Nombre}/`;
                 (!fs.existsSync(pa))?fs.mkdirpSync(pa):'';
                 return resolve({Error:'Sin Comprobantes'});
             }
@@ -1078,7 +1078,7 @@ module.exports = class Catalogos {
             let today =  moment(new Date()).format('YYYY-MM-DD');
             let compExt = datos.Ext;
             let compCont = datos.Contenido;
-            let compPath = `./shared/uploads/${datos.datosCliente.Nombre}/`;
+            let compPath = `${process.env.Shared}uploads/${datos.datosCliente.Nombre}/`;
             let compNombre =  `Contrato-parcela_${datos.datosTerreno.parcela}-lote_${datos.datosTerreno.lote}-etapa_${datos.datosTerreno.etapa}.${compExt}`;
             this._subirArchivo(compPath,compNombre,compCont,2097152).then(res=>{
                 return resolve({res});
@@ -1253,7 +1253,7 @@ module.exports = class Catalogos {
     }
     Generar_pdf_prueba(datos){
         return new Promise((resolve, reject) => {
-            let file = `./shared/uploads/Recibos/RECIBO.pdf`;
+            let file = `${process.env.Shared}uploads/Recibos/RECIBO.pdf`;
             let wf = fs.createWriteStream(file);
             return this.obtenerDatosRecibo({}).then((datosCompletos) => {
                 let doc = new pfd();
@@ -1281,7 +1281,7 @@ module.exports = class Catalogos {
     }
     Generar_pdf_pagare(datos){
         return new Promise((resolve, reject) => {
-            let file = `./shared/uploads/Pagares/Pagare.pdf`;
+            let file = `${process.env.Shared}uploads/Pagares/Pagare.pdf`;
             let wf = fs.createWriteStream(file);
             let doc = new pfd();
             wf.on('error', (error) => { console.error(error); });
@@ -1359,7 +1359,7 @@ module.exports = class Catalogos {
     }
     Generar_pdf_recibo(datos){
         return new Promise((resolve, reject) => {
-            let file = `./shared/uploads/Recibos/RECIBO.pdf`;
+            let file = `${process.env.Shared}uploads/Recibos/RECIBO.pdf`;
             let wf = fs.createWriteStream(file);
                 let doc = new pfd();
                 wf.on('error', (error) => { console.error(error); });
@@ -1730,7 +1730,7 @@ module.exports = class Catalogos {
             let today =  moment(new Date()).format('YYYY-MM-DD');
             let compExt = `xlsx`;
             let compCont = new Buffer(datos.file, "base64"); ;
-            let compPath = `./shared/uploads/CargaDatos/`;
+            let compPath = `${process.env.Shared}uploads/CargaDatos/`;
             let compNombre =  `Archivo_carga.xlsx`;
             this._subirArchivo(compPath,compNombre,compCont,2097152).then(res=>{
                 if(datos.Borrar_anteriores){
@@ -1740,7 +1740,7 @@ module.exports = class Catalogos {
                 }
 //                return mysql.ejecutar(`TRUNCATE Table Datos_carga`);
             }).then(eliminados=>{
-                return this._leerExcel(`./shared/uploads/CargaDatos/Archivo_carga.xlsx`);
+                return this._leerExcel(`${process.env.Shared}uploads/CargaDatos/Archivo_carga.xlsx`);
             }).then(datos=>{
                 if(datos){
                     return new Promise((resO, rejE)=>{

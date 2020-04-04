@@ -346,7 +346,7 @@ module.exports = class Catalogos {
     Obtener_datos_contrato(datos){
         return new Promise((resolve, reject)=>{
             if(datos.datosTerreno.IdTerreno){
-                let ruta_archivo = `./shared/uploads/${datos.datosCliente.Nombre}/`;
+                let ruta_archivo = `${process.env.Shared}uploads/${datos.datosCliente.Nombre}/`;
                 let nombre_archivo =  `Contrato-parcela_${datos.datosTerreno.parcela}-lote_${datos.datosTerreno.lote}-etapa_${datos.datosTerreno.etapa}.html`;
                 let file = `${ruta_archivo}${nombre_archivo}`;
                 if(fs.existsSync(file)){
@@ -430,7 +430,7 @@ module.exports = class Catalogos {
     subir_excel_terrenos(datos_archivo){
         return new Promise((resolve, reject)=>{
             let datos = new Buffer(datos_archivo.file, "base64");
-            let path = `./shared/uploads/Catalogos/`;
+            let path = `${process.env.Shared}uploads/Catalogos/`;
             let fileName = `Catalogo_terrenos${moment().format('YYYY-MM-DD_HH:mm:ss')}.xlsx`;
             return this._guardarArchivoDirectorio(path,fileName,datos,2097152,'base64').then(fullPath=>{
                 //LEE EL ARCHIVO DE EXCEL Y LO TRANSFORMA EN UN OBJETO

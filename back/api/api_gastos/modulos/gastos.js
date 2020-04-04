@@ -26,7 +26,7 @@ module.exports = class Gastos {
                 if(datos.Adjunto){
                     let compExt = `${datos.Adjunto.split(',')[0].split(';')[0].split('/')[1]}`;
                     let cont = new Buffer(datos.Adjunto.split(',')[1], "base64");
-                    let path = `./shared/uploads/Gastos/`;
+                    let path = `${process.env.Shared}uploads/Gastos/`;
                     let nomb =  `Gasto_${moment().format('YYYY-MM-DD_HH-mm-ss')}.${compExt}`; 
                     return this._subirArchivo(path,nomb,cont,2097152);
                 }else{
@@ -179,7 +179,7 @@ module.exports = class Gastos {
     Subir_excel_partidas(datos_archivo){
         return new Promise((resolve, reject)=>{
             let datos = new Buffer(datos_archivo.file, "base64");
-            let path = `./shared/uploads/Gastos/`;
+            let path = `${process.env.Shared}uploads/Gastos/`;
             let fileName = `Carga_gastos_${moment().format('YYYY-MM-DD_HH:mm:ss')}.${datos_archivo.Ext}`;
             return this._guardarArchivoDirectorio(path,fileName,datos,2097152,'base64').then(fullPath=>{
                 //LEE EL ARCHIVO DE EXCEL Y LO TRANSFORMA EN UN OBJETO

@@ -183,7 +183,7 @@ module.exports = class Usuarios {
     Obtener_archivo_manual(datos){
         console.log('datos',datos);
         return new Promise((resolve, reject) => {
-            let path = `./shared/Manuales/${datos.Nombre}.docx`;
+            let path = `${process.env.Shared}/Manuales/${datos.Nombre}.docx`;
 //            let path = `./shared/Manuales/Plantilla_gastos.xlsx`;
             console.log('path',path);
             let cont = fs.readFileSync(path);
