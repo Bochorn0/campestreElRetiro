@@ -9,7 +9,7 @@ const api_website = require('./api/api_website/app');
 var cors = require('cors');
 const bodyParser = require('body-parser');
 const config = require('./shared/config/config.json');
-process.env.Shared = './shared/'
+process.env.Shared = `${config.URL_shared}`;
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
