@@ -1,15 +1,273 @@
 <div class="col-xl-12 col-lg-12 col-xs-12">
-    <div class="card mb-3">
+    <div class="card mb-3"  *ngIf="panelVisualizar == 'Prospectos'">
         <div class="card-header bg-primary" >
-            Prospectos de clientes
+            Listado de prospectos
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-lg-12">
-                    <h3 class="text-center text-info ">Datos de Contacto</h3>
-                    Listado de prospectos
+        <div class="card-body" *ngIf="Prospectos  && !detalleProspecto " >
+            <div class="row" id="prospectosId">
+                <div class="col-12 col-sm-6" *ngFor="let p of Prospectos | paginate: { itemsPerPage: 3, currentPage: pageProspectos, id:'prospectosId' }">                
+                    <div class="card" style="margin: 5px;">
+                        <div class="card-body" style="padding: 15px; min-height: 165px;">
+                            <div class="media row" style="border-bottom: 1px solid #ddd; margin-bottom: 10px;">
+                                <div class="col-12 col-sm-6">
+                                    <strong class="text-primary">
+                                        <span>{{p.Nombre_prospecto}}</span>
+                                    </strong>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <strong >
+                                        <span>
+                                            <b> <i class="fa fa-bullseye"></i> : </b>  {{(p.Apartado)?'Apartado':(p.Cita)?'Cita Agendada':(p.Cotizacion)?'Cotización enviada':(p.Informacion)?'Información enviada':'Sin Atender'}}                                                    
+                                        </span>
+                                    </strong>
+                                </div>
+                                <div class="col-12">
+                                    <p class="mb-1 text-sm"><b> <i class="fa fa-envelope"></i> : </b> {{(p.Correo)?p.Correo:'-'}}</p>
+                                    <p class="mb-2 text-sm"><b> <i class="fa fa-phone"></i> : </b>{{(p.Telefono)?p.Telefono:'-'}}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p class="text-muted mb-2 text-sm"><b> <i class="fa fa-calendar"></i> : </b> {{p.Fecha_modificacion.split('T').join(' ').split('.')[0]}}</p>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn bg-warning pull-right w-100" (click)="detalleProspecto = p;"><i class="fa fa-check-square"></i> | Detalles</button>                            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class=" col-12 text-right">
+                    <br>
+                    <pagination-controls (pageChange)="pageProspectos = $event" id="prospectosId"></pagination-controls>
+                </div>
+            </div>
+        </div>
+        <div class="card-body" *ngIf="detalleProspecto" >
+            <button class="btn bg-warning text-white" (click)="detalleProspecto = false"><i class="fa fa-users"></i> | Ver Todos</button>
+            <br><br>
+            <div class="list-group-item list-group-item-action " >
+                <div class="media" >
+                    <div class="align-self-start mx-2 circle thumb55" >
+                        <i class="fa fa-user text-primary fa-3x" style="margin-left:8px;"></i> 
+                    </div>
+                    <div class="media-body text-truncate">
+                        <p class="mb-1">
+                            <strong class="text-primary">
+                                <span class="circle bg-success circle-lg text-left"></span>
+                                <span>{{detalleProspecto.Nombre_prospecto}}</span>
+                            </strong>
+                        </p>
+                        <p class="mb-1 text-sm">{{detalleProspecto.Descripcion}}</p>
+                    </div>
+                </div>
+                <div class="media-body list-group">
+                    <br>
+                    <a href="tel:{{detalleProspecto.Telefono}}"><div class="list-group-item list-group" ><i class="fa fa-phone-square text-green"></i> Llamar  {{detalleProspecto.Telefono}}</div></a>
+                    <a style="cursor:pointer; color: #007bff;" (click)="prospectoActivo = detalleProspecto; mandarInformacionModal(modalInformacion);  modalDatos = {Tipo: 'MandarInformacion', Clase: 'bg-warning', Titulo: 'Enviar Información a Cliente'} " >
+                        <div class="list-group-item list-group" >
+                            <i class="fa fa-check-circle text-success" *ngIf="detalleProspecto.Informacion" style="margin:0 5px;"></i>  
+                            <i class="fa fa-envelope text-info"></i> Mandar Información 
+                        </div>
+                    </a>
+                    <a style="cursor:pointer; color: #007bff;" (click)="prospectoActivo = detalleProspecto; enviarCotizacionModal(modalCotizacion);  modalDatos = {Tipo: 'EnviarCotizacion', Clase: 'bg-warning', Titulo: 'Enviar Cotización a Cliente'} " >
+                        <div class="list-group-item list-group" >
+                            <i class="fa fa-check-circle text-success" *ngIf="detalleProspecto.Cotizacion" style="margin:0 5px;"></i> 
+                            <i class="fa fa-envelope text-warning"></i> Enviar Cotización 
+                        </div>
+                    </a>
+                    <a style="cursor:pointer; color: #007bff;" (click)="prospectoActivo = detalleProspecto; agendarCita(modalCita);  modalDatos = {Tipo: 'AgendarCita', Clase: 'bg-info', Titulo: 'Agendar Cita al retiro'} ">
+                        <div class="list-group-item list-group" >
+                            <i class="fa fa-check-circle text-success" *ngIf="detalleProspecto.Cita" style="margin:0 5px;"></i> 
+                            <i class="fa fa-calendar text-danger"></i> Agendar Visita 
+                        </div>
+                    </a>
+                    <!-- <button class="btn btn-primary" (click)=" prospectoActivo = p; apartarProspecto(modalApartado); modalDatos = {Tipo: 'ModalApartado', Clase: 'bg-info', Titulo: 'Apartar Terreno'} ">Apartar</button> -->
+                    <button class="btn btn-success" (click)="apartarTerreno(detalleProspecto);"> <i class="fa fa-plus-circle"></i> | Nuevo Cliente</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- MODAL APARTADO -->
+<ng-template #modalApartado let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header modal-lg">
+        <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row" *ngIf="prospectoActivo">
+            <div class="col-6" *ngFor="let a of Terrenos">
+                <a (click)="confirmarSeleccionarTereno();">
+                    <div class="card mb-3">
+                        <div class="card-header text-white bg-{{(a.Color)?a.Color:'default'}}">
+                            <i class="fa fa-user"></i> TER-{{a.IdTerreno}}
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <tr><th>Etapa:{{a.etapa}}</th><th>Lote: {{a.lote}}</th><th>Parcela: {{a.parcela}}</th><th>Estatus: {{a.Estado}}</th></tr>
+                            </table>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<!-- MODAL CITAS -->
+<ng-template #modalCita let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header modal-lg">
+        <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row" *ngIf="prospectoActivo">
+            <div class="col-12">
+                <div class="form-group"> 
+                    <label class="label-form">Fecha</label><br>
+                    <input type="datetime-local" class="form-control" class="form-control" [(ngModel)]="prospectoActivo.CitaNueva" />
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group"> 
+                    <button class="btn btn-success pull-right" (click)="actualizarProspecto();"><i class="fa fa-calendar"></i> Agendar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<!-- MODAL PARA MANDAR INFORMACION -->
+<ng-template #modalInformacion let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header {{modalDatos.Clase?modalDatos.Clase:''}}">
+        <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label class="label-form">Para: </label>
+                    <input type="text" class="form-control" [(ngModel)]="objInformacion.Para" placeholder="jesus.ortiz@gmail.com" />
+                </div>
+                <div class="form-group">
+                    <label class="label-form">Asunto: </label>
+                    <input type="text" class="form-control" [(ngModel)]="objInformacion.Asunto" placeholder="Información Sobre Terreno" />
+                </div>
+                <div class="form-group">
+                    <label class="label-form">Mensaje:</label>
+                    <textarea rows="10" class="form-control" [(ngModel)]="objInformacion.Mensaje" placeholder="Cuerpo del correo"></textarea>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary form-control" (click)="enviarCorreoInformacion();"><i class="fa fa-envelope"></i> Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<!-- MODAL MAPA TERRENOS -->
+<ng-template #modalTerrenosLat let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header {{modalDatos.Clase?modalDatos.Clase:''}}">
+        <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-12">
+                <agm-map [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [zoom]="18" >
+                    <agm-marker [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [label]="'M'"></agm-marker>
+                </agm-map>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<!-- MODAL MANDAR COTIZACION -->
+<ng-template #modalCotizacion let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header {{modalDatos.Clase?modalDatos.Clase:''}}">
+        <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    <label class="label-form">Para: </label>
+                    <input type="text" class="form-control" [(ngModel)]="objCotizacion.Para" placeholder="jesus.ortiz@gmail.com" />
+                </div>
+                <div class="form-group">
+                    <label class="label-form">Asunto: </label>
+                    <input type="text" class="form-control" [(ngModel)]="objCotizacion.Asunto" placeholder="Cotización solicitada" />
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6 ">
+                            <button class="btn btn-success" (click)="detalleProspecto=false;  activeModal.dismiss(); panelVisualizar = 'Cotizaciones';">
+                                <i class='fa fa-plus-circle'></i> |  Nueva
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <label class="input-group-btn" style="margin:0;">
+                                    <span class="btn bg-warning text-white" >
+                                        <i class="fa fa-upload"> </i> | Cargar Cotización
+                                        <input type="file" style="display: none;" disabled (change)="nombreArchivo($event);" required>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <b class="text-info pull-right" *ngIf="objCotizacion.Adjunto">
+                                <i class="fa fa-file-o " ></i> Cotización
+                            </b>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="label-form">Mensaje:</label>
+                    <textarea rows="10" class="form-control" [(ngModel)]="objCotizacion.Mensaje" placeholder="Cuerpo del correo"></textarea>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary form-control" (click)="enviarCorreoCotizacion();"><i class="fa fa-envelope"></i> Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+    <!-- COTIZADOR -->
+    <div class="row" *ngIf="panelVisualizar == 'Cotizaciones' " >
+        <div class="col-12">
+            <!-- vistaEnviarCotizacion -->
+            <button class="btn btn-danger pull-right" (click)="panelVisualizar = 'Prospectos'; detalleProspecto = prospectoActivo;  enviarCotizacionModal(modalCotizacion);  modalDatos = {Tipo: 'EnviarCotizacion', Clase: 'bg-warning', Titulo: 'Enviar Cotización a Cliente'} "><i class="fa fa-times"></i> |  Cancelar</button>
+        </div>
+        <div class="col-12">
+            <br>
+            <div class="row">
+                <div class="col-12">
+                    <app-cotizador [Prospecto]="prospectoActivo" (vista)="vistaEnviarCotizacion($event);"></app-cotizador>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- NUEVO CLIENTE -->
+        <div class="row" *ngIf="panelVisualizar == 'NuevoCliente' " >
+            <div class="col-12">
+                <!-- vistaEnviarCotizacion -->
+                <button class="btn btn-danger pull-right" (click)="panelVisualizar = 'Prospectos'; detalleProspecto = prospectoActivo;  enviarCotizacionModal(modalCotizacion);  modalDatos = {Tipo: 'EnviarCotizacion', Clase: 'bg-warning', Titulo: 'Enviar Cotización a Cliente'} "><i class="fa fa-times"></i> |  Cancelar</button>
+            </div>
+            <div class="col-sm-12">
+                <h3 class="text-center">Nuevo Cliente</h3>
+                <div class="row">
+                    <app-formulario-clientes-separado [Nuevo]="true" [datosCliente]="datosNuevoCliente" (vista)="this.detalleCliente = false" ></app-formulario-clientes-separado>
+                </div>
+            </div>
+        </div>

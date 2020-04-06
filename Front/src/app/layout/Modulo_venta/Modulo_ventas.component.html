@@ -3,8 +3,8 @@
     <!-- MENU PRINCIPAL -->
     <div class="row text-center menuPrincipal" *ngIf="mostrarPrincipal ">
         <a (click)="mostrarPrincipal=false; obtenerProspectos('Prospectos'); " class="col-6 text-menu ">
-            <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Prospectos_texto.png" class="img-fluid" /><br> 
-        </a> 
+            <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Prospectos_texto.png" class="img-fluid" /><br>
+        </a>
         <a (click)="mostrarPrincipal=false; obtenerProspectos('Citas');" class="col-6 text-menu">
             <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Citas_texto.png" class="img-fluid"  /><br>
         </a> 
@@ -42,10 +42,49 @@
         <div class="col-sm-12">
             <h3 class="text-center">Terrenos Activos</h3>
             <input type="text" class="form-control" placeholder="Buscar terrenos relacionados con :" [(ngModel)]="terrenosBuscar" (keydown)="filtrarTerrenos();" />
+            <br>
             <div class="row">
                 <div class="col-12 col-sm-12 col-md-6 text-center" *ngFor="let a of terrenos | paginate: { itemsPerPage: 6, currentPage: pageTerr, id: 'terr_r' };">
                     <div class="card mb-3">
                         <div class="card-header bg-{{(a.Color)?a.Color:'default'}}">
+                            <i class="fa fa-map"></i> TER-{{a.IdTerreno}}
+                        </div>
+                        <div class="card-body">
+                            <span><b>Estatus: </b>{{a.Estado}}</span>
+                            <br>
+                            <table class="table" >
+                                <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th></tr>
+                                <tr><td>{{a.etapa}}</td><td>{{a.lote}}</td><td>{{a.parcela}}</td></tr>
+                            </table>
+                            <span class="text-muted">
+                                <b style="color:#000 !important">
+                                    <i class="fa fa-address-book"></i> Original:
+                                </b>
+                                {{a.Original}}
+                            </span>
+                            <br>
+                            <span class="text-muted">
+                                <b style="color:#000 !important">
+                                    <i class="fa fa-address-book"></i> Actual:
+                                </b>
+                                {{a.Pertenece}}
+                            </span>
+                            <!-- <span class="text-muted"><i class="fa fa-address-book"></i> Actual: {{a.Pertenece}}</span> -->
+                            <br>
+                            <span style="font-size: 15px;"><i class="fa fa-chart-area"></i> Superficie : {{a.Superficie}} |  Asignado : <i class="fa fa-{{(!a.Asignado)?'times-circle text-danger':'check-circle text-success'}}"></i> </span>
+                            <br/><br/>
+                            <div class="row card-footer">
+                                <div class="col-6">
+                                    <button (click)="asignarTerreno(a);" style="margin: 10px;" class="btn btn-info "> <i class="fa fa-shopping-cart"></i> |  Apartar Terreno </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn bg-warning text-white" style="margin: 10px;"  (click)="abrirModal(modalTerrenosLat); terrenoActual = a; modalDatos = {Tipo: 'Modal Terrenos', Clase: 'bg-info', Titulo: 'Mapa del Terreno'};"><i class="fa fa-map"></i> | Datos y Ubicación</button>
+                                </div>
+                            </div>                            
+<!-- 
+
+                    <div class="card mb-3">
+                        <div class="card-header text-white  bg-{{(a.Color)?a.Color:'default'}}">
                             <i class="fa fa-user"></i> TER-{{a.IdTerreno}}
                         </div>
                         <div class="card-body">
@@ -56,9 +95,8 @@
                             <br>
                             <span style="font-size: 15px;"><i class="fa fa-chart-area"></i> Superficie : {{a.Superficie}} |  Asignado : <i class="fa fa-{{(!a.Asignado)?'times-circle text-danger':'plus-circle text-success'}}"></i> </span>
                             <br/>
-                            <br/>
-                            <button (click)="asignarTerreno(a);" style="margin: 10px;" class="btn btn-info col-6"> Apartar Terreno <i class="fa fa-shopping-cart"></i> </button>
-                            <button class="btn bg-warning col-6  text-white" style="margin: 10px;"  (click)="abrirModal(modalTerrenosLat); terrenoActual = a; modalDatos = {Tipo: 'Modal Terrenos', Clase: 'bg-info', Titulo: 'Mapa del Terreno'};"><i class="fa fa-map"></i> Datos y Ubicación</button>
+                            <br/> -->
+
                         </div>
                     </div>
                 </div>
@@ -110,6 +148,23 @@
                         </div>
                     </div>
                 </div>
+                <div class="list-group" *ngIf="!ProspectosAprobados[0]">
+                    <div class="list-group-item list-group-item-action " >
+                        <div class="media">
+                            <div class="align-self-start mx-2 circle thumb55" >
+                                <i class="fa fa-user text-primary fa-3x" style="margin-left:8px;"></i> 
+                            </div>
+                            <div class="media-body text-truncate">
+                                <p class="mb-1">
+                                    <strong class="text-primary">
+                                        <span class="circle bg-success circle-lg text-left"></span>
+                                        <span>Sin Resultados</span>
+                                    </strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>    
@@ -144,6 +199,19 @@
                     </div>
                     <div class="form-group">
                         <button class="btn btn-primary form-control" (click)="guardarNuevoProspecto();"><i class="fa fa-save"></i> Guardar</button>
+                    </div>
+                </div>
+                <div class="list-group" *ngIf="!nuevoProspecto && !Prospectos[0]">
+                    <div class="list-group-item list-group-item-action " >
+                        <div class="media">
+                            <div class="media-body text-truncate">
+                                <p class="mb-1">
+                                    <strong class="text-primary">
+                                        <span>Sin Resultados</span>
+                                    </strong>
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="list-group" *ngIf="!nuevoProspecto && Prospectos[0]">
@@ -229,7 +297,7 @@
             <div class="col-6" *ngFor="let a of Terrenos">
                 <a (click)="confirmarSeleccionarTereno();">
                     <div class="card mb-3">
-                        <div class="card-header bg-{{(a.Color)?a.Color:'default'}}">
+                        <div class="card-header text-white bg-{{(a.Color)?a.Color:'default'}}">
                             <i class="fa fa-user"></i> TER-{{a.IdTerreno}}
                         </div>
                         <div class="card-body">
@@ -337,15 +405,15 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6 ">
-                            <button class="btn btn-defaul" (click)="mostrarPrincipal=false;  activeModal.dismiss(); panelVisualizar = 'Cotizaciones';">
-                                <i class='fa fa-plus-circle text-green'></i> |  Nueva
+                            <button class="btn btn-success" (click)="mostrarPrincipal=false;  activeModal.dismiss(); panelVisualizar = 'Cotizaciones';">
+                                <i class='fa fa-plus-circle'></i> |  Nueva
                             </button>
                         </div>
                         <div class="col-6">
                             <div class="input-group">
                                 <label class="input-group-btn" style="margin:0;">
-                                    <span class="btn btn-warning" >
-                                        <i class="fa fa-upload"> </i> Cargar Cotización
+                                    <span class="btn bg-warning text-white" >
+                                        <i class="fa fa-upload"> </i> | Cargar Cotización
                                         <input type="file" style="display: none;" disabled (change)="nombreArchivo($event);" required>
                                     </span>
                                 </label>

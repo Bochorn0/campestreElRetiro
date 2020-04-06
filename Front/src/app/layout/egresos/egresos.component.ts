@@ -313,7 +313,6 @@ export class EgresosComponent implements OnInit {
         let restantes = this.gastosTodos;
         restantes = (this.fInicio)?restantes.filter(ob=> moment(ob.Fecha).format('YYYY-MM-DD') >=  this.fInicio):restantes;
         restantes = (this.fFin)?restantes.filter(ob=> moment(ob.Fecha).format('YYYY-MM-DD') <=  this.fFin):restantes;
-        console.log('categoriasSelect',this.categoriasSelect);
         let subcategos_permitidas = [];
         if(this.categoriasSelect[0]){
             let filtradosCategorias = [];
@@ -334,7 +333,6 @@ export class EgresosComponent implements OnInit {
                 });
             }
         }
-        console.log('subcategorias',this.subcategoriasSelect);
         if(this.subcategoriasSelect[0]){
             let filtradosCategorias = [];
             this.subcategoriasSelect.forEach(s=>{
@@ -423,7 +421,7 @@ export class EgresosComponent implements OnInit {
         datos.forEach(d=>{
             let existe =  datosOrdenados.find(dd=>dd.Categoria == d.Categoria);
             if(!existe){
-                datosOrdenados.push({Categoria: d.Categoria, Subcategorias : datos.filter(dd=>dd.IdCategoria == d.IdCategoria)});
+                datosOrdenados.push({Categoria: d.Categoria, IdCategoria:d.IdCategoria , Subcategorias : datos.filter(dd=>dd.IdCategoria == d.IdCategoria)});
             }
         });
         return datosOrdenados;

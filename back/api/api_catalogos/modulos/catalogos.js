@@ -225,7 +225,8 @@ module.exports = class Catalogos {
     }
     obtener_prospectos_ventas(datos){
         return new Promise((resolve, reject)=>{
-            let condiciones = ` IdUsuario = ${datos.IdUsuario} `;
+            let condiciones = ' 1=1 ';
+            condiciones += (datos.IdUsuario)? ` AND IdUsuario = ${datos.IdUsuario} `:' ';
             mysql.ejecutar(`SELECT * FROM Prospectos_ventas WHERE ${condiciones}; `).then((res)=>{
                 return resolve({Data: res, error: false});
             }).catch(err=>{ console.log('error',err); reject(err);})

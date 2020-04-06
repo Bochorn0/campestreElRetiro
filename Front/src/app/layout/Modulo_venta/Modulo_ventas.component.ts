@@ -110,11 +110,10 @@ export class ModuloVentasComponent implements OnInit {
                         }
                         p.Lapso = this._diferenciaDiasFechas(moment(p.Fecha_modificacion),moment());
                     })
-                    if(tipoPanel){
-                        this.panelVisualizar = tipoPanel;
-                    }
-
                 }
+            }
+            if(tipoPanel){
+                this.panelVisualizar = tipoPanel;
             }
             //console.log('this.calendarEve',this.calendarEvents);
             this.totales.Prospectos = this.Prospectos.length
@@ -322,7 +321,7 @@ export class ModuloVentasComponent implements OnInit {
         this.catalogosService.obtenerTerrenos().then(res=>{
             let datos = res['Data'].filter(ob=>ob.Asignado == 0);
             datos.forEach(d=>{
-                d.Color = 'secondary';
+                d.Color = 'orange';
             })
             this.terrenosTodos = this.terrenos =  datos;
 
@@ -391,49 +390,88 @@ export class ModuloVentasComponent implements OnInit {
         }
         this.clientesTodos = filtrados;
     }
+
     filtrarTerrenos(){
         let filtrados = this.terrenosTodos;
-        //console.log('filtrados',filtrados);
-        if((this.terrenosBuscar && this.terrenosBuscar != '' )){
+        console.log('filtrados',filtrados);
+        if((this.terrenosBuscar) && filtrados){
             let coincidencias = [];
-            if(filtrados[0]){
-                filtrados.forEach((f)=>{
-                    let validado = false;
-                    //NOMBRE
-                    if(f.Pertenece.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
-                        validado = true;
-                    }
-                    //CODIGO
-                    if(`TER-${f.IdTerreno}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
-                        validado = true;
-                    }
-                    //ETAPA
-                    if(`${f.etapa}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
-                        validado = true;
-                    }
-                    //LOTE
-                    if(`${f.lote}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
-                        validado = true;
-                    }
-                    //PARCELA
-                    if(`${f.parcela}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
-                        validado = true;
-                    }
-                    //SUPERFICIE
-                    if(`${f.Superficie}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
-                        validado = true;
-                    }
-                    //ESTADO
-                    if(`${f.Estado}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
-                        validado = true;
-                    }
-                    if(validado){ coincidencias.push(f);}
-                });
-                filtrados =coincidencias;
-            }
+            filtrados.forEach((dat)=>{
+                let validado = false;
+                if(`${dat.etapa}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`TER-${dat.IdTerreno}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.parcela}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.Pertenece}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.Superficie}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.Original}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.Estado}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.lote}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(validado){ coincidencias.push(dat);}
+            });
+            filtrados = (coincidencias[0])?coincidencias:filtrados;
         }
-        this.terrenos = filtrados;
+        this.terrenos =  filtrados;
     }
+
+    // filtrarTerrenos(){
+    //     let filtrados = this.terrenosTodos;
+    //     //console.log('filtrados',filtrados);
+    //     if((this.terrenosBuscar && this.terrenosBuscar != '' )){
+    //         let coincidencias = [];
+    //         if(filtrados[0]){
+    //             filtrados.forEach((f)=>{
+    //                 let validado = false;
+    //                 //NOMBRE
+    //                 if(f.Pertenece.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+    //                     validado = true;
+    //                 }
+    //                 //CODIGO
+    //                 if(`TER-${f.IdTerreno}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+    //                     validado = true;
+    //                 }
+    //                 //ETAPA
+    //                 if(`${f.etapa}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+    //                     validado = true;
+    //                 }
+    //                 //LOTE
+    //                 if(`${f.lote}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+    //                     validado = true;
+    //                 }
+    //                 //PARCELA
+    //                 if(`${f.parcela}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+    //                     validado = true;
+    //                 }
+    //                 //SUPERFICIE
+    //                 if(`${f.Superficie}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+    //                     validado = true;
+    //                 }
+    //                 //ESTADO
+    //                 if(`${f.Estado}`.toString().toUpperCase().indexOf(this.terrenosBuscar.toUpperCase()) > -1){
+    //                     validado = true;
+    //                 }
+    //                 if(validado){ coincidencias.push(f);}
+    //             });
+    //             filtrados =coincidencias;
+    //         }
+    //     }
+    //     this.terrenos = filtrados;
+    // }
     obtenerClientesActivos(){
         this.catalogosService.clientesTerrenos().then(res=>{
             this.terrenosClientes =  res['Data'];

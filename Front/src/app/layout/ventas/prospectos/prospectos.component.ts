@@ -4,6 +4,7 @@ import { CatalogosService } from '../../../shared/services/catalogos.service';
 import { VentasService } from '../../../shared/services/ventas.service';
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
+import {NgbActiveModal,NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import swal from 'sweetalert2';
 import * as moment from 'moment';
 import * as _ from 'lodash';
@@ -15,10 +16,14 @@ import * as _ from 'lodash';
     providers: [CatalogosService, VentasService]
 })
 export class ProspectosComponent implements OnInit {
+    @ViewChild('modalCotizacion')modalCotizacion;
     //Datos Basicos
     IdCotizacion;cotizaciones;nombre;numIfe;comprobante;fotoIfe;origen;telefono;correo;fComprobante;fIfe;direccion;fNacimiento;
     terrenos;IdTerreno; datosTerreno;celReferencia1;celReferencia2;celReferencia3;pdfPagare;mensualidad;anualidad;numPagos;
     parcelas;lotes;etapas;
+    detalleProspecto;datosNuevoCliente;
+    panelVisualizar;
+    objInformacion={};modalDatos;activeModal;prospectoActivo;objCotizacion={};
     //Datos Referencias
     referencia1;referencia2;referencia3;
     //Datos Terreno
@@ -28,22 +33,15 @@ export class ProspectosComponent implements OnInit {
     @Output() public vista = new EventEmitter();  
     //Mantenimiento
     fechaPrimerMantenimiento;contratoAgua;importeMantenimiento;fechaParaCobro;
-    constructor(private catalogosService : CatalogosService, private ventasService: VentasService) {
-        this.IdCotizacion = 0;
-        this._obtenerCotizaciones();
-        this._obtenerTerrenos();
-        this.numParcela = '';
-        this.costoMetro =  140;
-        this.terrenosCliente = [];
-        this.terrenosCliente.push({IdCotizacion : 0});
-        this.nombre = 'Bocho';
-        this.numIfe = this.origen = this.telefono = this.direccion = this.referencia1 = this.referencia2 = this.referencia3 = 'Prueba';
-        this.correo = 'prueba@prueba.com';
-        this.fNacimiento = '1991-08-24';
+    Prospectos;ProspectosAprobados;mostrarPrincipal;
+    constructor(private catalogosService : CatalogosService, private ventasService: VentasService, private modalService: NgbModal) {
+        this.datosNuevoCliente = {Terrenos:[{Id:0,Cotizacion:[{IdCotizacion:0}]}]};
+        this.obtenerProspectos();
         this.fechaParaCobro = 0;
         this.importeMantenimiento = 1500;
         this.contratoAgua = 500;
         this.fechaPrimerMantenimiento =  `${moment().add('6','month').format('YYYY-MM')}-15`;
+        this.panelVisualizar = 'Prospectos';
     }
     formatter = (result: string) => result.toUpperCase();
     _obtenerCotizaciones(){
@@ -67,70 +65,40 @@ export class ProspectosComponent implements OnInit {
         }).catch(err=>{console.log('err',err);})
     }
     ngOnInit() {}
-    borrarTerreno(indice){
-        let parcelas = [];
-        this.terrenosCliente.splice(indice,1);
-        this.terrenos.forEach(ter=>{
-            let existe = this.terrenosCliente.filter(t=> t.IdTerreno == ter.IdTerreno);
-            if(!existe[0]){
-                parcelas.push(ter.parcela);
+    obtenerProspectos(){
+        console.log('1');
+        this.catalogosService.obtenerProspectosVendedor({}).then(res=>{
+            //console.log('res',res);
+            if(res['Data']){
+                let prospectos = res['Data'];
+                this.Prospectos =  prospectos.filter(p=> p.Apartado == 0);
+                console.log('prospectos',prospectos);
+                this.ProspectosAprobados =  prospectos.filter(p=> p.Apartado == 1);
+                console.log('pros',this.ProspectosAprobados);
+                if(this.Prospectos[0]){
+                    // this.Prospectos.forEach(p=>{
+                    //     // this.calendarEvents.push({
+                    //     //     id: p.IdProspecto,
+                    //     //     title: `${p.Nombre_prospecto}`,
+                    //     //     start: moment(p.Cita).format('YYYY-MM-DD HH:mm:ss'),
+                    //     //     end: moment(p.Cita).add('3','hour').format('YYYY-MM-DD HH:mm:ss'),
+                    //     //     backgroundColor: '#0073b7', 
+                    //     //     borderColor: '#0073b7',
+                    //     //     textColor: '#fff',
+                    //     //     className: 'text-center text-bold'
+                    //     // });
+                    //     if(moment(p.Cita).isValid()){
+                    //         p.CitaNueva = `${moment(p.Cita).format('YYYY-MM-DDTHH:mm')}`;
+                    //     }
+                    //     // p.Lapso = this._diferenciaDiasFechas(moment(p.Fecha_modificacion),moment());
+                    // })
+                }
             }
-        })
-        this.parcelas = parcelas;
-    }
-    nombreArchivo(event, nombre){
-        let file: File = event.target.files[0];
-        let renderFile: FileReader = new FileReader();
-        switch(nombre){
-            case 'Domicilio':
-            this.comprobante = file.name;
-            renderFile.readAsDataURL(file);
-            renderFile.onloadend = () => {
-                if (renderFile.result) { this.fComprobante =  renderFile.result }
-            }
-            break;
-            case 'Ife':this.fotoIfe = file.name; this.fIfe = file;
-            renderFile.readAsDataURL(file);
-            renderFile.onloadend = () => {
-                if (renderFile.result) { this.fIfe =  renderFile.result }
-            }
-            break;
-            default: break;
-        }
-    }
-    filtrarTerrenos = (text$: Observable<string>) =>
-      text$.pipe( debounceTime(200), distinctUntilChanged(),
-        map(term => term === ''?[]:this.parcelas.filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
-    );
-    filtrarLotes = (text$: Observable<string>) =>
-    text$.pipe( debounceTime(200), distinctUntilChanged(),
-      map(term => term === ''?[]:this.lotes.filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
-    );
-    filtrarEtapas = (text$: Observable<string>) =>
-    text$.pipe( debounceTime(200), distinctUntilChanged(),
-        map(term => term === ''?[]:this.etapas.filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
-    );
-    seleccionarLote(sele){
-        console.log('lote', sele);
-    }
-    seleccionarEtapa(sele){
-        console.log('etapa', sele);
-    }
-    seleccionarParcela(selected, indice){
-        this.datosTerreno =  this.terrenos.filter(ob=>ob.parcela == selected.item.toString())[0];
-        let  existe = this.terrenosCliente.filter(ob => ob.IdTerreno == this.datosTerreno.IdTerreno);
-        console.log('dat',this.datosTerreno);
-        if(this.datosTerreno && !existe[0]){
-            this.terrenosCliente[indice] =  this.datosTerreno;
-            let restantes = this.terrenos.filter(t=> t.IdTerreno != this.datosTerreno.IdTerreno);
-            this.parcelas = restantes.map((key)=>{
-                return key.parcela;
-            })
-        }else{
-            swal('Error','El terreno no puede agregarse porque ya esta en la lista, por favor selecciona uno diferente','error');
-            this.terrenosCliente[indice] = {}; 
-        }
-        console.log('ter',this.terrenosCliente);
+            //console.log('this.calendarEve',this.calendarEvents);
+            // this.totales.Prospectos = this.Prospectos.length
+            // this.totales.Pros_activos = this.Prospectos.filter(p=>p.Lapso < 24).length;
+            // this.totales.Pros_alerta = this.Prospectos.filter(p=>p.Lapso >= 24).length;
+        }).catch(err=>{console.log('err',err);})
     }
     guardarNuevoCliente(){
         if(!this.terrenosCliente[0].IdTerreno){
@@ -184,6 +152,52 @@ export class ProspectosComponent implements OnInit {
             }).catch(err=>{console.log('err',err);})
         }
 
+    }
+    mandarInformacionModal(content){
+        let datosUsr = JSON.parse(localStorage.getItem('Datos')); 
+        this.objInformacion = {
+            Para: `${this.prospectoActivo.Correo}`,
+            Mensaje:`Hola, Saludos desde Campestre el retiro.\n Nuestra prioridad es brindar un buen servicio, este correo es para enviarle información referente a nuestros campestres disponibles,\n\n\n Sin más por el momento me despido,\n\n Soy ${datosUsr.Datos.Nombre} De Campestre el Retiro, Estoy a sus ordenes para cualquier duda. `,
+            Asunto: `Información Solicitada`,
+        };        
+        this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
+    }
+    vistaEnviarCotizacion(event){
+        //console.log('enviarcot',event);
+        this.panelVisualizar = 'Prospectos';
+        this.modalDatos = {Tipo: 'EnviarCotizacion', Clase: 'bg-warning', Titulo: 'Enviar Cotización a Cliente'};
+        let Adj; let Buf;
+        if(event.Cotizacion_string){
+            Adj = event.Cotizacion_string;
+            Buf = event.Cotizacion_buffer;
+        }
+        //console.log('adj',Adj);
+        let datosUsr = JSON.parse(localStorage.getItem('Datos'));
+        this.objCotizacion = {
+            Para: `${this.prospectoActivo.Correo}`,
+            Mensaje:`Hola, Saludos desde Campestre el retiro.\n Nuestra prioridad es brindar un buen servicio, este correo es para enviarle la cotización solicitada,\n Sin más por el momento me despido,\n\n Soy ${datosUsr.Datos.Nombre} De Campestre el Retiro, Estoy a sus ordenes para cualquier duda.\n\nEsta Cotización tiene una vida util de 72 Horas. `,
+            Asunto: `Cotización Solicitada`,
+            Adjunto: Adj,
+            AdjuntoBuffer:Buf 
+        };
+        this.activeModal = this.modalService.open(this.modalCotizacion, {windowClass: 'modal-holder', size: 'lg'});
+    }
+    agendarCita(content){
+        this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
+    }
+    apartarTerreno(p){
+        this.panelVisualizar = 'NuevoCliente'
+        this.datosNuevoCliente = { Nombre:p.Nombre_prospecto, Correo:p.Correo,Telefono:p.Telefono,Terrenos:[{Id:0,Cotizacion:[{IdCotizacion:0}]}]}
+    }
+    enviarCotizacionModal(content){
+        let datosUsr = JSON.parse(localStorage.getItem('Datos'));
+        this.objCotizacion = {
+            Para: `${this.prospectoActivo.Correo}`,
+            Mensaje:`Hola, Saludos desde Campestre el retiro.\n Nuestra prioridad es brindar un buen servicio, este correo es para enviarle la cotización solicitada,\n Sin más por el momento me despido,\n\n Soy ${datosUsr.Datos.Nombre} De Campestre el Retiro, Estoy a sus ordenes para cualquier duda.\n\nEsta Cotización tiene una vida util de 72 Horas. `,
+            Asunto: `Cotización Solicitada`,
+            Adjunto: ''
+        };
+        this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
     }
     _downloadFile(url, nombre,  ext) {
         let dwldLink = document.createElement("a");
