@@ -5,12 +5,12 @@
     <div class="row text-center">
         <div class="col-6 col-lg-3">
             <div class="form-group" >
-                <button (click)="mostrarEmpleados($event);" class="btn bg-purple menu w-100 text-white" ><i class="fa fa-address-book"></i> | Empleados </button>
+                <button (click)="mostrarEmpleados($event);" class="btn bg-primary menu w-100 text-white" ><i class="fa fa-address-book"></i> | Empleados </button>
             </div>
         </div>
         <div class="col-6 col-lg-3">    
             <div class="form-group">
-                <button (click)="obtenerUsuarios();" class="btn bg-primary menu w-100 text-white" ><i class="fa fa-users"></i> | Usuarios</button>
+                <button (click)="obtenerUsuarios();" class="btn bg-purple menu w-100 text-white" ><i class="fa fa-users"></i> | Usuarios</button>
             </div>
         </div>
         <div class="col-6 col-lg-3">
@@ -40,7 +40,7 @@
                 </div>                
                 <div class="col-12" *ngIf="this.empladosActivos && !empleadoEditar">
                     <div class="card card-default">
-                        <div class="card-header bg-purple">
+                        <div class="card-header bg-primary">
                             <h4 class="text-white"><i class="fa fa-address-book"></i> |  Empleados Activos</h4>
                         </div>
                         <div class="card-body text-center">
@@ -315,7 +315,7 @@
                 <!-- PANEL DE USUARIOS -->
                 <div class="col-12" *ngIf="this.datosUsuarios && !usuarioEditar">
                     <div class="card card-default">
-                        <div class="card-header bg-primary">
+                        <div class="card-header bg-purple">
                             <h4 class="text-white"><i class="fa fa-users"></i> | Usuarios Activos</h4>
                         </div>
                         <div class="card-body text-center">
