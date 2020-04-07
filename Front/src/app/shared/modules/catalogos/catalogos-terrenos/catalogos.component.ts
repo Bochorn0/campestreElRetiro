@@ -29,8 +29,7 @@ export class CatalogosTerrenosComponent implements OnInit {
         this.frmSolicitud = fb.group({
             'File': [null]
         });
-//        this.parcelaFiltro = this.loteFiltro =this.etapaFiltro = 
-this.estatusFiltro = '0';
+//        this.parcelaFiltro = this.loteFiltro = this.etapaFiltro =  this.estatusFiltro = 'TODOS';
         this.verCatalogoTerrenos({});
     }            
     ngOnInit() { }
@@ -50,48 +49,57 @@ this.estatusFiltro = '0';
     }
     filtrarTerrenos(){
         let filtrados = this.terrenosTodos;
-        console.log('filtrados',filtrados);
-        console.log('par',this.parcelaFiltro);
-        if((this.textoTerreno) && filtrados){
+        if((this.textoTerreno && this.textoTerreno != '') && filtrados){
             let coincidencias = [];
             filtrados.forEach((dat)=>{
                 let validado = false;
-                if(`${dat.etapa}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                if(`${dat.etapa}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
                     validado = true;
                 }
-                if(`${dat.parcela}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                if(`${dat.parcela}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
                     validado = true;
                 }
-                if(`${dat.Pertenece}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                if(`${dat.Pertenece}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
                     validado = true;
                 }
-                if(`${dat.Original}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                if(`${dat.Original}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
                     validado = true;
                 }
-                if(`${dat.Estado}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                if(`${dat.Estado}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
                     validado = true;
                 }
-                if(`${dat.lote}`.toString().toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                if(`${dat.Superficie}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.Latitud}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.Longitud}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`TER-${dat.IdTerreno}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.lote}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
                     validado = true;
                 }
                 if(validado){ coincidencias.push(dat);}
             });
             filtrados = (coincidencias[0])?coincidencias:filtrados;
         }
-        console.log('parcelas',this.parcelas);
-        filtrados = (this.parcelaFiltro != 'TODOS' && this.parcelas.find(o=>o.parcela == `${this.parcelaFiltro}`))?filtrados.filter(f=>f.parcela == `${this.parcelaFiltro}`):filtrados;
-        filtrados = (this.loteFiltro != 'TODOS' && this.lotes.find(o=>o.lote == `${this.loteFiltro}`))?filtrados.filter(f=>f.lote == `${this.loteFiltro}`):filtrados;
-        filtrados = (this.etapaFiltro != 'TODOS' && this.etapas.find(o=>o.etapa == `${this.etapaFiltro}`))?filtrados.filter(f=>f.etapa == `${this.etapaFiltro}`):filtrados;
-        filtrados = (this.estatusFiltro != '0')?filtrados.filter(f=>f.Estado == this.estatusFiltro):filtrados;
-        //console.log('filtrados',filtrados);
-        /*
-        let datosOrdenados = {Opciones:{Eliminar:true,Seleccionar: true,Editar:true,Detalles:true},Datos:filtrados};
-
-        this.datosTerrenos = datosOrdenados;
-        if(this.datatableTerrenos != null){
-            this.datatableTerrenos._reiniciarRegistros(datosOrdenados);
+        if(this.parcelaFiltro){
+            filtrados = (this.parcelaFiltro != 'TODOS' && this.parcelas.find(o=>o.parcela == `${this.parcelaFiltro}`))?filtrados.filter(f=>f.parcela == `${this.parcelaFiltro}`):filtrados;
         }
-        this.datosTerrenos = datosOrdenados;*/
+        if(this.loteFiltro){
+            filtrados = (this.loteFiltro && this.loteFiltro != 'TODOS' && this.lotes.find(o=>o.lote == `${this.loteFiltro}`))?filtrados.filter(f=>f.lote == `${this.loteFiltro}`):filtrados;
+        }
+        if(this.etapaFiltro){
+            filtrados = (this.etapaFiltro && this.etapaFiltro != 'TODOS' && this.etapas.find(o=>o.etapa == `${this.etapaFiltro}`))?filtrados.filter(f=>f.etapa == `${this.etapaFiltro}`):filtrados;
+        }
+        if(this.estatusFiltro){
+            filtrados = (this.estatusFiltro && this.estatusFiltro != 'TODOS' && this.estatusTodos.find(o=>o.Estatus == `${this.estatusFiltro}`))?filtrados.filter(f=>f.Estado == `${this.estatusFiltro}`):filtrados;
+//            filtrados = (this.estatusFiltro && this.estatusFiltro != 'TODOS')?filtrados.filter(f=>f.Estado == this.estatusFiltro):filtrados;
+        }
         this.datosTerrenos = filtrados;
         if(this.datosTerrenos[0]){
             this._recorrerFiltros(filtrados);
@@ -128,6 +136,7 @@ this.estatusFiltro = '0';
         this.catalogosService.obtenerTerrenos().then(res=>{
             //let datos = this._ordenarDatosTerrenos(res['Data']);
             let datos = res['Data'];
+            datos.map(d=>d.Color = 'purple');
             console.log('datos',datos);
             this._recorrerFiltros(datos);
             // console.log('par',this.parcelas);
@@ -282,6 +291,7 @@ this.estatusFiltro = '0';
         this.parcelas.push({parcela:'TODOS'});
         this.lotes.push({lote:'TODOS'});
         this.etapas.push({etapa:'TODOS'});
+        this.estatusTodos.push({Estatus:'TODOS'});
         
         console.log('dat para fil',datos);
         if(datos){

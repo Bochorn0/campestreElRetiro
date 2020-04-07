@@ -21,47 +21,58 @@
                 <form [formGroup]="frmSolicitud" class="form-validate" (keydown.enter)="$event.preventDefault()" novalidate="">
                     <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)"  formControlName="File" />
                 </form>
-                <br>
+                <hr>
             </div>
             <div class="col-lg-12" >
-                <div class="card mb-3">
+                <!-- <div class="card mb-3">
                     <div class="card-header bg-primary">
-                        Terrenos Activos
-                        <!-- <button *ngIf="this.chksTerrenos.length > 0" (click)="borrarMultiplesTerrenos();" class="btn btn-danger-clasic pull-right"><i class="fa fa-times"></i> Borrar Multiples </button> -->
+                        <i class="fa fa-map"></i> | Terrenos Activos
                     </div>
-                    <div class="card-body" >
+                    <div class="card-body" > -->
                         <div class="row" *ngIf="!detalleTerrenos">
-                            <div class="col-12 text-center">
+                            <div class="col-6 col-sm-3 text-center">
+                                <div class="form-group">
+                                    <button (click)="verCatalogoTerrenos();" class="btn btn-dark w-100"><i class="fa fa-map"></i> | Ver Todos  </button>
+                                </div>
+                            </div>
+                            <div class="col-6 col-sm-3 text-center">
                                 <label class="switch ">
                                     <input type="checkbox" [(ngModel)]="verFiltros" />
                                     <span class="slider round"></span>
                                 </label>
-                                <b style="vertical-align: sub;"> Mostar Filtros</b>
+                                <b style="vertical-align: sub;"> Mas Filtros</b>
+                            </div>
+                            <div class="col-12 col-sm-6 text-center">
+                                <div class="form-group"> 
+                                    <input (keyup)="filtrarTerrenos();"  placeholder="Buscar en Terrenos:" type="text" class="form-control" [(ngModel)]="textoTerreno" />
+                                </div>
                             </div>
                         </div>
                         <hr>
                         <div class="row" *ngIf="verFiltros && !detalleTerrenos">
-                            <div class="col-lg-3">
-                                <ngx-select [items]="parcelas" optionValueField="parcela" placeholder="Parcela:" (select)="filtrarTerrenos();" [(ngModel)]="parcelaFiltro"></ngx-select>
-                            </div>
-                            <div class="col-lg-3">
-                                <ngx-select [items]="lotes" optionValueField="lote" placeholder="Lote:" (select)="filtrarTerrenos();" [(ngModel)]="loteFiltro"></ngx-select>
-                            </div>
-                            <div class="col-lg-3"> 
-                                <ngx-select [items]="etapas" optionValueField="etapa" placeholder="Etapa:" (select)="filtrarTerrenos();" [(ngModel)]="etapaFiltro"></ngx-select>
-                            </div>
-                            <div class="col-lg-3">
-                                <select  class="form-control" [(ngModel)]="estatusFiltro" (change)="filtrarTerrenos();" >
-                                    <option value="0">Estatus</option>
-                                    <option  *ngFor="let e of estatusTodos;" value="{{e.Estatus}}">{{e.Estatus}}</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-12">
-                                <br>
-                                <div class="form-group"> 
-                                    <input (keyup)="filtrarTerrenos();"  placeholder="Buscar en Terrenos:" type="text" class="form-control" [(ngModel)]="textoTerreno" />
+                            <div class="col-6 col-lg-3">
+                                <div class="form-group">
+                                    <label class="label-form">Parcela: </label>
+                                    <ngx-select [items]="parcelas" optionValueField="parcela" placeholder="Parcela:" (select)="filtrarTerrenos();" [(ngModel)]="parcelaFiltro"></ngx-select>
                                 </div>
-                                <br>
+                            </div>
+                            <div class="col-6 col-lg-3">
+                                <div class="form-group">
+                                    <label class="label-form">Lote: </label>
+                                    <ngx-select [items]="lotes" optionValueField="lote" placeholder="Lote:" (select)="filtrarTerrenos();" [(ngModel)]="loteFiltro"></ngx-select>
+                                </div>
+                            </div>
+                            <div class="col-6 col-lg-3"> 
+                                <div class="form-group">
+                                    <label class="label-form">Etapa: </label>
+                                    <ngx-select [items]="etapas" optionValueField="etapa" placeholder="Etapa:" (select)="filtrarTerrenos();" [(ngModel)]="etapaFiltro"></ngx-select>
+                                </div>
+                            </div>
+                            <div class="col-6 col-lg-3">
+                                <div class="form-group">
+                                    <label class="label-form">Estatus: </label>
+                                    <ngx-select [items]="estatusTodos" optionValueField="Estatus" placeholder="Estatus:" (select)="filtrarTerrenos();" [(ngModel)]="estatusFiltro"></ngx-select>
+                                </div>
                             </div>
                         </div>      
                         <div class="row" *ngIf="!detalleTerrenos && datosTerrenos">
@@ -182,8 +193,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    <!-- </div>
+                </div> -->
             </div>
         </div>
     </div>

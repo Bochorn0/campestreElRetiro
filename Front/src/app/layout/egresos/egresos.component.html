@@ -5,12 +5,12 @@
     <div class="row text-center">
         <div class="col-6 col-lg-3">
             <div class="form-group" >
-                <button (click)="obtenerGastos();" class="btn bg-primary w-100 text-white" ><i class="fa fa-trello"></i> | Gastos </button>
+                <button (click)="obtenerGastos();" class="btn bg-purple w-100 text-white" ><i class="fa fa-trello"></i> | Gastos </button>
             </div>
         </div>
         <div class="col-6 col-lg-3">    
             <div class="form-group">
-                <button (click)="verCatalogoCategorias();" class="btn bg-warning menu w-100 text-white" ><i class="fa fa-code-fork"></i> | Categorias</button>
+                <button (click)="verCatalogoCategorias();" class="btn bg-primary menu w-100 text-white" ><i class="fa fa-code-fork"></i> | Categorias</button>
             </div>
         </div>
         <div class="col-6 col-lg-3">
@@ -172,7 +172,8 @@
                     <br>
                 </div>
                 <div class="col-xs-12 col-lg-12 col-xl-12" *ngIf="datosGastos">
-                    <div class="card-header bg-primary">
+                    <div class="card-header bg-purple">
+                        <i class="fa fa-trello"></i> | 
                         Gastos <b class="pull-right" style="color: #fff;">$ {{this.totalGastoAcumulado | number}}</b>
                     </div>
                     <div class="card-body table-responsive">
@@ -256,8 +257,8 @@
             <div class="row"  *ngIf="verCategorias" [@routerTransition]>
                 <div class="col-lg-12">
                     <div class="card mb-3">
-                        <div class="card-header bg-warning">
-                            Catalogo de categorias
+                        <div class="card-header bg-primary">
+                            <i class="fa fa-code-fork"></i> | Catalogo de categorias
                         </div>
                         <div class="card-body">
                             <div class="row">

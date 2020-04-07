@@ -25,6 +25,7 @@ export class CatalogosComponent implements OnInit {
     checksTerrenos = [];textoBuscar;
     parcelas=[];lotes=[];etapas=[];estatusTodos=[]
     parcelaFiltro;loteFiltro;etapaFiltro;estatusFiltro;panelVisualizar;vistaCentro;
+    textoTerreno;
     constructor(private fb: FormBuilder, private catalogosService: CatalogosService) { 
         //this.parcelaFiltro = this.loteFiltro = this.etapaFiltro = 
         this.estatusFiltro = '0';
@@ -77,6 +78,77 @@ export class CatalogosComponent implements OnInit {
         map(term => term === ''?[]:this.etapas.map(o=>o.etapa).filter(ob => `${ob}`.toUpperCase().indexOf(term.toUpperCase()) > -1))
     );    
     ngOnInit() {}
+    filtrarTerrenos(){
+        let filtrados = this.datosTodosTotales;
+        if((this.textoTerreno && this.textoTerreno != '') && filtrados){
+            let coincidencias = [];
+            filtrados.forEach((dat)=>{
+                let validado = false;
+                if(`DAT-${dat.Id}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.Nombre}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(`${dat.Correo}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                    validado = true;
+                }
+                if(dat.Terrenos[0]){
+                    dat.Terrenos.forEach(ter=>{
+                        if(`${ter['ETAPA']}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                            validado = true;
+                        }
+                        if(`${ter['PARCELA']}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                            validado = true;
+                        }
+                        if(`${ter['LOTE']}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                            validado = true;
+                        }
+                        if(`${ter['NOMBRE DE PARCELA']}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                            validado = true;
+                        }
+                        if(`${ter['ESTADO']}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                            validado = true;
+                        }
+                        if(`${ter['SUPERFICIE']}`.toUpperCase().indexOf(this.textoTerreno.toUpperCase()) > -1){
+                            validado = true;
+                        }
+                    });
+                }
+                if(validado){ coincidencias.push(dat);}
+            });
+            filtrados = (coincidencias[0])?coincidencias:filtrados;
+        }
+        let coincidencias = [];
+        filtrados.forEach(d=>{
+            let validado = false;
+            if(d.Terrenos[0]){
+                d.Terrenos.forEach(ter=>{
+                    //FILTROS PARTICULARES
+                    if(this.parcelaFiltro &&  (this.parcelas.find(o=>o.parcela == `${this.parcelaFiltro}`)) && ter['PARCELA'] == this.parcelaFiltro){
+                        validado = true;
+                    }                        
+                    if(this.etapaFiltro && (this.etapas.find(o=>o.etapa == `${this.etapaFiltro}`))  && ter['ETAPA'] == this.etapaFiltro){
+                        validado = true;
+                    }
+                    if(this.estatusFiltro && this.estatusFiltro != 0 && ter['ESTADO'] == this.estatusFiltro){
+                        validado = true;
+                    }
+                    console.log('lote',this.loteFiltro);
+                    if(this.loteFiltro && (this.lotes.find(o=>o.lote == `${this.loteFiltro}`))  && ter['LOTE'] == this.loteFiltro){
+                        validado = true;
+                    }            
+                });
+            }
+            if(validado){ coincidencias.push(d);}
+        });
+        filtrados = (coincidencias[0])?coincidencias:filtrados;
+        this.datosTodos = filtrados;
+        if(this.datosTodos[0]){
+            this._recorrerFiltros(filtrados);
+        }
+
+    }    
     buscarEn(){
         let dataFiltrada;
         if((this.textoBuscar) && this.datosTodosTotales){
@@ -125,7 +197,7 @@ export class CatalogosComponent implements OnInit {
         let datosOrd = this._ordenarDatosTodos(datosF);
         console.log('datosF',datosF);
         this._recorrerFiltros(datosOrd);
-        this.datosTodos.Datos = datosOrd;
+        this.datosTodos = datosOrd;
     }
 
     verCatalogoTerrenos(event){
@@ -153,8 +225,9 @@ export class CatalogosComponent implements OnInit {
             let datos = this._ordenarDatosTodos(res['Datos']);
 //            console.log('datos',datos);
             this.datosTodosTotales  = datos;
-            this._recorrerFiltros(datos);
-            this.datosTodos  =  { Datos: datos, Ordenes : {Saldo_credito:'',Saldo_certificado: '', Saldo_mantenimiento: '', Saldo_agua: ''}};
+//            this.datosTodos  =  { Datos: datos, Ordenes : {Saldo_credito:'',Saldo_certificado: '', Saldo_mantenimiento: '', Saldo_agua: ''}};
+            this.datosTodos  =  datos;
+            this._recorrerFiltros(datos);            
             this.vistaCentro = true;            
             /*if(this.datatableDatosTodos != null){
                 this.datatableDatosTodos._reiniciarRegistros(this.datosTodos);
@@ -165,31 +238,61 @@ export class CatalogosComponent implements OnInit {
         });
     }
     _recorrerFiltros(datos){
-//        console.log('dat para fil',datos);
         this.parcelas = []; this.lotes = []; this.etapas = []; this.estatusTodos = [];
+        this.parcelas.push({parcela:'TODOS'});
+        this.lotes.push({lote:'TODOS'});
+        this.etapas.push({etapa:'TODOS'});
+        this.estatusTodos.push({Estatus:'TODOS'});
         if(datos){
-            datos.forEach(d=>{
-                d.Terrenos.forEach(t=>{
-                    let existePar = this.parcelas.find(pa=>pa.parcela == t['PARCELA']);
-                    if(!existePar){
-                        this.parcelas.push({parcela:t['PARCELA']});
-                    }
-                    let existeEta = this.etapas.find(pa=>pa.etapa == t['ETAPA']);
-                    if(!existeEta){
-                        this.etapas.push({etapa:t['ETAPA']});
-                    }
-                    let existeLot = this.lotes.find(pa=>pa.lote == t['LOTE']);
-                    if(!existeLot){
-                        this.lotes.push({lote:t['LOTE']});
-                    }
-                    let existeEst = this.estatusTodos.find(pa=>pa.Estatus == t['ESTADO']);
-                    if(!existeEst){
-                        this.estatusTodos.push({Estatus:t['ESTADO']});
-                    }
-                })
+            datos.forEach(dd=>{        
+                if(dd.Terrenos[0]){
+                    dd.Terrenos.forEach(d=>{
+                        let existePar = this.parcelas.find(pa=>pa.parcela == d['PARCELA']);
+                        if(!existePar){
+                            this.parcelas.push({parcela:d['PARCELA']});
+                        }
+                        let existeEta = this.etapas.find(pa=>pa.etapa == d['ETAPA']);
+                        if(!existeEta){ 
+                            this.etapas.push({etapa:d['ETAPA']});
+                        }
+                        let existeLot = this.lotes.find(pa=>pa.lote == d['LOTE']);
+                        if(!existeLot){
+                            this.lotes.push({lote:d['LOTE']});
+                        }
+                        let existeEst = this.estatusTodos.find(pa=>pa.Estatus ==  d['ESTADO']);
+                        if(!existeEst){
+                            this.estatusTodos.push({Estatus:d['ESTADO']});
+                        }                
+                    });
+                }
             });
-        }
+        }        
+//        console.log('dat para fil',datos);
+        // this.parcelas = []; this.lotes = []; this.etapas = []; this.estatusTodos = [];
+        // if(datos){
+        //     datos.forEach(d=>{
+        //         d.Terrenos.forEach(t=>{
+        //             let existePar = this.parcelas.find(pa=>pa.parcela == t['PARCELA']);
+        //             if(!existePar){
+        //                 this.parcelas.push({parcela:t['PARCELA']});
+        //             }
+        //             let existeEta = this.etapas.find(pa=>pa.etapa == t['ETAPA']);
+        //             if(!existeEta){
+        //                 this.etapas.push({etapa:t['ETAPA']});
+        //             }
+        //             let existeLot = this.lotes.find(pa=>pa.lote == t['LOTE']);
+        //             if(!existeLot){
+        //                 this.lotes.push({lote:t['LOTE']});
+        //             }
+        //             let existeEst = this.estatusTodos.find(pa=>pa.Estatus == t['ESTADO']);
+        //             if(!existeEst){
+        //                 this.estatusTodos.push({Estatus:t['ESTADO']});
+        //             }
+        //         })
+        //     });
+        // }
     }
+    
     asignarChecks(event){
         //console.log('even',event);
         this.checksTerrenos =  event;
@@ -312,6 +415,8 @@ export class CatalogosComponent implements OnInit {
                     });
                 }
                 datosOrdenados.push({
+                    Id: d['Id'],
+                    Color: 'danger',
                     Nombre:d["NOMBRE DEL CLIENTE"].trim(),
                     Correo:d["CORREO"].trim(),
                     NumIfe:d["NUMERO DE INE"].trim(),

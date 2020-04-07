@@ -5,7 +5,7 @@
         </div>
         <div class="card-body" *ngIf="Prospectos  && !detalleProspecto " >
             <div class="row" id="prospectosId">
-                <div class="col-12 col-sm-6" *ngFor="let p of Prospectos | paginate: { itemsPerPage: 3, currentPage: pageProspectos, id:'prospectosId' }">                
+                <div class="col-12 col-sm-6" *ngFor="let p of Prospectos | paginate: { itemsPerPage: 4, currentPage: pageProspectos, id:'prospectosId' }">                
                     <div class="card" style="margin: 5px;">
                         <div class="card-body" style="padding: 15px; min-height: 165px;">
                             <div class="media row" style="border-bottom: 1px solid #ddd; margin-bottom: 10px;">

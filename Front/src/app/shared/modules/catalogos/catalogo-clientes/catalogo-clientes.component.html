@@ -14,76 +14,125 @@
         </ngb-tabset>        -->
     </div>
     <div class="col-xl-12 col-lg-12 col-xs-12" >
-        <div class="card mb-3">
+        <!-- <div class="card mb-3">
             <div class="card-header bg-secondary" >
-                Clientes
+                <i class="fa fa-users"></i> |  Clientes
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <b>Buscar por filtros de terreno en los clientes, (El terreno del cliente contiene los datos: )</b>
+            <div class="card-body"> -->
+                <div class="row" *ngIf="!clienteDetalles">
+                    <div class="col-6 col-sm-3 text-center">
+                        <div class="form-group">
+                            <button (click)="obtenerClientesActivos();" class="btn btn-dark w-100"><i class="fa fa-map"></i> | Ver Todos  </button>
+                        </div>
                     </div>
-                    <div class="col-6 col-lg-3">
-                        <h4> Parcela </h4>
-                        <ngx-select [items]="parcelas" optionValueField="parcela" placeholder="Parcela:" (select)="filtrarTerrenos();" [(ngModel)]="parcelaFiltro"></ngx-select>
-                        <!-- <input  (keyup)="filtrarTerrenos();"   placeholder="Parcela:" type="text" class="form-control" [(ngModel)]="parcelaFiltro" [ngbTypeahead]="filtrarParcelas" (selectItem)="parcelaFiltro = $event.item; filtrarTerrenos();" [resultFormatter]="formatter" /> -->
-                        <!-- <select  class="form-control" [(ngModel)]="parcelaFiltro" (change)="filtrarTerrenos();" >
-                            <option value="0">Todas</option>
-                            <option  *ngFor="let e of parcelas;" value="{{e.parcela}}">{{e.parcela}}</option>
-                        </select> -->
+                    <div class="col-6 col-sm-3 text-center">
+                        <label class="switch ">
+                            <input type="checkbox" [(ngModel)]="verFiltros" />
+                            <span class="slider round"></span>
+                        </label>
+                        <b style="vertical-align: sub;"> Mas Filtros</b>
                     </div>
-                    <div class="col-6 col-lg-3">
-                        <h4> Lote </h4>
-                        <ngx-select [items]="lotes" optionValueField="lote" placeholder="Lote:" (select)="filtrarTerrenos();" [(ngModel)]="loteFiltro"></ngx-select>
-                        <!-- <input  (keyup)="filtrarTerrenos();"  placeholder="Lote:" type="text" class="form-control" [(ngModel)]="loteFiltro" [ngbTypeahead]="filtrarLotes" (selectItem)="loteFiltro = $event.item; filtrarTerrenos();"  [resultFormatter]="formatter" /> -->
-                        <!-- <select  class="form-control" [(ngModel)]="loteFiltro" (change)="filtrarTerrenos();" >
-                            <option value="0">Todos</option>
-                            <option  *ngFor="let e of lotes;" value="{{e.lote}}">{{e.lote}}</option>
-                        </select> -->
-                    </div>
-                    <div class="col-6 col-lg-3"> 
-                        <h4> Estapa </h4>
-                        <ngx-select [items]="etapas" optionValueField="etapa" placeholder="Etapa:" (select)="filtrarTerrenos();" [(ngModel)]="etapaFiltro"></ngx-select>                        
-                        <!-- <input (keyup)="filtrarTerrenos();"  placeholder="Etapa:" type="text" class="form-control" [(ngModel)]="etapaFiltro" [ngbTypeahead]="filtrarEtapas" (selectItem)="etapaFiltro = $event.item; filtrarTerrenos();" [resultFormatter]="formatter" /> -->
-                        <!-- <select  class="form-control" [(ngModel)]="etapaFiltro" (change)="filtrarTerrenos();" >
-                            <option value="0">Todas</option>
-                            <option  *ngFor="let e of etapas;" value="{{e.etapa}}">{{e.etapa}}</option>
-                        </select> -->
-                    </div>                    
-                    <!-- <div class="col-lg-3">
-                        <h4> Parcela </h4>
-                        <select  class="form-control" [(ngModel)]="parcelaFiltro" (change)="filtrarTerrenos();" >
-                            <option value="0">Todas</option>
-                            <option  *ngFor="let e of parcelas;" value="{{e.parcela}}">{{e.parcela}}</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-3">
-                        <h4> Lote </h4>
-                        <select  class="form-control" [(ngModel)]="loteFiltro" (change)="filtrarTerrenos();" >
-                            <option value="0">Todos</option>
-                            <option  *ngFor="let e of lotes;" value="{{e.lote}}">{{e.lote}}</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-3"> 
-                        <h4> Estapa </h4>
-                        <select  class="form-control" [(ngModel)]="etapaFiltro" (change)="filtrarTerrenos();" >
-                            <option value="0">Todas</option>
-                            <option  *ngFor="let e of etapas;" value="{{e.etapa}}">{{e.etapa}}</option>
-                        </select>
-                    </div> -->
-                    <div class="col-6 col-lg-3"> 
-                        <h4> Estatus </h4>
-                        <select  class="form-control" [(ngModel)]="estatusFiltro" (change)="filtrarTerrenos();" >
-                            <option value="0">Todos</option>
-                            <option  *ngFor="let e of estatusTodos;" value="{{e.Estatus}}">{{e.Estatus}}</option>
-                        </select>
-                    </div>                 
-                    <div class="col-lg-12">    
-                    <br>
+                    <div class="col-12 col-sm-6 text-center">
+                        <div class="form-group"> 
+                            <input (keyup)="filtrarTerrenos();"  placeholder="Buscar en Terrenos:" type="text" class="form-control" [(ngModel)]="textoTerreno" />
+                        </div>
                     </div>
                 </div>
+                <hr>
+                <div class="row" *ngIf="verFiltros && !clienteDetalles">
+                    <div class="col-6 col-lg-3">
+                        <div class="form-group">
+                            <label class="label-form">Parcela: </label>
+                            <ngx-select [items]="parcelas" optionValueField="parcela" placeholder="Parcela:" (select)="filtrarTerrenos();" [(ngModel)]="parcelaFiltro"></ngx-select>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="form-group">
+                            <label class="label-form">Lote: </label>
+                            <ngx-select [items]="lotes" optionValueField="lote" placeholder="Lote:" (select)="filtrarTerrenos();" [(ngModel)]="loteFiltro"></ngx-select>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3"> 
+                        <div class="form-group">
+                            <label class="label-form">Etapa: </label>
+                            <ngx-select [items]="etapas" optionValueField="etapa" placeholder="Etapa:" (select)="filtrarTerrenos();" [(ngModel)]="etapaFiltro"></ngx-select>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="form-group">
+                            <label class="label-form">Estatus: </label>
+                            <ngx-select [items]="estatusTodos" optionValueField="Estatus" placeholder="Estatus:" (select)="filtrarTerrenos();" [(ngModel)]="estatusFiltro"></ngx-select>
+                        </div>
+                    </div>
+                </div>         
+                <div class="row" *ngIf="clientesTodos && !clienteDetalles.IdCliente" id="cli_r">
+                    <div class="col-12 col-md-6  text-center" *ngFor="let a of clientesTodos | paginate: { itemsPerPage: 6, currentPage: pageCli, id: 'cli_r' };">
+                        <div class="card mb-3">
+                            <div class="card-header bg-{{(a.Color)?a.Color:'default'}}">
+                                <i class="fa fa-user"></i> {{a.Codigo}}
+                            </div>
+                            <div class="card-body">
+                                <span><b><i class="fa fa-user"></i> : </b>{{a.Nombre}}</span>
+                                <br>
+                                <span><b><i class="fa fa-envelope"></i> : </b> {{a.Correo}}</span>
+                                <table class="table"  *ngIf="a.Terrenos[0]">
+                                    <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th><th>Estatus:</th></tr>
+                                    <tr *ngFor="let t of a.Terrenos"><td>{{t.etapa}}</td><td>{{t.lote}}</td><td>{{t.parcela}}</td><td>{{t.Estado}}</td></tr>
+                                </table>
+                                <table class="table"  *ngIf="!a.Terrenos[0]">
+                                    <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th><th>Estatus:</th></tr>
+                                    <tr ><td colspan="4">Sin Terrenos</td></tr>
+                                </table>
+                                <br>
+                                <div class="row card-footer">
+                                    <div class="col-6">
+                                        <button class="btn btn-primary w-100" (click)="detalleCliente(a)"><i class="fa fa-pencil"></i> | Detalles</button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button class="btn btn-danger w-100" (click)="confirmarBorrarCliente(a)" title="Borrar Cliente"><i class="fa fa-times"></i> | Borrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 text-right">
+                        <pagination-controls (pageChange)="pageCli = $event" id="cli_r"></pagination-controls>
+                    </div>
+
+
+                    <!-- <div class="col-12 col-lg-12" style="overflow: auto;">
+                        <table class="table table-hover table-stripped" *ngIf="clientesTodos">
+                            <thead>
+                                <tr>
+                                    <th>Codigo</th>
+                                    <th>Nombre</th>
+                                    <th>Terreno</th>
+                                    <th>Lote</th>
+                                    <th>Etapa</th>
+                                    <th class="text-center"><i class="fa fa-gear"></i></th>
+                                </tr>
+                            </thead>
+                            <tbody >
+                                <tr *ngFor="let cli of clientesTodos | paginate: { itemsPerPage: 10, currentPage: this.datosPage }" >
+                                    <td>{{cli.Codigo}}</td>
+                                    <td>{{cli.Nombre}}</td>
+                                    <td>{{cli.Parcela}}</td>
+                                    <td>{{cli.Lote}}</td>
+                                    <td >{{cli.Etapa}}</td>
+                                    <td class="text-center">
+                                        <button class="btn btn-primary" (click)="detalleCliente(cli)"><i class="fa fa-pencil"></i> Detalles</button>&nbsp;
+                                        <button class="btn btn-danger" style="background: #c00 !important; " (click)="confirmarBorrarCliente(cli)" title="Borrar Cliente"><i class="fa fa-times"></i></button>&nbsp;
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-right" >
+                            <pagination-controls (pageChange)="this.datosPage = $event" ></pagination-controls>
+                        </div>
+                    </div> -->
+                </div>
                 <div class="row text-center" *ngIf="terrenos">
-                    <div class="col-4 col-lg-2">
+                    <!-- <div class="col-4 col-lg-2">
                         <div class="form-group">
                             <button (click)="obtenerClientesActivos();" class="btn btn-dark w-100"><i class="fa fa-users"></i> Ver Todos  </button>
                         </div>
@@ -91,10 +140,9 @@
                     <div class="col-8 col-lg-10">
                         <div class="form-group"> 
                             <input type="text" [(ngModel)]="textoCliente" placeholder="Buscar por texto" (keyup)="filtrarTerrenos();"  class="form-control" />
-                            <!-- <input id="typeahead-format" (keyup)="campoNombre();"  placeholder="Encontrar por nombre del cliente:" type="text" class="form-control" [(ngModel)]="nombreCliente" [ngbTypeahead]="filtrarCliente" (selectItem)="detalleCliente($event.item);" [resultFormatter]="formatter" /> -->
                         </div>
                         <br>
-                    </div>
+                    </div> -->
                     <div class="col-12 col-lg-12" *ngIf="clienteDetalles.IdCliente || datosDetalle">
                         <ngb-tabset>
                             <ngb-tab>
@@ -501,42 +549,7 @@
                         </ngb-tabset>    
                     </div>
                 </div>
-                <div class="row" *ngIf="clientesTodos && !clienteDetalles.IdCliente">
-                    <div class="col-12 col-lg-12" style="overflow: auto;">
-                        <table class="table table-hover table-stripped" *ngIf="clientesTodos">
-                            <thead>
-                                <tr>
-                                    <th>Codigo</th>
-                                    <th>Nombre</th>
-                                    <th>Terreno</th>
-                                    <th>Lote</th>
-                                    <th>Etapa</th>
-                                    <th class="text-center"><i class="fa fa-gear"></i></th>
-                                </tr>
-                            </thead>
-                            <tbody >
-                                <tr *ngFor="let cli of clientesTodos | paginate: { itemsPerPage: 10, currentPage: this.datosPage }" >
-                                    <td>{{cli.Codigo}}</td>
-                                    <td>{{cli.Nombre}}</td>
-                                    <td>{{cli.Parcela}}</td>
-                                    <td>{{cli.Lote}}</td>
-                                    <td >{{cli.Etapa}}</td>
-                                    <td class="text-center">
-                                        <!-- <button class="btn btn-success" (click)="nuevaVenta(cli)" title="Abono Terreno"><i class="fa fa-plus-circle"></i></button> &nbsp;
-                                        <button class="btn btn-danger" (click)="nuevoMantenimiento(cli)" title="Abono Mantenimiento"><i class="fa fa-plus-circle"></i></button>&nbsp; -->
-    <!--                                    <button class="btn btn-info" (click)="nuevaVenta(cli)" title="Abono Cerfiticado"><i class="fa fa-plus-circle"></i></button>&nbsp;-->
-                                        <button class="btn btn-primary" (click)="detalleCliente(cli)"><i class="fa fa-pencil"></i> Detalles</button>&nbsp;
-                                        <button class="btn btn-danger" style="background: #c00 !important; " (click)="confirmarBorrarCliente(cli)" title="Borrar Cliente"><i class="fa fa-times"></i></button>&nbsp;
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="text-right" >
-                            <pagination-controls (pageChange)="this.datosPage = $event" ></pagination-controls>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            <!-- </div>
+        </div> -->
     </div>
 </div>        
