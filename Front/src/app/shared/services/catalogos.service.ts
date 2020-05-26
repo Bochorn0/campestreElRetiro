@@ -222,6 +222,11 @@ export class CatalogosService {
       return Promise.resolve(response);
     }).catch(err => { return Promise.reject(err); });
   }
+  enviarCorreo(datos){
+    return this.api.post(`/catalogos/envio_correo`, datos).then(response => {
+      return Promise.resolve(response);
+    }).catch(err => { return Promise.reject(err); });
+  }
   guardarCambiosPuestos(datos){
     return this.api.post(`/catalogos/actualizarDatosPuestos`, datos).then(response => {
       return Promise.resolve(response);

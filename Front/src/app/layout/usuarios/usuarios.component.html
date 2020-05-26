@@ -80,10 +80,11 @@
                             <div class="col-12 col-lg-3 ">
                                 <div class="form-group">
                                     <label class="label-form"> Perfil </label>
-                                    <select class="form-control" [(ngModel)]="empleadoEditar.Puesto" >
+                                    <ngx-select [items]="catalogoPuestos" optionValueField="Nombre_perfil" placeholder="Selecciona un perfil:"  [(ngModel)]="empleadoEditar.Puesto"></ngx-select>
+                                    <!-- <select class="form-control" [(ngModel)]="empleadoEditar.Puesto" >
                                         <option value="0">Selecciona el puesto</option>
                                         <option *ngFor="let per of catalogoPuestos" value="{{per.Nombre_perfil}}">{{per.Nombre_perfil}}</option>
-                                    </select>
+                                    </select> -->
                                 </div>
                             </div>
                             <div class="col-12 col-lg-3 ">
@@ -220,10 +221,11 @@
                                 <div class="col-xs-4 col-lg-4">
                                     <div class="form-group">
                                         <label class="label-form"> Puesto </label>
-                                        <select class="form-control" [(ngModel)]="puesto" >
+                                        <ngx-select [items]="catalogoPuestos" optionValueField="Nombre_perfil" placeholder="Selecciona un perfil:"  [(ngModel)]="puesto"></ngx-select>
+                                        <!-- <select class="form-control" [(ngModel)]="puesto" >
                                             <option value="0">Selecciona el puesto</option>
                                             <option *ngFor="let pue of catalogoPuestos" value="pue.Nombre_perfil">{{pue.Nombre_perfil}}</option>
-                                        </select>
+                                        </select> -->
                                     </div>
                                 </div>
                                 <div class="col-xs-4 col-lg-4">

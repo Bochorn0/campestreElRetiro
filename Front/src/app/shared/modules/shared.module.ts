@@ -16,6 +16,7 @@ import { FinanciamientoVentasModule} from './ventas/venta/venta.module';
 import { FormularioClientesModule } from './formularios/formulario-clientes/formulario-clientes.module';
 import { FormularioClientesSeparadoModule } from './formularios/formulario-clientes-separado/formulario-clientes-separado.module';
 import { StatModule} from './stat/stat.module';
+import { IngresosModule} from './ingresos/ingresos.module';
 import { HomeInfoModule} from './home-info/home-info.module';
 import { PageHeaderModule } from './page-header/page-header.module';
 import { ChartsModule as Ng2Charts } from 'ng2-charts';
@@ -24,6 +25,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { AuthGuard } from '../guard/auth.guard';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { NgxSelectModule } from 'ngx-select-ex';
+import { DetalleClienteModule } from './catalogos/detalles-cliente/detalles-cliente.module';
 //import { AngularPrint} from 'angular-print';
 /*import {
     AlertComponent,
@@ -71,7 +73,9 @@ import { NgxSelectModule } from 'ngx-select-ex';
     NgbTabsetModule,
     NgbModalModule,
     NgxPaginationModule,
-    NgxSelectModule
+    NgxSelectModule,
+    DetalleClienteModule,
+    IngresosModule
    // AngularPrint
   ],
   exports: [
@@ -104,7 +108,9 @@ import { NgxSelectModule } from 'ngx-select-ex';
     NgbTabsetModule,
     NgbModalModule,
     NgxPaginationModule,
-    NgxSelectModule
+    NgxSelectModule,
+    DetalleClienteModule,
+    IngresosModule
    // AngularPrint
   ],
   providers:[AuthGuard]

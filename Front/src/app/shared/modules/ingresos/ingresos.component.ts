@@ -1,21 +1,21 @@
 import { Component, OnInit ,Input, ViewChild} from '@angular/core';
-import { routerTransition } from '../../../../router.animations';
-import { CatalogosService } from '../../../../shared/services/catalogos.service';
-import { VentasService } from '../../../../shared/services/ventas.service'
+import { routerTransition } from '../../../router.animations';
+import { CatalogosService } from '../../../shared/services/catalogos.service';
+import { VentasService } from '../../../shared/services/ventas.service'
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import swal from 'sweetalert2';
 import * as moment from 'moment';
 
 @Component({
-    selector: 'app-venta',
-    templateUrl: './venta.component.html',
-    styleUrls: ['./venta.component.scss'],
+    selector: 'app-ingresos',
+    templateUrl: './ingresos.component.html',
+    styleUrls: ['./ingresos.component.scss'],
     animations: [routerTransition()],
-    providers: [CatalogosService, VentasService]
+    providers: [CatalogosService, VentasService] 
 })
-export class VentaComponent implements OnInit {
-
+export class IngresosComponent implements OnInit {
+    @Input('datosIngreso') datosIngreso;
     //
     datosCliente;mensualidadesPendientes;mensualidad;nombresClientes;datosTerreno;datosMensualidad;
     VentaCompleta;anualidadesPendientes;anualidad;
@@ -25,8 +25,9 @@ export class VentaComponent implements OnInit {
     conceptosAPagar;total_abono;catalogoVentas;conceptoVenta;
     idTerreno ;formaPago;mostrarCuentas;cuentasDeposito;cuentaDestino;
     pdfRecibo;formaDePago;formasDePago;
-    @Input('datosVenta')datosClienteVenta: any;
     tipoMovimiento;
+    
+
     constructor(private catalogosService : CatalogosService, private ventasService: VentasService) {
         this.obtenerClientesActivos();
         this._foliosCliente();
@@ -128,8 +129,8 @@ export class VentaComponent implements OnInit {
         })
     }
     ngOnInit() {
-        if(this.datosClienteVenta){
-            this.datosCliente =  this.datosClienteVenta;
+        if(this.datosIngreso){
+            this.datosCliente =  this.datosIngreso;
         }
     }
     agregarVenta(){

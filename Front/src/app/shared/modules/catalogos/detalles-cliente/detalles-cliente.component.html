@@ -1,0 +1,334 @@
+
+<div class="row" >
+    <div class="col-0 col-sm-3"></div>
+    <div class="col-0 col-sm-3"></div>
+    <div class="col-6 col-sm-3 text-center">
+        <div class="form-group">
+            <button (click)="volverTodosClientes();" class="btn btn-dark w-100"><i class="fa fa-book"></i> | Ver Todos  </button>
+        </div>
+    </div>
+    <div class="col-6 col-sm-3 text-center">
+        <div class="form-group">
+            <button class="btn btn-warning text-white w-100 pull-right" (click)="EditarCliente();"><i class="fa fa-pencil"></i> | Editar Cliente</button>
+        </div>
+    </div>
+    <!-- <div class="col-12">
+        <div class="form-group">
+            <button (click)="verDatosTodos();" class="btn btn-dark pull-left"><i class="fa fa-book"></i> | Ver Todos  </button>
+            <br><br>
+        </div>
+    </div> -->
+</div>    
+<div class="col-12">
+        <ngb-tabset>
+            <ngb-tab>
+                <ng-template ngbTabTitle ><b>Datos del Cliente</b> </ng-template>
+                <ng-template ngbTabContent>
+                    <div class="row" >
+                        <div class="col-12">
+                            <h4> {{datosDetalles.Codigo}} - {{ datosDetalles.Nombre}} </h4>
+                        </div>
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-info">
+                                    <h4>Datos Basicos </h4>
+                                </div>
+                                <div class="card-body row text-left">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label class="label-form"> #Cliente:</label>
+                                            {{ datosDetalles.Codigo}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-8">
+                                        <div class="form-group">
+                                            <label class="label-form"> Nombre : </label>
+                                            {{ datosDetalles.Nombre}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label-form"> Correo : </label>
+                                            {{ datosDetalles.Correo}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label-form"> Fecha Nacimiento :</label>
+                                            {{ datosDetalles.Fecha_nacimiento}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label-form"> IFE :</label>
+                                            {{ datosDetalles.Num_ife}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label-form"> Origen :</label>
+                                            {{ datosDetalles.Origen}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label-form"> Teléfono :</label>
+                                            {{ datosDetalles.Telefono}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label-form"> Direccion :</label>
+                                            {{ datosDetalles.Direccion}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label-form"> Monto Mantenimiento Actual :</label>
+                                            {{ datosDetalles.Monto_mantenimiento | number}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label-form"> Periodo de cobro :</label>
+                                            {{ datosDetalles.Periodo_cobro}} Meses
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label-form"> Referencia :</label>
+                                            {{ datosDetalles.Referencia_1}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="label-form"> Cel Referencia :</label>
+                                            {{ datosDetalles.TelRef_1}}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label class="label-form"> Observaciones:</label>
+                                        {{ datosDetalles.Observaciones}}
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                        <!-- TERRENOS -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-orange">
+                                    <h4>Terrenos </h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="list-group text-left">
+                                        <table class="table table-stripped table-bordered"  *ngIf="datosDetalles.Terrenos[0]">
+                                            <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th><th>Estatus:</th><th><i class="fa fa-gear"></i></th></tr>
+                                            <tr *ngFor="let t of datosDetalles.Terrenos"><td>{{t.etapa}}</td><td>{{t.lote}}</td><td>{{t.parcela}}</td><td>{{t.Estado}}</td><td><button class="btn bg-orange" (click)=" obtenerContratoTerreno(t);">Mas <i class="fa fa-sign-out"></i></button></td></tr>
+                                        </table>
+                                        <table class="table table-stripped table-bordered"  *ngIf="!datosDetalles.Terrenos[0]">
+                                            <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th><th>Estatus:</th><th><i class="fa fa-gear"></i></th></tr>
+                                            <tr ><td colspan="5">Sin Terrenos</td></tr>
+                                        </table>
+                                    </div>                                    
+                                    <!-- CONTRATOS -->
+                                    <div class="row"  *ngIf="contenidoContrato">
+                                        <hr>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label class="label-form"> &nbsp;</label>
+                                                <button class="btn bg-warning w-100 pull-right"   (click)="enviarContratoCorreo();"><i class="fa fa-envelope"></i> | Correo</button>
+                                            </div>                                        
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label class="label-form"> &nbsp;</label>
+                                                <button class="btn btn-primary w-100 pull-right" (click)="guardarContrato();"><i class="fa fa-save"></i> | Guardar</button>
+                                            </div>                                        
+                                        </div>
+                                        <div class="col-12" [froalaEditor] [(froalaModel)]="contenidoContrato"></div>                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card-header bg-primary">
+                                <h4>Saldos</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group">
+                                    <table class="table table-stripped table-bordered">
+                                        <tr *ngIf="datosDetalles.Credito_original > 0">
+                                            <td>
+                                            <b><i class="fa fa-dollar"></i> Crédito Original:</b>
+                                            </td>
+                                            <td>
+                                            $ {{datosDetalles.Credito_original | number}}
+                                            </td>
+                                    </tr>
+                                    <tr *ngIf="datosDetalles.Saldo_adeudo > 0">
+                                        <td>
+                                            <b><i class="fa fa-money"></i> Saldo Enganche:</b>
+                                        </td>
+                                        <td>
+                                            $ {{datosDetalles.Saldo_adeudo | number}}
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="datosDetalles.Saldo_credito > 0">
+                                        <td>
+                                            <b><i class="fa fa-credit-card"></i> Saldo Pendiente:</b>
+                                        </td>
+                                        <td>
+                                            $ {{datosDetalles.Saldo_credito | number}}
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="datosDetalles.Saldo_mantenimiento > 0">
+                                        <td>
+                                            <b><i class="fa fa-home"></i> Saldo Mantenimiento:</b>
+                                        </td>
+                                        <td>
+                                            $ {{datosDetalles.Saldo_mantenimiento | number}}
+                                        </td>
+                                    </tr>  
+                                    <tr *ngIf="datosDetalles.Saldo_agua > 0">
+                                        <td>
+                                            <b><i class="fa fa-dollar"></i> Contrato de Agua:</b>
+                                        </td>
+                                        <td>
+                                            $ {{datosDetalles.Saldo_agua | number}}
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="datosDetalles.Saldo_certificado > 0">
+                                        <td>
+                                            <b><i class="fa fa-address-card"></i> Saldo Certificado:</b>
+                                        </td>
+                                        <td>
+                                            $ {{datosDetalles.Saldo_certificado | number}}
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="datosDetalles.Saldo_total > 0">
+                                        <td>
+                                            <b><i class="fa fa-dollar"></i> Saldo Total:</b>
+                                        </td>
+                                        <td>
+                                            $ {{datosDetalles.Saldo_total | number}}
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="datosDetalles.Credito_original > 0">
+                                        <td>
+                                            <b><i class="fa fa-dollar"></i> Proximo Mantenimiento:</b>
+                                        </td>
+                                        <td>
+                                            2020-01-01 | $ {{datosDetalles.Monto_mantenimiento | number}}
+                                        </td>
+                                    </tr>                                                                    
+                                    </table>                                                                
+                                </div>                                
+                            </div>
+                        </div>                        
+                        <!-- <div class="col-lg-12">
+                            <br>
+                            <div class="card card-default">
+                            </div>
+                        </div>                                                     -->
+                        <div class="col-lg-12" *ngIf="datosDetalle">
+                            <br>
+                            <button class="btn btn-warning pull-right" (click)="this.datosDetalles = datosDetalle; this.datosDetalle = false;"> Regresar </button>
+                            <br>
+                            <br>
+                            <app-formulario-clientes-separado [datosCliente]="datosDetalle" (vista)=" this.datosDetalles = this.datosDetalle = false; obtenerClientesActivos();" ></app-formulario-clientes-separado>
+                        </div>   
+                    </div>                                 
+                </ng-template>
+            </ngb-tab>
+            <ngb-tab>
+                <ng-template ngbTabTitle><b>Financiamiento</b> </ng-template>
+                <ng-template ngbTabContent>
+                    <div class="row" >
+                        <div class="col-lg-12">
+                            <br>
+                            <div class="col-lg-12"><h3 class="text-center">  Mensualidades pendientes </h3><hr></div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="switch">
+                                <input type="checkbox" [(ngModel)]="mensualidadesAbonadsa" (change)="filtrarMensualidades();">
+                                <span class="slider round"></span>
+                            </label>
+                            Ver Mensualidades Pagados
+                        </div>
+                        <div class="col-lg-6">
+                            <button class="btn btn-success " (click)="nuevoMantenimiento(datosDetalles)" title="Abono Mantenimiento"><i class="fa fa-dollar"></i> Cobranza Mantenimientos </button>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="label-form"> Selecciona Terreno </label>
+                                <select *ngIf="datosDetalles.Terrenos" class="form-control" (change)="filtrarTerrenosMensualidad();" [(ngModel)]="idTerrenoMensualidad" >
+                                    <option value="0">Selecciona el terreno</option>
+                                    <option  *ngFor=" let ter of datosDetalles.Terrenos" value="{{ter.IdTerreno}}" > Lote: {{ter.lote}} - Etapa: {{ter.etapa}} - Terreno: {{ter.parcela}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-6"></div>
+                        <div class="col-lg-12" *ngFor=" let ter of datosDetalles.Terrenos" > 
+                            <div class="card mb-3" *ngIf="!ter.TerrenoMostrar">
+                                <div class="card-header bg-warning">
+                                    Abonos Lote: {{ter.lote}}, Etapa: {{ter.etapa}}, Parcela: {{ter.parcela}}
+                                </div>
+                                <div class="card-body ">
+                                    <app-datatables-general  *ngIf="ter.Mensualidades" [datosDatatable]="ter.Mensualidades" ></app-datatables-general>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="anualidadesVista">
+                        <div class="col-lg-6" *ngFor=" let ter of datosDetalles.Terrenos"> 
+                            <div class="card mb-3">
+                                <div class="card-header bg-info">
+                                    Abonos Lote: {{ter.lote}}, Etapa: {{ter.etapa}}, Parcela: {{ter.parcela}}
+                                </div>
+                                <div class="card-body ">
+                                    <app-datatables-general  *ngIf="ter.Anualidades" [datosDatatable]="ter.Anualidades" ></app-datatables-general>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                                    
+                </ng-template>
+            </ngb-tab>
+            <ngb-tab>
+                <ng-template ngbTabTitle><b>Mantenimientos</b> </ng-template>
+                <ng-template ngbTabContent>
+                    <div class="row" >
+                        <div class="col-lg-12">
+                            <br>
+                            <div class="col-lg-12"><h3 class="text-center">  Mantenimientos pendientes </h3><hr></div>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="switch">
+                                <input type="checkbox" [(ngModel)]="mantenimientosPagados" (change)="filtrarMantenimientos();">
+                                <span class="slider round"></span>
+                            </label>
+                            Ver Mantenimientos Pagados
+                        </div>
+                        <div class="col-lg-6">
+                            <button class="btn btn-success " (click)="nuevoMantenimiento(datosDetalles)" title="Abono Mantenimiento"><i class="fa fa-dollar"></i> Cobranza Mantenimientos </button>
+                        </div>
+                        <div class="col-lg-12" > 
+                            <br>
+                            <div class="card mb-3" *ngIf="datosDetalles.Mantenimientos[0]">
+                                <div class="card-header bg-danger">
+                                    Mantenimientos Pendientes
+                                </div>
+                                <div class="card-body ">
+                                    <table class="table table-hover" >
+                                        <tr><th>Fecha</th><th>Importe Restante</th><th>Pagado</th><th>Abonado</th></tr>
+                                        <tr *ngFor="let m of datosDetalles.Mantenimientos">
+                                            <td>{{m.Fecha }}</td><td>$ {{m.Importe | number}}</td><td>{{(m.Pagado  == 'Si')?'Si':(m.Restante > 0)?'Parcilamente':'No'}}</td><td>$ {{(m.Abonado)?m.Abonado:'0'}}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                                    
+                </ng-template>
+            </ngb-tab>
+        </ngb-tabset>    
+    </div>

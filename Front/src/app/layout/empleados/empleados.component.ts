@@ -66,6 +66,10 @@ export class EmpleadosComponent implements OnInit {
         this.catalogosService.obtenerEmpleados().then(res =>{
             this.vistaCentro = true;
             this.empladosActivos = res['Data'];
+            this.catalogoEmpleados =  res['Data'];
+            this.nombresEmpleados = res['Data'].map((key)=>{
+                return key.Nombre;
+            });
             this.panelVisualizar = 'Empleados';
             //this.empladosActivos =  { Datos : res['Data']};
         }).catch(err=>{this._limpiarVariables();});
@@ -126,7 +130,7 @@ export class EmpleadosComponent implements OnInit {
         this.datosEmpleado.Sueldo = this.sueldoEmpleado;
         this.datosEmpleado.Horas =  this.horasLaboradas;
         this.datosEmpleado.Comisiones = comisionesMonto;
-        this.datosEmpleado.Bonos = this.bonos;
+        this.datosEmpleado.Bonos = this.bonos; 
         this.datosEmpleado.Descuentos = this.descuentos;
         this.datosEmpleado.Descuentos_totales = this.descuentos;
         if(this.horasLaboradas < 40){

@@ -9,14 +9,13 @@ import { StatModule} from '../../stat/stat.module';
 import {  } from '../../stat/stat.module';
 import { PageHeaderModule } from '../../page-header/page-header.module';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
-import { CatalogoClientesComponent } from './catalogo-clientes.component';
-import { DetalleClienteModule } from '../detalles-cliente/detalles-cliente.module';
+import { DetalleClienteComponent } from './detalles-cliente.component';
 import { FormularioClientesSeparadoModule } from '../../formularios/formulario-clientes-separado/formulario-clientes-separado.module';
 import { NgxSelectModule } from 'ngx-select-ex';
 @NgModule({
-    imports: [CommonModule, RouterModule, FormsModule,DatatableModule,StatModule,PageHeaderModule,ReactiveFormsModule, NgxPaginationModule,    NgbTypeaheadModule, FroalaEditorModule, FroalaViewModule, NgbTabsetModule,FormularioClientesSeparadoModule,NgxSelectModule,DetalleClienteModule],
-    declarations: [CatalogoClientesComponent],
-    exports: [CatalogoClientesComponent] 
+    imports: [CommonModule, RouterModule, FormsModule,DatatableModule,StatModule,PageHeaderModule,ReactiveFormsModule, NgxPaginationModule,    NgbTypeaheadModule, FroalaEditorModule, FroalaViewModule, NgbTabsetModule,FormularioClientesSeparadoModule,NgxSelectModule],
+    declarations: [DetalleClienteComponent],
+    exports: [DetalleClienteComponent] 
 })
 
-export class CatalogoClientesModule {}
+export class DetalleClienteModule {}

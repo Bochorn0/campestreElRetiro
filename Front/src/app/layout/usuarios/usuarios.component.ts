@@ -85,6 +85,7 @@ export class UsuariosComponent implements OnInit {
         console.log('info',this.objCorreoEnviar);
         if(this.objCorreoEnviar){
             this.catalogosService.enviarCorreoCotizacion(this.objCorreoEnviar).then(res=>{
+                console.log('termino');
                 this.activeModal.dismiss();
                 this.obtenerUsuarios();
             }).catch(err=>{console.log('err',err);})
@@ -290,6 +291,10 @@ export class UsuariosComponent implements OnInit {
         this.catalogosService.obtenerEmpleados().then(res =>{
             this.vistaCentro = true;
             this.empladosActivos = res['Data'];
+            this.catalogoEmpleados =  res['Data'];
+            this.nombresEmpleados = res['Data'].map((key)=>{
+                return key.Nombre;
+            });
             this.panelVisualizar = 'Empleados';
             //this.empladosActivos =  { Datos : res['Data']};
         }).catch(err=>{this._limpiarVariables();});

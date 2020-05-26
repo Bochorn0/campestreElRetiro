@@ -8,8 +8,9 @@ import { DatatableModule} from '../../datatables-general/datatables-general.modu
 import { StatModule} from '../../stat/stat.module';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { VentaComponent } from './venta.component';
+import { NgxSelectModule } from 'ngx-select-ex';
 @NgModule({
-    imports: [CommonModule, RouterModule, FormsModule,DatatableModule,StatModule,ReactiveFormsModule, NgxPaginationModule,    NgbTypeaheadModule, FroalaEditorModule, FroalaViewModule],
+    imports: [CommonModule, RouterModule, FormsModule,DatatableModule,StatModule,ReactiveFormsModule, NgxPaginationModule,NgbTypeaheadModule, FroalaEditorModule, FroalaViewModule,NgxSelectModule],
     declarations: [VentaComponent],
     exports: [VentaComponent]
 })

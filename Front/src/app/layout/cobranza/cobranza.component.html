@@ -30,6 +30,7 @@
     </div>
     <div *ngIf="vistaCentro">
         <!--Venta regular-->
+        <!-- <app-ingresos *ngIf="ingresoNuevo" [datosIngreso]="datosVenta"  [@routerTransition]></app-ingresos> -->
         <app-venta *ngIf="ingresoNuevo" [datosVenta]="datosVenta"  [@routerTransition]></app-venta>
         <!--Catalogo Clientes-->
         <app-catalogo-clientes *ngIf="clientesCatalogos" (vista)="catalogoClientes($event);" (nuevaOperacion)="nueva_operacion($event);" [@routerTransition]></app-catalogo-clientes>

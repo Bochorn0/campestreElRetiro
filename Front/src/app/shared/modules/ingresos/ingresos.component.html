@@ -27,9 +27,32 @@
                             <tr><td><b>{{today}}</b></td></tr>
                         </table>
                     </div>
-                    <div class="col-12" >
+                    <div class="col-12">
                         <hr />
-                        <div class="row" *ngIf="datosCliente.IdCliente">
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            <ngx-select [items]="clientesTodos" optionValueField="Nombre" placeholder="Nombre del cliente:" (select)="seleccionarCliente($event);" [(ngModel)]="datosCliente.Nombre"></ngx-select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            <ngx-select [items]="datosCliente.Terrenos" optionValueField="NombreEspecial" placeholder="Selecciona terreno:" (select)="seleccionarTerreno($event);" [(ngModel)]="idTerreno"></ngx-select>
+                        </div>
+                    </div>                    
+                    <div class="col-12"  *ngIf="datosCliente.IdCliente">
+                        <h3>
+                            <b class="text-success">{{datosCliente.Codigo}}</b>
+                        </h3>
+                        <table class="table table-stripped table-bordered" style="width: 100%;"  *ngIf="datosCliente.Terrenos[0]">
+                            <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th><th>Estatus:</th><th><i class="fa fa-gear"></i></th></tr>
+                            <tr *ngFor="let t of datosCliente.Terrenos"><td>{{t.etapa}}</td><td>{{t.lote}}</td><td>{{t.parcela}}</td><td>{{t.Estado}}</td><td><button class="btn bg-orange" (click)=" obtenerContratoTerreno(t);">Mas <i class="fa fa-sign-out"></i></button></td></tr>
+                        </table>
+                        <!-- <table class="table table-stripped table-bordered" style="width: 100%;"  *ngIf="datosCliente.Terrenos[0]">
+                            <tr style="background-color:#999;"><th>Enganche:</th><th>Moroso:</th><th>Terreno:</th><th>Anualidad:</th><th><i class="fa fa-gear"></i></th></tr>
+                            <tr><td>{{datosCliente.Saldo_adeudo}}</td><td>{{datosCliente.Saldo_moroso}}</td><td>{{datosCliente.Saldo_credito}}</td><td>{{datosCliente.Saldo_anualidad}}</td><td><button class="btn bg-orange" (click)=" obtenerContratoTerreno(t);">Mas <i class="fa fa-sign-out"></i></button></td></tr>
+                        </table> -->
+                        <div class="row">
                             <div class="col-lg-3 text-center">
                                 <b class="text-primary">Adeudo Enganche: <b> $ {{datosCliente.Saldo_adeudo | number}}</b></b>
                             </div>
@@ -58,21 +81,7 @@
                                     Esta cotizacion se encuentra bloqueada por abono a capital, se necesita recotizar.
                                 </b>
                             </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                    <ngx-select [items]="clientesTodos" optionValueField="Nombre" placeholder="Nombre del cliente:" (select)="seleccionarCliente($event);" [(ngModel)]="datosCliente.Nombre"></ngx-select>
-                                    <!-- <input id="typeahead-format" placeholder="Nombre del cliente:" type="text" class="form-control" [(ngModel)]="datosCliente.Nombre" [ngbTypeahead]="filtrarCliente" (selectItem)="seleccionarCliente($event)"  /> -->
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                    <ngx-select [items]="datosCliente.Terrenos" optionValueField="NombreEspecial" placeholder="Selecciona terreno:" (select)="seleccionarTerreno($event);" [(ngModel)]="idTerreno"></ngx-select>
-                                    <!-- <select class="form-control" (change)="seleccionarTerreno();" [(ngModel)]="idTerreno">
-                                        <option value="0">Selecciona terreno</option>
-                                        <option *ngFor="let ter of datosCliente.Terrenos" value="{{ter.IdTerreno}}" > Lote: {{ter.lote}} - Etapa: {{ter.etapa}} - Parcela: {{ter.parcela}} </option>
-                                    </select> -->
-                                </div>
-                            </div>
+
                             <!-- <div class="col-lg-4">
                                 <div class="form-group" *ngIf="datosCliente.IdCliente">
                                     <label class="label-form">

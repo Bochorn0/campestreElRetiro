@@ -110,6 +110,16 @@
       display: none; 
     }
    }
+   @media (min-width: 992px) and (max-width: 1199px) {   
+    .col-lg-0{
+      display: none; 
+    }
+   }
+   @media (min-width: 1200px){   
+    .col-xl-0{
+      display: none; 
+    }
+   }
 // .bg-warning{
 //     color:#fff;
 //     background-color:#2A8901 !important;
