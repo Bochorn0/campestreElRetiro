@@ -39,7 +39,28 @@
     </div>
     <!-- LOTES -->
     <div class="row"  *ngIf="panelVisualizar == 'Lotes' " >
+        <div class="col-12  bottom-hr">
+            <div class="row text-center">
+                <div class="col-4">
+                    <a (click)="visualizarLotesDisponibles('Disponibles');" >
+                        <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Lotes_disponibles.png" class="img-fluid ico-lot" /> 
+                    </a>
+                </div>
+                <div class="col-4">
+                    <a (click)="visualizarLotesDisponibles('Contado');" >
+                        <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Lotes_contado.png" class="img-fluid ico-lot"  /> 
+                    </a>
+                </div>
+                <div class="col-4">
+                    <a (click)="visualizarLotesDisponibles('Certificados');" >
+                        <img src="http://admin.campestreelretiro.com/assets/images/App_icons/Lotes_certificados.png" class="img-fluid ico-lot"  /> 
+                    </a>
+                </div>
+            </div>
+            <br>
+        </div>
         <div class="col-sm-12">
+            <br>
             <h3 class="text-center">Terrenos Activos</h3>
             <input type="text" class="form-control" placeholder="Buscar terrenos relacionados con :" [(ngModel)]="terrenosBuscar" (keydown)="filtrarTerrenos();" />
             <br>
@@ -106,6 +127,22 @@
             </div>
         </div>   
     </div>
+    <!-- GOOGLE EARTH -->
+    <div class="row" *ngIf="panelVisualizar == 'Lotes_disponibles' " >
+        <div class="col-12">
+            <br>
+            <div class="row"  *ngIf="kmzArchivo">
+                <div class="col-12">
+                    <h3 class="text-center">Lotes {{loteVer}} </h3>
+                    <br>
+                    <agm-map  [zoom]="18" >
+                        <agm-kml-layer [url]="kmzArchivo"> </agm-kml-layer>
+                    </agm-map>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- COTIZADOR -->
     <div class="row" *ngIf="panelVisualizar == 'Cotizaciones' " >
         <div class="col-12">
@@ -237,6 +274,7 @@
                         <div class="media-body list-group" *ngIf="p.Atender">
                             <br>
                             <a href="tel:{{p.Telefono}}"><div class="list-group-item list-group" ><i class="fa fa-phone-square text-green"></i> Llamar </div></a>
+                            <a href="https://wa.me/+52{{p.Telefono}}"><div class="list-group-item list-group" ><i class="fa fa-whatsapp text-success"></i> whatsapp </div></a>
                             <a style="cursor:pointer; color: #007bff;" (click)="prospectoActivo = p; mandarInformacionModal(modalInformacion);  modalDatos = {Tipo: 'MandarInformacion', Clase: 'bg-warning', Titulo: 'Enviar Información a Cliente'} " >
                                 <div class="list-group-item list-group" >
                                     <i class="fa fa-check-circle text-success" *ngIf="p.Informacion" style="margin:0 5px;"></i>  
@@ -379,6 +417,7 @@
                 <agm-map [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [zoom]="18" >
                     <agm-marker [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [label]="'M'"></agm-marker>
                 </agm-map>
+                <!-- <agm-map [latitude]="-12.4620674" [longitude]="130.8406958" [zoom]="18" > -->
             </div>
         </div>
     </div>

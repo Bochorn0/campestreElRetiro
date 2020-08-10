@@ -48,6 +48,7 @@ export class ModuloVentasComponent implements OnInit {
     calendarPlugins = [dayGridPlugin,timeGridPlugin,interactionPlugin];
     selectedEvent = null;
     calendarEvents = [];terrenoActual;activeModal;objCotizacion = {};objInformacion={};modalDatos;
+    kmzArchivo;loteVer;
     // reference to the calendar element
     @ViewChild('calendar')calendar: FullCalendarComponent;
     @ViewChild('modalCotizacion')modalCotizacion;
@@ -679,6 +680,27 @@ export class ModuloVentasComponent implements OnInit {
     apartarTerreno(p){
         this.panelVisualizar = 'NuevoCliente'
         this.datosNuevoCliente = { Nombre:p.Nombre_prospecto, Correo:p.Correo,Telefono:p.Telefono,Terrenos:[{Id:0,Cotizacion:[{IdCotizacion:0}]}]}
+    }
+    visualizarLotesDisponibles(ver){
+        this.panelVisualizar = 'Lotes_disponibles'
+        this.loteVer = ver;
+        this.kmzArchivo = '';
+        console.log('ver',ver);
+        switch(ver){
+            case 'Disponibles':{
+                this.kmzArchivo = 'http://campestreelretiro.com:8008/DISPONIBLES_ETAPA_7.kmz';
+            } break;
+            case 'Contado':{
+                this.kmzArchivo = 'http://campestreelretiro.com:8008/CONTADO.kmz';
+            } break;
+            case 'Certificados':{
+                this.kmzArchivo = 'http://campestreelretiro.com:8008/CERTIFICADOS.kmz';
+            } break;
+            default:{
+                this.kmzArchivo = 'http://campestreelretiro.com:8008/CONTADO.kmz';
+            } break;
+        }
+//        this.kmzArchivo = 'http://campestreelretiro.com:8008/CONTADO.kmz';
     }
     _limpiarVistaYVariables(){
         this.vistaCentro = this.clientesCatalogos = this.datosContrato = this.clienteNuevo = this.cotizacionNueva  = false;
