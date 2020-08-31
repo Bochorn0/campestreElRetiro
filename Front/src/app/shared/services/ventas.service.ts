@@ -121,4 +121,9 @@ export class VentasService {
       return Promise.resolve(response);
     }).catch(err => { return Promise.reject(err); });
   }
+  nuevoIngresoArchivo(datos){
+    return this.api.post(`/ingresos/nuevoIngresoArchivo`, datos).then(response => {
+      return Promise.resolve(response);
+    }).catch(err => { return Promise.reject(err); });
+  }
 }

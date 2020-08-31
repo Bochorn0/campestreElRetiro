@@ -229,6 +229,15 @@ router.post('/obtenerMantenimientoCalculado', (req, res) => {
         res.status(400).send(error);
     })
 });
+router.post('/nuevoIngresoArchivo', (req, res) => {
+    let objVentas = new Ventas();
+    objVentas.nuevo_ingreso_archivo(req.body).then((result) => {
+        res.status(200).send(result);
+    }).catch((error) => {
+        res.status(400).send(error);
+    })
+});
+
 
 
 

@@ -31,24 +31,27 @@
                         <hr />
                         <div class="row" *ngIf="datosCliente.IdCliente">
                             <div class="col-lg-3 text-center">
-                                <b class="text-primary">Adeudo Enganche: <b> $ {{datosCliente.Saldo_adeudo | number}}</b></b>
+                                <b class="text-primary">Adeudo Enganche: <b> $ {{datosCliente.Adeudo_enganche | number}}</b></b>
+                            </div>
+                            <!-- <div class="col-lg-3 text-center">
+                                <b class="text-info"> Adeudo Moroso: <b> $ {{datosCliente.Adeudo_moroso | number}}</b></b>
+                            </div> -->
+                            <div class="col-lg-3 text-center">
+                                <b class="text-primary">Adeudo Terreno: <b> $ {{datosCliente.Adeudo_terreno | number}} </b></b>
                             </div>
                             <div class="col-lg-3 text-center">
-                                <b class="text-info"> Adeudo Moroso: <b> $ {{datosCliente.Saldo_moroso | number}}</b></b>
+                                <b class="text-primary">Adeudo Anualidad: <b> $ {{datosCliente.Adeudo_anualidades | number}}</b></b>
                             </div>
                             <div class="col-lg-3 text-center">
-                                <b class="text-warning">Pendiente Terreno: <b> $ {{datosCliente.Saldo_credito | number}} </b></b>
-                            </div>
-                            <div class="col-lg-3 text-center">
-                                <b class="text-danger">Pendiente Anualidad: <b> $ {{datosCliente.Saldo_anualidad | number}}</b></b>
+                                <b class="text-primary">Adeudo Mantenimiento: <b> $ {{datosCliente.Adeudo_mantenimientos | number}}</b></b>
                             </div>
                             <div class="col-lg-12"><hr></div>
-                            <div class="col-lg-6 text-center">
+                            <!-- <div class="col-lg-6 text-center">
                                 <b>Crédito Original: <b> $ {{datosCliente.Credito_original | number}} </b></b> 
-                            </div>
-                            <div class="col-lg-6 text-center">
+                            </div> -->
+                            <!-- <div class="col-lg-6 text-center">
                                 <b>Saldo TOTAL: <b> $ {{(datosCliente.Saldo_credito + datosCliente.Saldo_adeudo + datosCliente.Saldo_agua + datosCliente.Saldo_mantenimiento +  datosCliente.Saldo_anualidad + datosCliente.Saldo_certificado) | number}} </b></b>
-                            </div>
+                            </div> -->
                             <div class="col-lg-12"><hr></div>
                         </div>
                         <br>
@@ -58,21 +61,45 @@
                                     Esta cotizacion se encuentra bloqueada por abono a capital, se necesita recotizar.
                                 </b>
                             </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="form-group">
-                                    <ngx-select [items]="clientesTodos" optionValueField="Nombre" placeholder="Nombre del cliente:" (select)="seleccionarCliente($event);" [(ngModel)]="datosCliente.Nombre"></ngx-select>
-                                    <!-- <input id="typeahead-format" placeholder="Nombre del cliente:" type="text" class="form-control" [(ngModel)]="datosCliente.Nombre" [ngbTypeahead]="filtrarCliente" (selectItem)="seleccionarCliente($event)"  /> -->
+                            <div class="col-12 col-sm-6" *ngIf="clientesTodos[0]">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <label class="label-form"> Tipo de venta </label>                                    
+                                        <form [formGroup]="frmSolicitud" class="form-validate" (keydown.enter)="$event.preventDefault()" novalidate="">
+                                            <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)"  formControlName="File" />
+                                        </form>                                    
+                                        <div class="col-3" style="padding-right:0;">
+                                            <button (click)="subirArchivo.click();" class="btn bg-orange w-100 text-white" ><i class="fa fa-cloud-upload"></i> | Carga Excel </button>
+                                            <!-- <button class="btn btn-secondary pull-right" type="button"><i class="fa fa-cloud-upload"></i> |  Carga Excel</button> -->
+                                        </div>
+                                        <div class="col-9"  style="padding-left:0;">
+                                            <ngx-select [items]="clientesTodos" optionValueField="Nombre" placeholder="Nombre del cliente:" (select)="seleccionarCliente($event);" aria-describedby="basic-addon2" ></ngx-select>
+                                        </div>
+                                    </div>
                                 </div>
+                                <!-- <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text" id="basic-addon1">
+                                        <button class="btn btn-secondary" type="button"><i class="fa fa-cloud-upload"></i> |  Excel</button>
+                                      </span>
+                                    </div>
+                                    <ngx-select [items]="clientesTodos"  style="position: relative;  flex: 1 1 auto; width: 100%; margin-bottom: 0;"  optionValueField="Nombre" placeholder="Nombre del cliente:" (select)="seleccionarCliente($event);" aria-describedby="basic-addon2" ></ngx-select>
+                                  </div> -->
+                                
+                                <!-- <div class="input-group mb-3">
+                                    <ngx-select [items]="clientesTodos" class="form-control"  optionValueField="Nombre" placeholder="Nombre del cliente:" (select)="seleccionarCliente($event);" aria-describedby="basic-addon2" ></ngx-select>
+                                    <div class="input-group-prepend">
+                                        <button class="btn btn-secondary" type="button"><i class="fa fa-cloud-upload"></i> |  Excel</button>
+                                    </div>
+
+                                </div> -->
+                                <!-- <div class="form-group">                                </div> -->
                             </div>
-                            <div class="col-12 col-sm-6">
+                            <!-- <div class="col-12 col-sm-6">
                                 <div class="form-group">
-                                    <ngx-select [items]="datosCliente.Terrenos" optionValueField="NombreEspecial" placeholder="Selecciona terreno:" (select)="seleccionarTerreno($event);" [(ngModel)]="idTerreno"></ngx-select>
-                                    <!-- <select class="form-control" (change)="seleccionarTerreno();" [(ngModel)]="idTerreno">
-                                        <option value="0">Selecciona terreno</option>
-                                        <option *ngFor="let ter of datosCliente.Terrenos" value="{{ter.IdTerreno}}" > Lote: {{ter.lote}} - Etapa: {{ter.etapa}} - Parcela: {{ter.parcela}} </option>
-                                    </select> -->
+                                    <ngx-select [items]="datosCliente.Terrenos" optionValueField="NombreEspecial" placeholder="Selecciona terreno:" (select)="seleccionarTerreno($event);" [(ngModel)]="terrenoSelect"></ngx-select>
                                 </div>
-                            </div>
+                            </div> -->
                             <!-- <div class="col-lg-4">
                                 <div class="form-group" *ngIf="datosCliente.IdCliente">
                                     <label class="label-form">
@@ -86,18 +113,22 @@
                             <div class="col-lg-3">
                                 <div class="form-group" *ngIf="datosCliente.IdCliente && datosTerreno">
                                     <label class="label-form"> Tipo de venta </label>
-                                    <select class="form-control" (change)="actualizarFolioMov();" [(ngModel)]="tipoIngreso">
+                                    <select class="form-control" (change)="cambiarTotalesYConceptos();" [(ngModel)]="tipoIngreso">
                                         <option value="0">Selecciona tipo de venta</option>
-                                        <option *ngFor="let tipVen of catalogoVentas"  value="{{tipVen.Codigo}}" [disabled]="(tipVen.Codigo == '01'  || tipVen.Codigo == '03' ) &&datosTerreno.Bloqueado">{{tipVen.Descripcion}}</option>
+                                        <option value="Enganche" [disabled]="datosCliente.Adeudo_enganche == 0">Enganche</option>
+                                        <option value="Terreno" [disabled]="datosCliente.Adeudo_terreno == 0">Terreno</option>
+                                        <option value="Anualidad" [disabled]="datosCliente.Adeudo_anualidades == 0">Anualidad</option>
+                                        <option value="Mantenimiento" [disabled]="datosCliente.Adeudo_mantenimientos ==  0">Mantenimiento</option>
+                                        <!-- <option *ngFor="let tipVen of catalogoVentas"  value="{{tipVen.Codigo}}" [disabled]="(tipVen.Codigo == '01'  || tipVen.Codigo == '03' ) &&datosTerreno.Bloqueado">{{tipVen.Descripcion}}</option> -->
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-lg-3" *ngIf="tipoIngreso == 01">
+                            <div class="col-lg-3" *ngIf="tipoIngreso == 'Terreno' ">
                                 <div class="form-group" >
                                     <label class="label-form"> Mensualidades </label>
-                                    <select *ngIf="tipoIngreso == '01' "  (change)="cambiarTotalesYConceptos();" class="form-control" [(ngModel)]="mensualidad" >
+                                    <select *ngIf="datosCliente.Financiamiento[0]" (change)="cambiarTotalesYConceptos($event);" class="form-control" [(ngModel)]="mensualidad" >
                                         <option value="0">Selecciona la mensualidad a abonar</option>
-                                        <option  *ngFor=" let men of mensualidadesPendientes" value="{{men.IdAdeudo}}" [disabled]="men.Pagado == 1" > {{men.Fecha.split('T')[0]}} - {{men.Importe | number}}</option>
+                                        <option  *ngFor=" let m of datosCliente.Financiamiento" value="{{m.IdFinanciamientoMensualidades}}" [disabled]="m.Pagado == 1" > {{(m.Fecha)?m.Fecha.split('T')[0]:''}} - {{m.Cantidad | number}}</option>
                                     </select>
                                 </div>
                             </div>
@@ -123,15 +154,15 @@
                                 </div>
                             </div>
 
-                            <div class="col-xs-2 col-lg-2 pull-right">
-                                <div class="form-group" *ngIf="datosCliente.IdCliente && tipoIngreso != '0' ">
+                            <div class="col-xs-12 col-lg-12">
+                                <div class="form-group pull-right" *ngIf="datosCliente.IdCliente && tipoIngreso != '0' ">
                                     <label class="label-form"> <br> </label><br>
-                                    <button class="btn btn-success" (click)="agregarVenta();"><i class="fa fa-plus-circle" ></i> Agregar</button>
+                                    <button class="btn btn-success " (click)="agregarVenta();"><i class="fa fa-plus-circle" ></i> Agregar</button>
                                 </div>
                             </div>
                         </div>
                         <hr>
-                        <div class="row">
+                        <div class="row" *ngIf="conceptosAPagar[0]">
                             <div class="col-lg-12 text-center" ><h3>Conceptos</h3><hr></div>
                             <div class="col-lg-12" *ngIf="conceptosAPagar[0]">
                                 <div class="row">
@@ -146,6 +177,9 @@
                                 </div>
                             </div>
                             <div class="col-lg-5"></div>
+                            <div class="col-lg-12">
+                                <hr>
+                            </div>
                             <div class="col-lg-4">
                                 <div class="form-group" *ngIf="datosCliente.IdCliente && tipoIngreso != '0' ">
                                     <label class="label-form"> Forma de Pago </label>

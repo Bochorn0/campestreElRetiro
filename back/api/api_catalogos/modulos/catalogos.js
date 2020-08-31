@@ -16,6 +16,7 @@ const mysql =  require("../../../shared/db/mysql_driver");
 const moment =  require("moment");
 var fs = require("fs-extra");
 var Excel = require('exceljs');
+var _ = require('lodash');
 module.exports = class Catalogos {
     Base(solicitud){
         return new Promise((resolve, reject)=>{
@@ -651,7 +652,7 @@ module.exports = class Catalogos {
                 if (size > maxSize) { return reject(`Archivo adjunto no debe pesar mas de ${maxSize/1048576} MB`);}
             }
             //Si no existe el directorio se crea
-            (!fs.existsSync(path))?fs.mkdirpSync(path):'';
+            (!fs.existsSync(path))?fs.mkdirSync(path):'';
             //Fullpath
             let fullPath = `${path}${nombre}`;
             //Se escribe el archivo
@@ -706,6 +707,368 @@ module.exports = class Catalogos {
                     });
                 });
             }
+        });
+     }
+     Guardar_cliente_nuevo(conexion,d){
+        return new Promise((resolve, reject)=>{
+            return this._ordenarQuery(conexion,`SELECT * FROM Clientes WHERE Nombre = '${d.Nombre}' ; `).then(res=>{
+//                console.log('res',res);
+                if(res[0]){
+                    return this._editarCliente(conexion,d);
+                }else{
+                    return this._insertarCliente(conexion,d);
+                }
+            }).then(res =>{
+            // }).then(res=>{
+                //conexion.end();
+//                console.log('res',res);
+                return resolve(res);
+            }).catch(err => { 
+//                console.log('err',err);
+                return reject(err);
+            });
+        });
+     }
+     _editarCliente(conexion,d){
+        return new Promise((resolve, reject)=>{
+            return resolve({editado:true});
+            // return this._ordenarQuery(conexion,`INSERT INTO Clientes (${campos}) VALUES (${valores});`);
+        });
+     }
+     _insertarCliente(conexion,d){
+        return new Promise((resolve, reject)=>{
+            let fecha; let path = `${process.env.Shared}Clientes/${d.Carpeta}/`;
+//            console.log('d',d.Fecha_contrato);
+            if(moment(d.Fecha_contrato).isValid()){
+                fecha = (d.Fecha_contrato)?moment(d.Fecha_contrato).utc().format('YYYY-MM-DD'):null;                
+            }
+            let campos = ` Folio, Nombre, Direccion, Vendedor, Telefono, Contrato_firmado, Adeudo_terreno, Adeudo_mantenimientos, Adeudo_anualidades, Adeudo_enganche, Carpeta, Activo ${(fecha)?',Fecha_contrato':''}`;
+            let valores = `'CLI','${d.Nombre}','${d.Direccion}','${d.Vendedor}',${(d.Telefono)?`'${d.Telefono}'`:null},${(d.Contrato_firmado)?d.Contrato_firmado:0},${d.Adeudo_terreno},0,${d.Total_anualidad},${d.Total_enganche},'${path}/${d.Nombre}/${d.Nombre}.xlsx',1 ${(fecha)?`,'${fecha}'`:''}`;
+            return Promise.resolve({}).then(res=>{
+                if(d.Nombre ){
+                    console.log('////////////////////////////GUARDANDO DIRECTORIO Y DATOS DE CLIENTE: ',d.Nombre);
+
+                        (!fs.existsSync(path))?fs.mkdirSync(path):'';
+                        (!fs.existsSync(`${path}/${d.Nombre}`))?fs.mkdirSync(`${path}/${d.Nombre}`):'';
+                        if(d.Dir ){
+                            fs.copyFileSync(`${d.Dir}`, `${path}/${d.Nombre}/${d.Nombre}.xlsx`);
+                        }                    
+                    return this._ordenarQuery(conexion,`INSERT INTO Clientes (${campos}) VALUES (${valores});`)
+                }else{
+                    return Promise.resolve({});
+                }
+            }).then(data=>{
+                if(d.Nombre ){
+                    return this._ordenarQuery(conexion,`SELECT * FROM Clientes WHERE Nombre = '${d.Nombre}'  limit 1; `);
+                }else{
+                    return Promise.resolve({});
+                }
+            }).then(res=>{
+                if(res[0]){
+                    d.IdCliente = res[0].IdCliente;
+                }
+                let Promesas_terrenos = [];
+                if(d.Terrenos[0]){
+                    console.log('////////////////////////////GUARDANDO DATOS DE TERRENO ',d.Nombre);
+                    d.Terrenos.forEach(t=>{
+                        let campos = ` IdCliente, Folio, Lote, Etapa, Parcela, Superficie, Asignado, Estatus, Latitud, Longitud, Original, Actual, Apartado, Activo `;
+                        let valores = `${d.IdCliente},'Ter_${t.Lote}_${t.Etapa}','${t.Lote}','${t.Etapa}',${(t.Parcela)?`'${t.Parcela}'`:null},${(t.Superficie)?`'${t.Superficie}'`:null}, '${d.Nombre}', 'ACTIVO','29.310437','-110.823333', '${d.Vendedor}','${d.Nombre}',0,0`;
+//                        console.log('valores',valores);
+                        Promesas_terrenos.push(this._ordenarQuery(conexion,`INSERT INTO Terrenos (${campos}) VALUES (${valores});`));
+                    });
+                }
+                return Promise.all(Promesas_terrenos);
+            }).then(Terrenos=>{
+                let Promesas_financiamiento = [];
+//                console.log('d',d.Adeudos_clientes);
+                if(d.Adeudos_clientes[0]){
+                    console.log('////////////////////////////GUARDANDO ADEUDOS ',d.Nombre);
+                    d.Adeudos_clientes.forEach(a=>{
+                        let fecha = (a.Fecha && a.Fecha!= 'x'  && moment(a.Fecha).isValid())?moment(a.Fecha).utc().format('YYYY-MM-DD'):null;
+                        let obs = (d.Observaciones)?`'${d.Observaciones}'`:null;
+                        let fecha_p = (a.Fecha_pago  && a.Fecha_pago!= 'x'  && moment(a.Fecha_pago).isValid())?moment(a.Fecha_pago).utc().format('YYYY-MM-DD'):null;
+                        let campos = ` IdCliente, Num_pago, Cantidad, Saldo_restante, Pagado, Num_recibo, Firmado ${(obs)?`,Observacion`:''} ${(fecha)?',Fecha':''} ${(fecha_p)?',Fecha_pago':''} `;
+                        let valores = `${d.IdCliente},${a.Num_pago},${(a.Cantidad)?a.Cantidad:(!a.Pagado)?d.Mensualidad:a.Cantidad},${a.Saldo_restante},${(a.Pagado)?1:0},'${`${a.Num_recibo}`.split("'").join('')}',${(a.Firmado)?1:0} ${(obs)?`,'${obs}'`:''} ${(fecha)?`,'${fecha}'`:''} ${(fecha_p)?`,'${fecha_p}'`:''}`;
+//                        if(a.Cantidad){
+                        if(Number.isInteger(a.Num_pago)){
+                            Promesas_financiamiento.push(this._ordenarQuery(conexion,`INSERT INTO Financiamiento_terrenos (${campos}) VALUES (${valores});`));
+                        }
+//                        }
+                    });
+                }
+                return Promise.all(Promesas_financiamiento);
+            }).then(res=>{
+                let Promesas_anualidades = [];
+                if(d.Anualidades[0]){
+                    console.log('////////////////////////////GUARDANDO ANUALIDADES ',d.Nombre);
+                    d.Anualidades.forEach(a=>{
+                        let fecha = (a.Fecha && a.Fecha!= 'x' && moment(a.Fecha).isValid() )?moment(a.Fecha).utc().format('YYYY-MM-DD'):null;
+                        let obs = (d.Observaciones)?`'${d.Observaciones}'`:null;
+                        let fecha_p = (a.Fecha_pago  && a.Fecha_pago!= 'x' && moment(a.Fecha_pago).isValid() )?moment(`${a.Fecha_pago}`).utc().format('YYYY-MM-DD'):null;
+                        let campos = ` IdCliente, Num_pago, Cantidad, Pagado, Num_recibo, Firmado ${(obs)?`,Observacion`:''} ${(fecha)?',Fecha':''} ${(fecha_p)?',Fecha_pago':''} `;
+                        let valores = `${d.IdCliente},${a.Num_pago},${(a.Cantidad)?a.Cantidad:(!a.Pagado)?d.Anualidad:a.Cantidad},${(a.Pagado)?1:0},'${`${a.Num_recibo}`.split("'").join('')}',${(a.Firmado)?1:0} ${(obs)?`,'${obs}'`:''} ${(fecha)?`,'${fecha}'`:''} ${(fecha_p)?`,'${fecha_p}'`:''}`;
+                        if(Number.isInteger(a.Num_pago)){
+                            Promesas_anualidades.push(this._ordenarQuery(conexion,`INSERT INTO Financiamiento_anualidades (${campos}) VALUES (${valores});`));
+                        }
+//                        if(a.Cantidad){
+
+//                        }
+                    });
+                }
+                return Promise.all(Promesas_anualidades);
+            }).then(res=>{
+//                console.log('res',res);
+//                return resolve(res[0]);
+                return resolve({Cliente:d.Nombre,Error:0});
+            }).catch(err=>{
+//                console.log('d',d);
+//                console.log('error',err);
+                return resolve({Cliente:d.Nombre, Error: err});
+            });
+        });
+    }
+    obtener_datos_clientes_nuevo(filtros){
+        let Datos = [];let ids_Clientes = `0,`;
+        var mysql = require('mysql');
+        var conexion = mysql.createConnection({
+            host     : 'localhost',
+            user     : 'root',
+            password : 'Sakaunperikin24*',
+            database : 'DBRetiro',
+            acquireTimeout: 100000000000000000
+          });
+        conexion.connect();
+        return new Promise((resolve, reject) => {
+            let condiciones = ` WHERE 1=1 `; 
+            //WHERE Nombre = '${d.Nombre}' 
+            return this._ordenarQuery(conexion,`SELECT * FROM Clientes ${condiciones}; `).then(res=>{
+                Datos = res;
+                let ids_ = _.uniq((Datos[0])?Datos.map((p)=>{ return p.IdCliente; }):[]);
+                ids_.forEach(i=>{ ids_Clientes += `${i},`});
+                return this._ordenarQuery(conexion,` SELECT * FROM Terrenos WHERE IdCliente IN (${ids_Clientes.slice(0,-1)}); `);
+            }).then(terrenos=>{
+                terrenos = (terrenos[0])?terrenos:[];
+                Datos.forEach(d=>{
+                    d.Terrenos = terrenos.filter(o=>o.IdCliente == d.IdCliente);
+                });
+                return this._ordenarQuery(conexion,` SELECT * FROM Financiamiento_terrenos WHERE IdCliente IN (${ids_Clientes.slice(0,-1)}); `);
+            }).then(deuda_terrenos=>{        
+                Datos.forEach(d=>{
+                    d.Financiamiento = deuda_terrenos.filter(o=>o.IdCliente == d.IdCliente);
+                });
+                return this._ordenarQuery(conexion,` SELECT * FROM Financiamiento_anualidades WHERE IdCliente IN (${ids_Clientes.slice(0,-1)}); `);
+            }).then(deuda_anualidades=>{
+                Datos.forEach(d=>{
+                    d.Anualidades = deuda_anualidades.filter(o=>o.IdCliente == d.IdCliente);
+                });
+                conexion.end();
+                return resolve({Data:Datos, Error:0});
+            }).catch(err => { console.log('err',err); return reject({Data: false, err })});
+        });
+    }
+
+     _ordenarDatosClienteFormato(datos){
+        let datosCliente = {Terrenos:[],Lotes:[],Etapas:[],Mensualidades:[],Adeudos_clientes:[],Mantenimientos:[],Anualidades:[],Agua:[],Certificados:[],Enganches:[]};
+        let datosOrdenados = [];
+         if(datos){
+            datos.eachRow({ includeEmpty: true },(row, rowNumber) => {
+                let columnas = [];
+                row.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+                    columnas.push(cell.value);
+                });
+                datosOrdenados.push(columnas);
+            });
+//            console.log('datosOrdenados',datosOrdenados);
+            this._datosBasicosCliente(datosOrdenados,datosCliente);
+            let campo = 'Anualidades';
+            datosCliente.Mensualidades.forEach(m=>{
+                if(m[1]||m[2]||m[3]||m[4]||m[5]||m[6]||m[7]||m[8]){
+                    if(m[1] != 'Mensualidades' && m[1] != 'TOTAL TERRENO'  && m[1] != 'N° de pago '){
+                        datosCliente.Adeudos_clientes.push(this._dataMensualidad(m));
+                    }
+                }
+                if(m[11]){
+                    datosCliente.Mantenimientos.push(this._dataGenericoMantenimiento(m));
+                }
+                if(m[20]== 'Enganche ' && m[21]== 'Enganche ' && m[22]== 'Enganche '){ campo = 'Enganche'; }
+                if(m[20]== 'Certificado Parcelario' && m[21]== 'Certificado Parcelario' && m[22]== 'Certificado Parcelario'){ campo = 'Certificado'; }
+                if(m[20]== 'Contrato de Agua' && m[21]== 'Contrato de Agua' && m[22]== 'Contrato de Agua'){ campo = 'Agua'; }
+                if(campo == 'Anualidades' && ( m[20]||m[21]||m[22]||m[23]||m[24]||m[25]||m[26]||m[27] )){
+                    datosCliente.Anualidades.push(this._dataGenericaPago(m));
+                }else if(campo == 'Enganche' && ( m[20]||m[21]||m[22]||m[23]||m[24]||m[25]||m[26]||m[27] ) ){
+                    if(m[20]== 'TOTAL ENGANCHE'){
+                        datosCliente.Total_enganche = (m[21])?(m[21].result)?m[21].result:m[21]:0; 
+                        datosCliente.Num_pagos_enganche = m[25]; 
+                        datosCliente.Fecha_enganche = m[27]; 
+                    }else{
+                        if(m[20] != 'Enganche '  && m[20]!='N° de pago '){
+                            datosCliente.Enganches.push(this._dataGenericaPago(m,true));
+                        }
+                    }
+                }else if(campo == 'Certificado' && ( m[20]||m[21]||m[22]||m[23]||m[24]||m[25]||m[26]||m[27] ) && m[20] != 'Certificado Parcelario'  && m[20]!='N° de pago '){
+                    datosCliente.Certificados.push(this._dataGenericaPago(m));
+                }else if(campo == 'Agua' && ( m[20]||m[21]||m[22]||m[23]||m[24]||m[25]||m[26]||m[27] ) && m[20] != 'Contrato de Agua' && m[20]!='N° de pago ' ){
+                    datosCliente.Agua.push(this._dataGenericaPago(m));
+                }
+            });
+         }
+//         console.log('datosCliente',datosCliente.Nombre);
+        datosCliente.Total_enganche = (datosCliente.Total_enganche)?datosCliente.Total_enganche:0;
+        datosCliente.Adeudo_terreno = (datosCliente.Adeudo_terreno)?datosCliente.Adeudo_terreno:0;
+        datosCliente.Adeudo_terreno = (datosCliente.Adeudo_terreno.error)?0:datosCliente.Adeudo_terreno;
+        return datosCliente;
+     }
+     _datosBasicosCliente(datosOrdenados,datosCliente){
+        //                console.log('d',d);
+        let activo_mensualidad = false;
+        datosOrdenados.forEach(d=>{
+            if(d[1] == 'VENDEDOR'){ datosCliente.Vendedor = d[2]; }
+            if(d[1] == 'COMPRADOR'){ datosCliente.Nombre = `${d[2]}`.trim().toUpperCase(); }
+            if(d[1] == 'DIRECCIÓN'){ datosCliente.Direccion = d[2]; }
+            if(d[1] == 'TELÉFONO'){ datosCliente.Telefono = d[2]; }
+            if(d[1] == 'FECHA DE CONTRATO'){ datosCliente.Fecha_contrato = d[2]; }
+            if(d[1] == 'LOTE '){ datosCliente.Lotes = (`${d[2]}`.indexOf('Y') > -1)?`${d[2]}`.split('Y'):[`${d[2]}`]; }
+            if(d[1] == 'ETAPA'){ datosCliente.Etapas = (`${d[2]}`.indexOf('Y') > -1)?`${d[2]}`.split('Y'):[`${d[2]}`]; }
+            if(d[1] == 'TOTAL TERRENO'){ datosCliente.Adeudo_terreno = (d[2])?d[2].result:0; }
+            if(d[1] == 'FINANCIAMIENTO'){ datosCliente.Num_mensualidades = d[2]; }
+            if(d[1] == 'CONTRATO FIRMADO'){ datosCliente.Firmado = (d[2]=='P')?1:0; }
+            if(d[1] == 'ANUALIDAD'){ datosCliente.Contiene_anualidades = (d[2]=='P')?1:0; }
+            if(d[1] == 'ENGANCHE'){ datosCliente.Contiene_enganche = (d[2]=='P')?1:0; }
+            if(d[1] == 'MANTENIMIENTO'){ datosCliente.Contiene_mantenimiento = (d[2]=='P')?1:0; }
+
+            if(d[1] == 'TOTAL TERRENO' && d[4]== 'MENSUALIDAD' && d[7]== '# PAGOS' && d[21]== 'TOTAL ANUALIDAD'){
+                datosCliente.Total_terreno_original = d[2].result;
+                datosCliente.Mensualidad = d[5];
+                datosCliente.Num_pagos = d[8]; 
+                datosCliente.Total_anualidad = (d[22])?d[22].result:0; 
+                datosCliente.Anualidad = (`${d[24]}`.indexOf('Y') > -1)?`${d[24]}`.split('Y')[0]:d[24]; 
+                datosCliente.Num_pagos_anualidad = d[26]; 
+                datosCliente.Fecha_anualidad = d[27]; 
+                activo_mensualidad = true;
+            }else{
+                datosCliente.Total_anualidad = 0; 
+            }
+            if(activo_mensualidad){
+                datosCliente.Mensualidades.push(d);
+            }
+        });
+        if(datosCliente.Lotes[0] && datosCliente.Etapas[0]){
+            for(let i = 0; i < datosCliente.Lotes.length; i++){
+                datosCliente.Terrenos.push({Lote: datosCliente.Lotes[i], Etapa: (datosCliente.Etapas[i])?datosCliente.Etapas[i]:''});
+            };
+        }
+        datosCliente.Mensualidades.shift();datosCliente.Mensualidades.shift();
+        return datosCliente;
+     }
+     _dataMensualidad(m){
+        return {
+            Num_pago: m[1],
+            Fecha: m[2],
+            Cantidad: (m[3])?(m[3].result)?m[3].result:m[3]:null,
+            Saldo_restante: (m[4])?m[4].result:0,
+            Pagado: (m[5]=='P' || m[5]=='P ')?1:0,
+            Fecha_pago: m[6],
+            Num_recibo: (m[7])?m[7]:null,
+            Firmado: (m[8]=='P' || m[8]=='P ')?1:0,
+            Observaciones: m[9],
+        }
+     }
+     _dataGenericoMantenimiento(m){
+        return {
+            Num_pago: m[11],
+            Fecha: m[12],
+            Cantidad: (m[13])?(m[13].result)?m[13].result:m[13]:null,
+            Pagado: (m[14]=='P' || m[14]=='P ')?1:0,
+            Fecha_pago: m[15],
+            Num_recibo: (m[16])?m[16]:null,
+            Firmado: (m[17]=='P' || m[17]=='P ')?1:0,
+            Observaciones: m[18],
+        };
+     }
+     _dataGenericaPago(m,extra = false){
+//         console.log('m',m);
+         if(extra){
+            return {
+                Num_pago: m[20], Fecha: m[21], Cantidad: (m[22])?(m[22].result)?m[22].result:m[22]:null, 
+                Saldo_restante: (m[23])?(m[23].result || m[23].result == '0')?m[23].result:m[23]:null, Pagado :(m[24]=='P' || m[24]=='P ')?1:0, 
+                Fecha_pago: m[25], Num_recibo: (m[26])?m[26]:null, Firmado: (m[27]=='P' || m[27]=='P ')?1:0, Observaciones: m[28],             
+            };
+         }else{
+            return {
+                Num_pago: m[20], Fecha: m[21], Cantidad: (m[22])?(m[22].result)?m[22].result:m[22]:null, 
+                Pagado: (m[23]=='P' || m[23]=='P ')?1:0, 
+                Fecha_pago: m[24], Num_recibo: (m[26])?m[25]:null, Firmado: (m[26]=='P' || m[26]=='P ')?1:0, Observaciones: m[27],             
+            };
+         }
+
+     }
+     generar_carpetas_clientes(){
+        let Promesas = [];let DatosWork = [];
+        var mysql = require('mysql');
+        var conexion = mysql.createConnection({
+            host     : 'localhost',
+            user     : 'root',
+            password : 'Sakaunperikin24*',
+            database : 'DBRetiro',
+            acquireTimeout: 100000000000000000
+        });
+        conexion.connect();
+        return new Promise((resolve, reject) => {
+            let carpetasCliente = `${process.env.Shared}uploads/El Retiro/`;
+            console.log('////// ELIMINANDO DATOS CLIENTES');
+            let Prom_truncates = [this._ordenarQuery(conexion,`TRUNCATE Clientes;`),
+            this._ordenarQuery(conexion,`TRUNCATE Financiamiento_anualidades;`),
+            this._ordenarQuery(conexion,`TRUNCATE Financiamiento_terrenos;`),
+            this._ordenarQuery(conexion,`TRUNCATE Terrenos;`)];
+            return Promise.all(Prom_truncates).then(res=>{
+                return this._datosOrdenados(carpetasCliente);
+            }).then(dat=>{
+//                console.log('dat',dat);
+                let PromCli = [];
+                if(dat[0]){
+                    dat.forEach(d=>{
+                        d.Data.Dir = d.Dir;
+                        d.Data.Carpeta = d.Carpeta;
+                        if(d.Data.Nombre){
+                            d.Data.Nombre = d.Data.Nombre.split('/').join(' Y ');
+                        }
+                        PromCli.push(this.Guardar_cliente_nuevo(conexion,d.Data));
+                    });
+                }
+                return Promise.all(PromCli);
+            }).then(res=>{
+//                console.log('res',JSON.stringify(res));
+                conexion.end();
+                console.log('////// TERMINA GUARDADO DE CLIENTES');
+                return resolve(res);
+            }).catch(err=>{
+//                console.log('err',err);
+                return reject(err);
+            });
+        });
+     }
+     _datosOrdenados(carpetasCliente){
+         let PromData = [];
+        return new Promise((resolve, reject)=>{
+            if(fs.existsSync(carpetasCliente)){
+                fs.readdirSync(carpetasCliente).forEach(file => {
+                    if(fs.existsSync(`${carpetasCliente}${file}/`) && file != '.DS_Store'){
+                        fs.readdirSync(`${carpetasCliente}${file}/`).forEach(f => {
+                            if(f != 'LIQUIDADOS' && `${f}`.indexOf('~$') == -1 && fs.existsSync(`${carpetasCliente}${file}/${f}`)  && f != '.DS_Store'){
+                                PromData.push({Data: new Excel.Workbook().xlsx.readFile(`${carpetasCliente}${file}/${f}`), Dir: `${carpetasCliente}${file}/${f}`, Carpeta: `${file}`.trim() });
+                            }
+                        });
+                    }
+                });
+            }
+            return Promise.all(PromData.map(a=>a.Data.then(r=>{
+                return a.Data = this._ordenarDatosClienteFormato(r.getWorksheet(1))
+            }))).then(rr=>{
+                return resolve(PromData);
+            }).catch(err=>{
+                console.log('err',err);
+                return reject(err);
+            });
         });
      }
     _contenidoContratoGenerico(datosContrato){

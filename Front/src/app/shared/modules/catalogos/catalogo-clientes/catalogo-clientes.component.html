@@ -24,19 +24,19 @@
                     <div class="col-6 col-lg-3">
                         <div class="form-group">
                             <label class="label-form">Parcela: </label>
-                            <ngx-select [items]="parcelas" optionValueField="parcela" placeholder="Parcela:" (select)="filtrarTerrenos();" [(ngModel)]="parcelaFiltro"></ngx-select>
+                            <ngx-select [items]="parcelas" optionValueField="Parcela" placeholder="Parcela:" (select)="filtrarTerrenos();" [(ngModel)]="parcelaFiltro"></ngx-select>
                         </div>
                     </div>
                     <div class="col-6 col-lg-3">
                         <div class="form-group">
                             <label class="label-form">Lote: </label>
-                            <ngx-select [items]="lotes" optionValueField="lote" placeholder="Lote:" (select)="filtrarTerrenos();" [(ngModel)]="loteFiltro"></ngx-select>
+                            <ngx-select [items]="lotes" optionValueField="Lote" placeholder="Lote:" (select)="filtrarTerrenos();" [(ngModel)]="loteFiltro"></ngx-select>
                         </div>
                     </div>
                     <div class="col-6 col-lg-3"> 
                         <div class="form-group">
                             <label class="label-form">Etapa: </label>
-                            <ngx-select [items]="etapas" optionValueField="etapa" placeholder="Etapa:" (select)="filtrarTerrenos();" [(ngModel)]="etapaFiltro"></ngx-select>
+                            <ngx-select [items]="etapas" optionValueField="Etapa" placeholder="Etapa:" (select)="filtrarTerrenos();" [(ngModel)]="etapaFiltro"></ngx-select>
                         </div>
                     </div>
                     <div class="col-6 col-lg-3">
@@ -49,8 +49,8 @@
                 <div class="row" *ngIf="clientesTodos && !clienteDetalles.IdCliente" id="cli_r">
                     <div class="col-12 col-md-6  text-center" *ngFor="let a of clientesTodos | paginate: { itemsPerPage: 6, currentPage: pageCli, id: 'cli_r' };">
                         <div class="card mb-3">
-                            <div class="card-header bg-{{(a.Color)?a.Color:'default'}}">
-                                <i class="fa fa-user"></i> {{a.Codigo}}
+                            <div class="card-header bg-{{(a.Color)?a.Color:'primary'}}">
+                                <i class="fa fa-user"></i> CLI-{{a.IdCliente}}
                             </div>
                             <div class="card-body">
                                 <span><b><i class="fa fa-user"></i> : </b>{{a.Nombre}}</span>
@@ -58,7 +58,7 @@
                                 <span><b><i class="fa fa-envelope"></i> : </b> {{a.Correo}}</span>
                                 <table class="table"  *ngIf="a.Terrenos[0]">
                                     <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th><th>Estatus:</th></tr>
-                                    <tr *ngFor="let t of a.Terrenos"><td>{{t.etapa}}</td><td>{{t.lote}}</td><td>{{t.parcela}}</td><td>{{t.Estado}}</td></tr>
+                                    <tr *ngFor="let t of a.Terrenos"><td>{{t.Etapa}}</td><td>{{t.Lote}}</td><td>{{(t.Parcela)?t.Parcela:'-'}}</td><td>{{t.Estatus}}</td></tr>
                                 </table>
                                 <table class="table"  *ngIf="!a.Terrenos[0]">
                                     <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th><th>Estatus:</th></tr>

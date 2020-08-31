@@ -232,4 +232,10 @@ export class CatalogosService {
       return Promise.resolve(response);
     }).catch(err => { return Promise.reject(err); });
   }
+  obtenerDatosClientes(datos){
+    return this.api.post(`/catalogos/obtenerDatosClientes`, datos).then(response => {
+      return Promise.resolve(response);
+    }).catch(err => { return Promise.reject(err); });
+  }
+  
 }

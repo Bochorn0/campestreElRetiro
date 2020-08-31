@@ -9,18 +9,18 @@
         </div>
         <div class="col-6 col-lg-3">
             <div class="form-group">
-                <button (click)="ventaRegular();" class="btn bg-success menu w-100" style="color: #fff;"><i class="fa fa-credit-card"></i> Abonos Terreno</button>
+                <button (click)="ventaRegular();" class="btn bg-success menu w-100" style="color: #fff;"><i class="fa fa-credit-card"></i> Nuevo Movimiento</button>
             </div>
         </div>
         <div class="col-6 col-lg-3">    
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <button (click)="nuevoMantenimiento();" class="btn btn-danger menu w-100" ><i class="fa fa-home"></i> Mantenimiento</button>
-            </div>
+            </div> -->
         </div>
         <div class="col-6 col-lg-3">
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <button (click)="nuevoIngresoExtra();" class="btn btn-warning text-white menu w-100"><i class="fa fa-address-card"></i> Certificados</button>
-            </div>
+            </div> -->
         </div>
     </div>
     <hr />
@@ -35,8 +35,8 @@
         <!--Catalogo Clientes-->
         <app-catalogo-clientes *ngIf="clientesCatalogos" (vista)="catalogoClientes($event);" (nuevaOperacion)="nueva_operacion($event);" [@routerTransition]></app-catalogo-clientes>
         <!--Mantenimiento-->
-        <app-mantenimiento *ngIf="mantenimientoNuevo" [datosMantenimiento]="datosMantenimiento" [@routerTransition]></app-mantenimiento>
+        <!-- <app-mantenimiento *ngIf="mantenimientoNuevo" [datosMantenimiento]="datosMantenimiento" [@routerTransition]></app-mantenimiento> -->
         <!--Ingresos Extra-->
-        <app-ingresos-extra *ngIf="ingresosExtraNuevo" [datosIngresosExtras]="datosIngresosExtra"  [@routerTransition]></app-ingresos-extra>
+        <!-- <app-ingresos-extra *ngIf="ingresosExtraNuevo" [datosIngresosExtras]="datosIngresosExtra"  [@routerTransition]></app-ingresos-extra> -->
     </div>
 </div>

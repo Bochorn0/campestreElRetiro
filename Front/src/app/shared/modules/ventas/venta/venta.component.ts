@@ -3,6 +3,7 @@ import { routerTransition } from '../../../../router.animations';
 import { CatalogosService } from '../../../../shared/services/catalogos.service';
 import { VentasService } from '../../../../shared/services/ventas.service'
 import {Observable} from 'rxjs';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import swal from 'sweetalert2';
 import * as moment from 'moment';
@@ -15,19 +16,22 @@ import * as moment from 'moment';
     providers: [CatalogosService, VentasService]
 })
 export class VentaComponent implements OnInit {
-
+    frmSolicitud: FormGroup; // Formulario de solicitud
     //
     datosCliente;mensualidadesPendientes;mensualidad;nombresClientes;datosTerreno;datosMensualidad;
-    VentaCompleta;anualidadesPendientes;anualidad;
+    VentaCompleta;anualidadesPendientes;anualidad;terrenoSelect;
     //Formulario ingresos
-    clientesTodos;today;terrenos;
+    clientesTodos = [];today;terrenos;
     folIngreso;folRecibo;tipoIngreso;conceptoIngreso;etapaIngreso;abonoVenta;totalVenta;
-    conceptosAPagar;total_abono;catalogoVentas;conceptoVenta;
+    conceptosAPagar;total_abono;catalogoVentas;conceptoVenta='';
     idTerreno ;formaPago;mostrarCuentas;cuentasDeposito;cuentaDestino;
     pdfRecibo;formaDePago;formasDePago;
     @Input('datosVenta')datosClienteVenta: any;
     tipoMovimiento;
-    constructor(private catalogosService : CatalogosService, private ventasService: VentasService) {
+    constructor(private catalogosService : CatalogosService, private ventasService: VentasService,private fb: FormBuilder) {
+        this.frmSolicitud = fb.group({
+            'File': [null]
+        });
         this.obtenerClientesActivos();
         this._foliosCliente();
         this.mensualidad =  this.anualidad = this.total_abono = this.tipoIngreso = this.etapaIngreso = 0;
@@ -38,6 +42,44 @@ export class VentaComponent implements OnInit {
         this.mostrarCuentas = false;
         this._tipoOperacion();
         this._formasDePago();
+    }
+    importar_excel($event): void {
+        let fileObject;
+        let file: File = $event.target.files[0];
+        let nom = file.name.split('.');
+        let compExt = `${nom[nom.length-1]}`;
+            if(compExt.toUpperCase() != 'XLSX'){
+                swal('error','El formato del archivo no es valido debe ser xlsx ','error');
+            }else{
+            this.importarArchivo($event).then((resultado: any) => {
+                if (resultado) {
+                    fileObject = { file: resultado.substring(78), Tipo: `Cliente`, Ext: compExt}
+                    return this.ventasService.nuevoIngresoArchivo(fileObject);
+                }else{
+                    return Promise.resolve({});
+                }
+            }).then(res=>{
+                console.log('res',res);
+                this.frmSolicitud.controls["File"].setValue(null);
+            }).catch(error => {
+                console.log('error',error);
+            });
+        }
+    }
+    importarArchivo($event){
+        return new Promise((resolve, reject) => {
+            try {
+                let uploadFiles = $event.target.files;
+                let file: File = uploadFiles[0];
+                let myReader: FileReader = new FileReader();
+                myReader.readAsDataURL(file);
+                myReader.onloadend = (e) => {
+                    return resolve(myReader.result);
+                };
+            } catch (error) {
+                return reject({ errorMessage: "No se pudo cargar el archivo", error });
+            }
+        });
     }
     _formasDePago(){
         this.catalogosService.obtenerCuentasEspeciales().then(res =>{
@@ -63,22 +105,32 @@ export class VentaComponent implements OnInit {
         }).catch(err=>{console.log('err',err);});
     }*/
     _tipoOperacion(){
-        this.catalogosService.obtenerCatalogoVentas().then(res=>{
-            console.log('res',res);
-            if(res['Data']){
-                this.catalogoVentas =  res['Data'].filter(ob=>ob.Tipo == 'Abono');
-            }
-        }).catch(err=>{console.log('err',err);});
+        this.catalogoVentas = [{Tipo:'Enganche'},
+        {Tipo:'Terreno'},
+        {Tipo:'Anualidad'},
+        {Tipo:'Mantenimiento'}];
+        // this.catalogosService.obtenerCatalogoVentas().then(res=>{
+        //     console.log('res',res);
+        //     if(res['Data']){
+        //         this.catalogoVentas =  res['Data'].filter(ob=>ob.Tipo == 'Abono');
+        //     }
+        // }).catch(err=>{console.log('err',err);});
     }
     obtenerClientesActivos(){
-        this.catalogosService.clientesTerrenos().then(res=>{
-            this.terrenos =  res['Data'];
-        return this.catalogosService.clientesActivos();
-        }).then(resCli=>{
-            this.clientesTodos =  this._ordenarDatosCliente(resCli['Data']);
-            this.nombresClientes = resCli['Data'].map((key)=>{
-                return key.Nombre;
+        this.catalogosService.obtenerDatosClientes({}).then(res=>{
+            this.clientesTodos = res['Data'];
+            this.clientesTodos.forEach(t=>{
+                if(t.Terrenos[0]){
+                    t.Terrenos.map(mm=>{
+                        mm.NombreEspecial = `Lote: ${mm.Lote} - Etapa: ${mm.Etapa}`;
+                    })
+                }
             });
+            console.log('clientes',this.clientesTodos);
+            this.nombresClientes = res['Data'].map((key)=>{
+                return key.Nombre;
+            })
+//            this._recorrerFiltros(this.clientesTodosTodos);
         }).catch(err=>{console.log('err',err);});
     }
     _ordenarDatosCliente(datos){
@@ -137,22 +189,22 @@ export class VentaComponent implements OnInit {
         let Anualidad = false;
         let existeTipo = this.conceptosAPagar.filter(ob=>ob.TipoMovimiento == this.tipoIngreso);
         let esAcumulable = false;
-        if(!esAcumulable && this.tipoIngreso == '01'){
-            esAcumulable = (this.conceptosAPagar.find(ob=>ob.Mensualidad.IdAdeudo == this.mensualidad))?false:true;
-        } 
-        if(!esAcumulable && this.tipoIngreso == '03'){
-            esAcumulable = (this.conceptosAPagar.find(ob=>ob.Anualidad.IdAnualidad == this.anualidad))?false:true;
-        }
+        // if(!esAcumulable && this.tipoIngreso == 'Terreno'){
+        //     esAcumulable = (this.conceptosAPagar.find(ob=>ob.Mensualidad.IdAdeudo == this.mensualidad))?false:true;
+        // } 
+        // if(!esAcumulable && this.tipoIngreso == 'Anualidad'){
+        //     esAcumulable = (this.conceptosAPagar.find(ob=>ob.Anualidad.IdAnualidad == this.anualidad))?false:true;
+        // }
         if(this.total_abono && !existeTipo[0] || esAcumulable){
-            if(this.tipoIngreso == '01'){
-                Mensualidad = this.mensualidadesPendientes.filter(ob => ob.IdAdeudo == this.mensualidad)[0];
-                this.mensualidadesPendientes.filter(ob => ob.IdAdeudo == this.mensualidad)[0].Pagado = 1;
-            }else if(this.tipoIngreso == '03'){
-                Anualidad = this.anualidadesPendientes.filter(ob => ob.IdAnualidad == this.anualidad)[0];
-                this.anualidadesPendientes.filter(ob => ob.IdAnualidad == this.anualidad)[0].Pagado = 1;
-            }
+            // if(this.tipoIngreso == 'Terreno'){
+            //     Mensualidad = this.mensualidadesPendientes.filter(ob => ob.IdAdeudo == this.mensualidad)[0];
+            //     this.mensualidadesPendientes.filter(ob => ob.IdAdeudo == this.mensualidad)[0].Pagado = 1;
+            // }else if(this.tipoIngreso == 'anualidad'){
+            //     Anualidad = this.anualidadesPendientes.filter(ob => ob.IdAnualidad == this.anualidad)[0];
+            //     this.anualidadesPendientes.filter(ob => ob.IdAnualidad == this.anualidad)[0].Pagado = 1;
+            // }
             
-            this.conceptoVenta += ` con un total de ${this.total_abono} al lote : ${this.datosTerreno.lote}, etapa : ${this.datosTerreno.etapa}, de campestre familiar ElRetiro.`;
+            this.conceptoVenta += ` con un total de ${this.total_abono} al lote : ${this.datosTerreno.Lote}, etapa : ${this.datosTerreno.Etapa}, de campestre familiar ElRetiro.`;
             this.conceptosAPagar.push({Concepto: `${this.conceptoVenta}`, Importe: this.total_abono ,TipoMovimiento: this.tipoIngreso,Mensualidad,Anualidad });
             this.totalVenta = 0;
             this.conceptosAPagar.forEach(co=>{
@@ -175,27 +227,31 @@ export class VentaComponent implements OnInit {
         map(term => term === ''?[]:this.nombresClientes.filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
     );
     seleccionarCliente(selected){
-        console.log('selected',selected);
         this.datosCliente =  this.clientesTodos.filter(ob=>ob.Nombre == selected)[0];
+        console.log('datosCliente',this.datosCliente);
         if(this.datosCliente.Terrenos.length == 1){
             this.datosTerreno = this.datosCliente.Terrenos[0];
+            this.terrenoSelect = this.datosCliente.Terrenos[0].NombreEspecial;
+        }else{
+            this.datosTerreno = false;
+//            this.terrenoSelect = '';
         }
-        if(this.datosCliente.Saldo_anualidad == 0){
-            let restantes = this.catalogoVentas.filter(ob=>ob.Codigo != '03');
-            this.catalogoVentas = restantes;
-            console.log('se quito anualidad',restantes);
-        }
-        if(this.datosCliente.Saldo_adeudo == 0){
+        // if(this.datosCliente.Saldo_anualidad == 0){
+        //     let restantes = this.catalogoVentas.filter(ob=>ob.Codigo != '03');
+        //     this.catalogoVentas = restantes;
+        //     console.log('se quito anualidad',restantes);
+        // }
+        // if(this.datosCliente.Saldo_adeudo == 0){
 
-            let restantes2 = this.catalogoVentas.filter(ob=>ob.Codigo != '02');
-            this.catalogoVentas = restantes2;           
-            console.log('se quito enganche',restantes2);
-        }
-        if(this.datosCliente.Saldo_credito == 0){
-            let restantes3 = this.catalogoVentas.filter(ob=>ob.Codigo != '01');
-            this.catalogoVentas = restantes3;
-            console.log('se quito mensualidad',restantes3);
-        }
+        //     let restantes2 = this.catalogoVentas.filter(ob=>ob.Codigo != '02');
+        //     this.catalogoVentas = restantes2;           
+        //     console.log('se quito enganche',restantes2);
+        // }
+        // if(this.datosCliente.Saldo_credito == 0){
+        //     let restantes3 = this.catalogoVentas.filter(ob=>ob.Codigo != '01');
+        //     this.catalogoVentas = restantes3;
+        //     console.log('se quito mensualidad',restantes3);
+        // }
     }
     seleccionarTerreno(selected){
         if(this.idTerreno){
@@ -336,21 +392,22 @@ export class VentaComponent implements OnInit {
             this.conceptoVenta =  `${tipoIngreso[0].Descripcion}`;
         }
     }
-    cambiarTotalesYConceptos(){
+    cambiarTotalesYConceptos(men){
         let movimiento = this.conceptoVenta;
         let importe = this.total_abono;
-        if(this.tipoIngreso == '01' && this.mensualidad){
-            let seleccionada = this.mensualidadesPendientes.find(ob => ob.IdAdeudo == this.mensualidad);
-            let datosMens =  this.datosCliente.Mensualidades.filter(ob => ob.IdTerreno == this.datosTerreno.IdTerreno);
-            //movimiento = `Mensualidad # ${seleccionada.Num_pago}`;
-            movimiento = `Mensualidad #${seleccionada.Num_pago} de ${datosMens.length}`;
-            importe = this.total_abono = seleccionada.Importe;
-        }else if(this.tipoIngreso == '03' && this.anualidad){
-            let seleccionada = this.anualidadesPendientes.find(ob => ob.IdAnualidad == this.anualidad);
-            let datosAnu =  this.datosCliente.Anualidades.filter(ob => ob.IdTerreno == this.datosTerreno.IdTerreno);
-            //movimiento = `Anualidad # ${seleccionada.Num_pago}`;
-            movimiento = `Anualidad #${seleccionada.Num_pago} de ${datosAnu.length}`;
-            importe = this.total_abono =  seleccionada.Importe;
+        if(this.tipoIngreso == 'Enganche'){
+            movimiento = 'Enganche';
+            importe = this.total_abono = this.datosCliente.Adeudo_enganche;
+        }else if(this.tipoIngreso == 'Terreno' && this.mensualidad){
+//            let seleccionada = this.mensualidadesPendientes.find(ob => ob.IdAdeudo == this.mensualidad);
+            console.log('mensualidad',this.mensualidad);
+            let datosMens =  this.datosCliente.Financiamiento.find(ob => ob.IdFinanciamientoMensualidades == this.mensualidad);
+            movimiento = `Mensualidad #${datosMens.Num_pago} de ${this.datosCliente.Financiamiento.length}`;
+            importe = this.total_abono = datosMens.Cantidad;
+        }else if(this.tipoIngreso == 'Anualidad' && this.anualidad){
+            let datosAnu =  this.datosCliente.Anualidades.find(ob => ob.IdFinanciamientoAnualidad == this.anualidad);
+            movimiento = `Anualidad #${datosAnu.Num_pago} de ${this.datosCliente.Anualidades.length}`;
+            importe = this.total_abono = datosAnu.Cantidad;
         }
         //this.conceptoVenta = `${movimiento} con un total de ${importe} al lote ${this.datosTerreno.lote}, etapa ${this.datosTerreno.etapa}, de campestre familiar ElRetiro.`;
         this.conceptoVenta = `${movimiento}`;

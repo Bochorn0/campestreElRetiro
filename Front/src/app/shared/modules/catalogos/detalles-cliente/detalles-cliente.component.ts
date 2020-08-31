@@ -29,13 +29,13 @@ export class DetalleClienteComponent implements OnInit {
     obtenerContratoTerreno(t){
         console.log(this.datosDetalles);
         let datos_contrato = {datosTerreno:t, datosCliente: this.datosDetalles};
-        this.catalogosService.obtenerDatosContrato(datos_contrato).then(res=>{
-            if(res['Data']){
-                this.contenidoContrato =  res['Data'];
-            }else{
-                this.contenidoContrato = 'Sin contrato ';
-            }
-        }).catch(err=>{this.contenidoContrato = 'Sin contrato ';})
+        // this.catalogosService.obtenerDatosContrato(datos_contrato).then(res=>{
+        //     if(res['Data']){
+        //         this.contenidoContrato =  res['Data'];
+        //     }else{
+        //         this.contenidoContrato = 'Sin contrato ';
+        //     }
+        // }).catch(err=>{this.contenidoContrato = 'Sin contrato ';})
     }    
     enviarContratoCorreo(){
         return new Promise ((resolve,reject)=>{

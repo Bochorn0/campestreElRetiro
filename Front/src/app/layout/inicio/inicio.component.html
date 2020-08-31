@@ -19,13 +19,13 @@
         <div class="col-12 col-md-4">
             <app-stat [routerLink]="['/Cobranza']" [routerLinkActive]="['router-link-active']" [bgClass]="'success'" [icon]="'fa-cc-mastercard'" [label]="'Cobranza'"></app-stat>
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4" *ngIf="datosUsuario.Modulos.Gastos">
             <app-stat [routerLink]="['/Egresos']" [routerLinkActive]="['router-link-active']" [bgClass]="'primary'" [icon]="'fa-trello'" [label]="'Gastos'" ></app-stat>
         </div>
         <!-- <div class="col-xl-3 col-lg-6">
             <app-stat [routerLink]="['/Cotizaciones']" [routerLinkActive]="['router-link-active']" [bgClass]="'info'" [icon]="'fa-shopping-cart'" [label]="'Cotizaciones'"></app-stat>
         </div> -->
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4" *ngIf="datosUsuario.Modulos.Catalogos">
             <app-stat [routerLink]="['/Catalogos']" [routerLinkActive]="['router-link-active']" [bgClass]="'purple'" [icon]="'fa-tasks'"  [label]="'Catalogos'"></app-stat>
         </div>
     </div>
