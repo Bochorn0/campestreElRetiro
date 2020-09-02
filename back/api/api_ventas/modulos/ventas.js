@@ -2,12 +2,16 @@ const mysql =  require("../../../shared/db/mysql_driver");
 const moment =  require('moment');
 const fs =  require('fs-extra');
 const Excel = require('exceljs');
-const xlsx =  require('node-xlsx');
+const node_xlsx =  require('node-xlsx');
+const XLSX = require('xlsx');
+let Catalogos = require('../../api_catalogos/modulos/catalogos')
+
 const unstream =  require('unstream');
 const pfd = require('pdfkit');
 const numerosALetras = require('../../../shared/modules/numerosLetras');
 //var mysql = require('mysql');
-module.exports = class Catalogos {
+module.exports = class Ventas {
+
     Base(solicitud){
         return new Promise((resolve, reject)=>{
             return resolve({status: `ok`});
@@ -1787,7 +1791,7 @@ module.exports = class Catalogos {
     _leerExcel(fullPath){
         return new Promise((resolve, reject) => {
             try {
-                let datos = xlsx.parse(fullPath);
+                let datos = node_xlsx.parse(fullPath);
                 let datosOrdenados = [];
                 datos[0].data.forEach((item, index) => {
                     datosOrdenados.push(item);
@@ -2005,6 +2009,84 @@ module.exports = class Catalogos {
             }).catch(err=>{console.log('err',err); return rejE(err);});
         });
      }
+     nuevo_ingreso_archivo(datos_archivo){
+         let file_;let datosArchivoNuevo={};let datosCliente={};let datosNombre = '-';let datosArchivoViejo={};
+        return new Promise((resolve, reject)=>{
+            let objCatalogos = new Catalogos();
+            return Promise.resolve().then(res=>{
+                if(datos_archivo.Nombre_cliente && datos_archivo.Nombre_cliente != ''){
+                    return Promise.resolve('');
+                }else{
+                    let myBuffer = Buffer.from(datos_archivo.file, 'base64');
+                    let path = `${process.env.Shared}uploads/Temporales/`;
+                    (!fs.existsSync(path))?fs.mkdirSync(path):'';
+                    let fileName = `Temporal_${moment().format('YYYY_MM_DD')}.xlsx`;
+                    return this._guardarArchivoDirectorio(path,fileName,myBuffer,2097152,'base64');
+                }
+            }).then(fullPath=>{
+                if(fullPath != ''){
+                    file_ = fullPath;
+                    let wb = new Excel.Workbook();
+                    return wb.xlsx.readFile(fullPath);
+                }else{
+                    Promise.resolve();
+                }
+           }).then((datosExcel) => {
+                if(file_){
+                    fs.unlinkSync(file_);                   
+                }
+                if(datosExcel){
+                    datosArchivoNuevo = objCatalogos.ordenarDatosClienteFormato(datosExcel.getWorksheet(1));
+                    datosNombre = (datosArchivoNuevo.Nombre)?datosArchivoNuevo.Nombre:'';
+                }
+                datosNombre = (datos_archivo.Nombre_cliente != '')?datos_archivo.Nombre_cliente:datosNombre;
+                return objCatalogos.obtener_datos_clientes_nuevo({Nombre: datosNombre});
+            }).then(datosCli=>{
+                if(datosCli.Data){
+                    console.log('datos',datosCli);
+                    datosCliente = datosCli.Data[0];
+                    let wbb = new Excel.Workbook();
+                    return wbb.xlsx.readFile(`${datosCliente.Carpeta}`);
+                }else{
+                    return Promise.resolve();
+                }
+
+            }).then((datosE) => {
+                if(datosE){
+                    datosArchivoViejo = objCatalogos.ordenarDatosClienteFormato(datosE.getWorksheet(1));
+                }
+                return resolve({DatosCliente: datosCliente, Datos_nuevo: datosArchivoNuevo, Datos_viejo: datosArchivoViejo, Modificaciones:true});
+            }).catch(err=>{
+                console.log('err',err);
+                return reject(err);
+            });
+
+//            let de = new Excel.Workbook().xlsx.readFile(`${carpetasCliente}${file}/${f}`)
+        });
+     }
+     _guardarArchivoDirectorio(path,nombre,datos,maxSize=false, encode=false){
+        return new Promise((resolve, reject) => {
+            //Si supera el max size regresa un reject
+            if(maxSize){
+                let encoding = (encode)?encode:false;
+                let size = Buffer.byteLength(datos,encoding);
+                if (size > maxSize) { return reject(`Archivo adjunto no debe pesar mas de ${maxSize/1048576} MB`);}
+            }
+            //Si no existe el directorio se crea
+            (!fs.existsSync(path))?fs.mkdirSync(path):'';
+            //Fullpath
+            let fullPath = `${path}${nombre}`;
+            //Se escribe el archivo
+            fs.writeFile(fullPath, datos,(err)=>{
+                if(err){ return reject(err)}else{resolve(fullPath);}
+            });
+        }).then((pathFinal) =>{
+            return pathFinal;
+        }).catch((error)=>{
+            console.log('err',error);
+            return error;
+        });
+    }
      obtener_mantenimiento_calculado(data){
         return new Promise((resolve, reject)=>{
             let mantenimiento = [];

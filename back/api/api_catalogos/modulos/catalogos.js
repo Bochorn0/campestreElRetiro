@@ -840,6 +840,7 @@ module.exports = class Catalogos {
         conexion.connect();
         return new Promise((resolve, reject) => {
             let condiciones = ` WHERE 1=1 `; 
+            condiciones += (filtros.Nombre)?` AND Nombre = '${filtros.Nombre}' `:``;
             //WHERE Nombre = '${d.Nombre}' 
             return this._ordenarQuery(conexion,`SELECT * FROM Clientes ${condiciones}; `).then(res=>{
                 Datos = res;
@@ -848,26 +849,32 @@ module.exports = class Catalogos {
                 return this._ordenarQuery(conexion,` SELECT * FROM Terrenos WHERE IdCliente IN (${ids_Clientes.slice(0,-1)}); `);
             }).then(terrenos=>{
                 terrenos = (terrenos[0])?terrenos:[];
-                Datos.forEach(d=>{
-                    d.Terrenos = terrenos.filter(o=>o.IdCliente == d.IdCliente);
-                });
+                if(Datos[0]){
+                    Datos.forEach(d=>{
+                        d.Terrenos = terrenos.filter(o=>o.IdCliente == d.IdCliente);
+                    });
+                }
                 return this._ordenarQuery(conexion,` SELECT * FROM Financiamiento_terrenos WHERE IdCliente IN (${ids_Clientes.slice(0,-1)}); `);
             }).then(deuda_terrenos=>{        
-                Datos.forEach(d=>{
-                    d.Financiamiento = deuda_terrenos.filter(o=>o.IdCliente == d.IdCliente);
-                });
+                if(Datos[0]){
+                    Datos.forEach(d=>{
+                        d.Financiamiento = deuda_terrenos.filter(o=>o.IdCliente == d.IdCliente);
+                    });
+                }
                 return this._ordenarQuery(conexion,` SELECT * FROM Financiamiento_anualidades WHERE IdCliente IN (${ids_Clientes.slice(0,-1)}); `);
             }).then(deuda_anualidades=>{
-                Datos.forEach(d=>{
-                    d.Anualidades = deuda_anualidades.filter(o=>o.IdCliente == d.IdCliente);
-                });
+                if(Datos[0]){
+                    Datos.forEach(d=>{
+                        d.Anualidades = deuda_anualidades.filter(o=>o.IdCliente == d.IdCliente);
+                    });
+                }
                 conexion.end();
                 return resolve({Data:Datos, Error:0});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
     }
 
-     _ordenarDatosClienteFormato(datos){
+     ordenarDatosClienteFormato(datos){
         let datosCliente = {Terrenos:[],Lotes:[],Etapas:[],Mensualidades:[],Adeudos_clientes:[],Mantenimientos:[],Anualidades:[],Agua:[],Certificados:[],Enganches:[]};
         let datosOrdenados = [];
          if(datos){
@@ -1062,7 +1069,7 @@ module.exports = class Catalogos {
                 });
             }
             return Promise.all(PromData.map(a=>a.Data.then(r=>{
-                return a.Data = this._ordenarDatosClienteFormato(r.getWorksheet(1))
+                return a.Data = this.ordenarDatosClienteFormato(r.getWorksheet(1))
             }))).then(rr=>{
                 return resolve(PromData);
             }).catch(err=>{

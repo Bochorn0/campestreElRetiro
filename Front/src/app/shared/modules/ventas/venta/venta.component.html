@@ -62,18 +62,20 @@
                                 </b>
                             </div>
                             <div class="col-12 col-sm-6" *ngIf="clientesTodos[0]">
-                                <div class="row">
-                                    <div class="form-group">
-                                        <label class="label-form"> Tipo de venta </label>                                    
-                                        <form [formGroup]="frmSolicitud" class="form-validate" (keydown.enter)="$event.preventDefault()" novalidate="">
-                                            <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)"  formControlName="File" />
-                                        </form>                                    
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <label class="label-form"> Tipo de venta </label>
+                                            <form [formGroup]="frmSolicitud" class="form-validate" (keydown.enter)="$event.preventDefault()" novalidate="">
+                                                <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)"  formControlName="File" />
+                                            </form>
+                                        </div>
                                         <div class="col-3" style="padding-right:0;">
                                             <button (click)="subirArchivo.click();" class="btn bg-orange w-100 text-white" ><i class="fa fa-cloud-upload"></i> | Carga Excel </button>
                                             <!-- <button class="btn btn-secondary pull-right" type="button"><i class="fa fa-cloud-upload"></i> |  Carga Excel</button> -->
                                         </div>
                                         <div class="col-9"  style="padding-left:0;">
-                                            <ngx-select [items]="clientesTodos" optionValueField="Nombre" placeholder="Nombre del cliente:" (select)="seleccionarCliente($event);" aria-describedby="basic-addon2" ></ngx-select>
+                                            <ngx-select [items]="clientesTodos" [(ngModel)]="Nombre_cliente" optionValueField="Nombre" placeholder="Nombre del cliente:" (select)="seleccionarCliente($event);" aria-describedby="basic-addon2" ></ngx-select>
                                         </div>
                                     </div>
                                 </div>

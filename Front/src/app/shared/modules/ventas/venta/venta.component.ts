@@ -26,7 +26,7 @@ export class VentaComponent implements OnInit {
     conceptosAPagar;total_abono;catalogoVentas;conceptoVenta='';
     idTerreno ;formaPago;mostrarCuentas;cuentasDeposito;cuentaDestino;
     pdfRecibo;formaDePago;formasDePago;
-    @Input('datosVenta')datosClienteVenta: any;
+    @Input('datosVenta')datosClienteVenta: any;Nombre_cliente;
     tipoMovimiento;
     constructor(private catalogosService : CatalogosService, private ventasService: VentasService,private fb: FormBuilder) {
         this.frmSolicitud = fb.group({
@@ -53,16 +53,29 @@ export class VentaComponent implements OnInit {
             }else{
             this.importarArchivo($event).then((resultado: any) => {
                 if (resultado) {
-                    fileObject = { file: resultado.substring(78), Tipo: `Cliente`, Ext: compExt}
+                    fileObject = { file: resultado.substring(78),Size: file.size , Tipo: `Cliente`, Ext: compExt}
                     return this.ventasService.nuevoIngresoArchivo(fileObject);
                 }else{
                     return Promise.resolve({});
                 }
             }).then(res=>{
+                let data = JSON.parse(JSON.stringify(res));
                 console.log('res',res);
                 this.frmSolicitud.controls["File"].setValue(null);
+                let datosModal2;
+                if(!data.DatosCliente.Nombre){
+                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Este cliente no existe actualmente, deseas darlo de alta?`, Tipo:'warning', Confirm: 'Si guardar'}  ;
+                }else if(data.Modificaciones){
+                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Hay actualizaciones en el nuevo archivo, deseas remplazarlo ? `, Tipo:'warning', Confirm: 'Si remplazar'}  ;
+                }else{
+                    datosModal2 =  {Titulo: 'Información',Contenido:` Se han Obtenido los detalles del cliente "${data.DatosCliente.Nombre}", Deseas Ingresar un Nuevo movimiento ?  `, Tipo:'success', Confirm: 'Si'}  ;
+                }
+                return this._confirmarModal({},datosModal2);
+            }).then(res=>{
+                console.log('res',res);
             }).catch(error => {
                 console.log('error',error);
+                this.frmSolicitud.controls["File"].setValue(null);
             });
         }
     }
@@ -227,15 +240,37 @@ export class VentaComponent implements OnInit {
         map(term => term === ''?[]:this.nombresClientes.filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
     );
     seleccionarCliente(selected){
-        this.datosCliente =  this.clientesTodos.filter(ob=>ob.Nombre == selected)[0];
-        console.log('datosCliente',this.datosCliente);
-        if(this.datosCliente.Terrenos.length == 1){
-            this.datosTerreno = this.datosCliente.Terrenos[0];
-            this.terrenoSelect = this.datosCliente.Terrenos[0].NombreEspecial;
-        }else{
-            this.datosTerreno = false;
-//            this.terrenoSelect = '';
-        }
+        if( this.Nombre_cliente && this.Nombre_cliente != ''){
+            return this.ventasService.nuevoIngresoArchivo({Nombre_cliente:this.Nombre_cliente}).then(res=>{
+                let data = JSON.parse(JSON.stringify(res));
+                console.log('res',res);
+                this.frmSolicitud.controls["File"].setValue(null);
+                let datosModal2;
+                if(!data.DatosCliente.Nombre){
+                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Este cliente no existe actualmente, deseas darlo de alta?`, Tipo:'warning', Confirm: 'Si guardar'}  ;
+                }else if(data.Modificaciones){
+                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Hay actualizaciones en el nuevo archivo, deseas remplazarlo ? `, Tipo:'warning', Confirm: 'Si remplazar'}  ;
+                }else{
+                    datosModal2 =  {Titulo: 'Información',Contenido:` Se han Obtenido los detalles del cliente "${data.DatosCliente.Nombre}", Deseas Ingresar un Nuevo movimiento ?  `, Tipo:'success', Confirm: 'Si'}  ;
+                }
+                return this._confirmarModal({},datosModal2);
+            }).then(res=>{
+                console.log('res',res);
+            }).catch(error => {
+                console.log('error',error);
+                this.frmSolicitud.controls["File"].setValue(null);
+            });            
+        };
+        // let dataFiltros = {Nombre_cliente: this.Nombre_cliente};
+        // return this.ventasService.nuevoIngresoArchivo(dataFiltros);
+        // this.datosCliente =  this.clientesTodos.filter(ob=>ob.Nombre == selected)[0];
+        // console.log('datosCliente',this.datosCliente);
+        // if(this.datosCliente.Terrenos.length == 1){
+        //     this.datosTerreno = this.datosCliente.Terrenos[0];
+        //     this.terrenoSelect = this.datosCliente.Terrenos[0].NombreEspecial;
+        // }else{
+        //     this.datosTerreno = false;
+        // }
         // if(this.datosCliente.Saldo_anualidad == 0){
         //     let restantes = this.catalogoVentas.filter(ob=>ob.Codigo != '03');
         //     this.catalogoVentas = restantes;
