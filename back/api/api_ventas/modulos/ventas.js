@@ -2076,30 +2076,45 @@ module.exports = class Ventas {
         let Modificaciones = [];let modFinanciamiento = [];let modAnualidad = [];
         let Viejos = d.DatosCliente.Financiamiento;
         let Nuevos = d.Datos_nuevo.Adeudos_clientes;
-//        console.log('viejos',Viejos);
+        //FINANCIAMIENTO
         if(Viejos[0] && Nuevos[0]){
-            Nuevos.forEach((f,i)=>{
-//                console.log('f',f);
+            Nuevos.forEach(f=>{
                 if(f.Pagado == 1){
                     let existe = Viejos.find(v=>{
-//                        console.log('v',v);
-                        if(v.Num_pago == f.Num_pago){
-                            let Old = moment(`${v.Fecha}`).utc().format('YYYY-MM-DD');
-                            let New = moment(`${f.Fecha}`).utc().format('YYYY-MM-DD');
-                            if(Old == New){
-                                // console.log('Old v',Old);
-                                // console.log('New f',New);
-                                return v;
-                            }
+                        let Old = moment(`${v.Fecha}`).utc().format('YYYY-MM-DD');
+                        let New = moment(`${f.Fecha}`).utc().format('YYYY-MM-DD');
+                        if(v.Num_pago == f.Num_pago && Old == New){
+                            return v;
                         }
                     });
-                    console.log('existe',existe);
-                    // console.log('f',f);
-                    // console.log('i',i);
+                    if(!existe){
+                        modFinanciamiento.push(f);
+                    }
                 }
             })
+            console.log('modFinanciamiento',modFinanciamiento);
         }
-        return true;
+        let Viejos = d.DatosCliente.Anualidades;
+        let Nuevos = d.Datos_nuevo.Adeudos_anualidades;
+        //AnualidadES
+        if(Viejos[0] && Nuevos[0]){
+            Nuevos.forEach(f=>{
+                if(f.Pagado == 1){
+                    let existe = Viejos.find(v=>{
+                        let Old = moment(`${v.Fecha}`).utc().format('YYYY-MM-DD');
+                        let New = moment(`${f.Fecha}`).utc().format('YYYY-MM-DD');
+                        if(v.Num_pago == f.Num_pago && Old == New){
+                            return v;
+                        }
+                    });
+                    if(!existe){
+                        modAnualidad.push(f);
+                    }
+                }
+            })
+            console.log('modAnualidad',modAnualidad);
+        }
+        return {Financiamiento:modFinanciamiento,Anualidad:modAnualidad};
      }
      _guardarArchivoDirectorio(path,nombre,datos,maxSize=false, encode=false){
         return new Promise((resolve, reject) => {
