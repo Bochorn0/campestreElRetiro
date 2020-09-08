@@ -2010,7 +2010,9 @@ module.exports = class Ventas {
         });
      }
      nuevo_ingreso_archivo(datos_archivo){
+//         console.log('data',datos_archivo);
          let file_;let datosArchivoNuevo={};let datosCliente={};let datosNombre = '-';let datosArchivoViejo={};
+         let Data;
         return new Promise((resolve, reject)=>{
             let objCatalogos = new Catalogos();
             return Promise.resolve().then(res=>{
@@ -2032,18 +2034,21 @@ module.exports = class Ventas {
                     Promise.resolve();
                 }
            }).then((datosExcel) => {
+//               console.log('datos',datosExcel);
                 if(file_){
                     fs.unlinkSync(file_);                   
                 }
                 if(datosExcel){
                     datosArchivoNuevo = objCatalogos.ordenarDatosClienteFormato(datosExcel.getWorksheet(1));
                     datosNombre = (datosArchivoNuevo.Nombre)?datosArchivoNuevo.Nombre:'';
+                }else{
+                    datosNombre = (datos_archivo.Nombre_cliente != '')?datos_archivo.Nombre_cliente:datosNombre;
                 }
-                datosNombre = (datos_archivo.Nombre_cliente != '')?datos_archivo.Nombre_cliente:datosNombre;
+//                console.log('nombre',datosNombre);
                 return objCatalogos.obtener_datos_clientes_nuevo({Nombre: datosNombre});
             }).then(datosCli=>{
                 if(datosCli.Data){
-                    console.log('datos',datosCli);
+//                    console.log('datos',datosCli);
                     datosCliente = datosCli.Data[0];
                     let wbb = new Excel.Workbook();
                     return wbb.xlsx.readFile(`${datosCliente.Carpeta}`);
@@ -2055,7 +2060,9 @@ module.exports = class Ventas {
                 if(datosE){
                     datosArchivoViejo = objCatalogos.ordenarDatosClienteFormato(datosE.getWorksheet(1));
                 }
-                return resolve({DatosCliente: datosCliente, Datos_nuevo: datosArchivoNuevo, Datos_viejo: datosArchivoViejo, Modificaciones:true});
+                Data = {DatosCliente: datosCliente, Datos_nuevo: datosArchivoNuevo, Datos_viejo: datosArchivoViejo};
+                Data.Modificaciones = this._obtenerModificacionesCliente(Data);
+                return resolve(Data);
             }).catch(err=>{
                 console.log('err',err);
                 return reject(err);
@@ -2063,6 +2070,36 @@ module.exports = class Ventas {
 
 //            let de = new Excel.Workbook().xlsx.readFile(`${carpetasCliente}${file}/${f}`)
         });
+     }
+     _obtenerModificacionesCliente(d){
+//        console.log('d',d);
+        let Modificaciones = [];let modFinanciamiento = [];let modAnualidad = [];
+        let Viejos = d.DatosCliente.Financiamiento;
+        let Nuevos = d.Datos_nuevo.Adeudos_clientes;
+//        console.log('viejos',Viejos);
+        if(Viejos[0] && Nuevos[0]){
+            Nuevos.forEach((f,i)=>{
+//                console.log('f',f);
+                if(f.Pagado == 1){
+                    let existe = Viejos.find(v=>{
+//                        console.log('v',v);
+                        if(v.Num_pago == f.Num_pago){
+                            let Old = moment(`${v.Fecha}`).utc().format('YYYY-MM-DD');
+                            let New = moment(`${f.Fecha}`).utc().format('YYYY-MM-DD');
+                            if(Old == New){
+                                // console.log('Old v',Old);
+                                // console.log('New f',New);
+                                return v;
+                            }
+                        }
+                    });
+                    console.log('existe',existe);
+                    // console.log('f',f);
+                    // console.log('i',i);
+                }
+            })
+        }
+        return true;
      }
      _guardarArchivoDirectorio(path,nombre,datos,maxSize=false, encode=false){
         return new Promise((resolve, reject) => {

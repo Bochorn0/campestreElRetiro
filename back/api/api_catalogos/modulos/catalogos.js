@@ -839,6 +839,7 @@ module.exports = class Catalogos {
           });
         conexion.connect();
         return new Promise((resolve, reject) => {
+            console.log('filtros',filtros);
             let condiciones = ` WHERE 1=1 `; 
             condiciones += (filtros.Nombre)?` AND Nombre = '${filtros.Nombre}' `:``;
             //WHERE Nombre = '${d.Nombre}' 
@@ -858,14 +859,14 @@ module.exports = class Catalogos {
             }).then(deuda_terrenos=>{        
                 if(Datos[0]){
                     Datos.forEach(d=>{
-                        d.Financiamiento = deuda_terrenos.filter(o=>o.IdCliente == d.IdCliente);
+                        d.Financiamiento = (deuda_terrenos[0])?deuda_terrenos.filter(o=>o.IdCliente == d.IdCliente):[];
                     });
                 }
                 return this._ordenarQuery(conexion,` SELECT * FROM Financiamiento_anualidades WHERE IdCliente IN (${ids_Clientes.slice(0,-1)}); `);
             }).then(deuda_anualidades=>{
                 if(Datos[0]){
                     Datos.forEach(d=>{
-                        d.Anualidades = deuda_anualidades.filter(o=>o.IdCliente == d.IdCliente);
+                        d.Anualidades = (deuda_anualidades[0])?deuda_anualidades.filter(o=>o.IdCliente == d.IdCliente):[];
                     });
                 }
                 conexion.end();
