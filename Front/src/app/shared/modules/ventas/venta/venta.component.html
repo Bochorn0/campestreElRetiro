@@ -232,3 +232,34 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-xs-12">
+        <ng-template #ModificacionModal let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-header modal-lg">
+                <h4 class="modal-title">{{modalDatos.Titulo}} </h4>
+                <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row"  *ngIf="datosModificacion">
+                    <div class="col-xs-12" *ngIf="datosModificacion.Financiamiento[0]">
+                        <h4>Financiamientos Nuevos</h4>
+                        <table class="table table-striped">
+                            <tr>
+                                <th>Num Pago</th>
+                                <th>Cantidad</th>
+                                <th>Fecha</th>
+                            </tr>
+                            <tr *ngFor="let d of datosModificacion.Financiamiento;">
+                                <td>{{d.Num_Pago}}</td>
+                                <td>{{d.Cantidad}}</td>
+                                <td>{{d.Fecha}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </ng-template>        
+    </div>    
+</div>

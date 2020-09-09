@@ -5,6 +5,7 @@ import { VentasService } from '../../../../shared/services/ventas.service'
 import {Observable} from 'rxjs';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
+import {NgbActiveModal,NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 import swal from 'sweetalert2';
 import * as moment from 'moment';
 
@@ -16,19 +17,21 @@ import * as moment from 'moment';
     providers: [CatalogosService, VentasService]
 })
 export class VentaComponent implements OnInit {
+    @ViewChild('ModificacionModal')ModificacionModal;
     frmSolicitud: FormGroup; // Formulario de solicitud
     //
     datosCliente;mensualidadesPendientes;mensualidad;nombresClientes;datosTerreno;datosMensualidad;
-    VentaCompleta;anualidadesPendientes;anualidad;terrenoSelect;
+    VentaCompleta;anualidadesPendientes;anualidad;terrenoSelect;activeModal;modalDatos;
     //Formulario ingresos
     clientesTodos = [];today;terrenos;
     folIngreso;folRecibo;tipoIngreso;conceptoIngreso;etapaIngreso;abonoVenta;totalVenta;
     conceptosAPagar;total_abono;catalogoVentas;conceptoVenta='';
     idTerreno ;formaPago;mostrarCuentas;cuentasDeposito;cuentaDestino;
     pdfRecibo;formaDePago;formasDePago;
-    @Input('datosVenta')datosClienteVenta: any;Nombre_cliente;
+    @Input('datosVenta')datosClienteVenta: any;Nombre_cliente;datosModificacion;
+
     tipoMovimiento;
-    constructor(private catalogosService : CatalogosService, private ventasService: VentasService,private fb: FormBuilder) {
+    constructor(private catalogosService : CatalogosService, private ventasService: VentasService,private fb: FormBuilder, private modalService: NgbModal) {
         this.frmSolicitud = fb.group({
             'File': [null]
         });
@@ -42,6 +45,7 @@ export class VentaComponent implements OnInit {
         this.mostrarCuentas = false;
         this._tipoOperacion();
         this._formasDePago();
+        this.modalDatos = {Tipo: '', Clase: 'bg-secondary', Titulo: ''};
     }
     importar_excel($event): void {
         let fileObject;
@@ -60,17 +64,19 @@ export class VentaComponent implements OnInit {
                 }
             }).then(res=>{
                 let data = JSON.parse(JSON.stringify(res));
+                this.datosModificacion = data.Modificaciones;
                 console.log('res',res);
                 this.frmSolicitud.controls["File"].setValue(null);
                 let datosModal2;
                 if(!data.DatosCliente.Nombre){
                     datosModal2 =  {Titulo: 'Advertencia',Contenido:`Este cliente no existe actualmente, deseas darlo de alta?`, Tipo:'warning', Confirm: 'Si guardar'}  ;
                 }else if(data.Modificaciones){
-                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Hay actualizaciones en el nuevo archivo, deseas remplazarlo ? `, Tipo:'warning', Confirm: 'Si remplazar'}  ;
+                    this.abrirModalModificacion(this.ModificacionModal);
+//                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Hay actualizaciones en el nuevo archivo, deseas remplazarlo ? `, Tipo:'warning', Confirm: 'Si remplazar'}  ;
                 }else{
                     datosModal2 =  {Titulo: 'Información',Contenido:` Se han Obtenido los detalles del cliente "${data.DatosCliente.Nombre}", Deseas Ingresar un Nuevo movimiento ?  `, Tipo:'success', Confirm: 'Si'}  ;
                 }
-                return this._confirmarModal({},datosModal2);
+//                return this._confirmarModal({},datosModal2);
             }).then(res=>{
                 console.log('res',res);
             }).catch(error => {
@@ -78,6 +84,10 @@ export class VentaComponent implements OnInit {
                 this.frmSolicitud.controls["File"].setValue(null);
             });
         }
+    }
+    abrirModalModificacion(content){
+        this.modalDatos = {Tipo: 'Datos Modificaciones', Clase: 'bg-info', Titulo: 'Datos modificaciones'} ;
+        this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
     }
     importarArchivo($event){
         return new Promise((resolve, reject) => {

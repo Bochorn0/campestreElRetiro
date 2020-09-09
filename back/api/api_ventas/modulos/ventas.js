@@ -2062,6 +2062,7 @@ module.exports = class Ventas {
                 }
                 Data = {DatosCliente: datosCliente, Datos_nuevo: datosArchivoNuevo, Datos_viejo: datosArchivoViejo};
                 Data.Modificaciones = this._obtenerModificacionesCliente(Data);
+//                console.log('Data',Data);
                 return resolve(Data);
             }).catch(err=>{
                 console.log('err',err);
@@ -2079,31 +2080,43 @@ module.exports = class Ventas {
         //FINANCIAMIENTO
         if(Viejos[0] && Nuevos[0]){
             Nuevos.forEach(f=>{
-                if(f.Pagado == 1){
+                if(f.Pagado == 1 ){
+//                    console.log('f',f);
                     let existe = Viejos.find(v=>{
-                        let Old = moment(`${v.Fecha}`).utc().format('YYYY-MM-DD');
-                        let New = moment(`${f.Fecha}`).utc().format('YYYY-MM-DD');
-                        if(v.Num_pago == f.Num_pago && Old == New){
+                        let Old;let New;
+                        if(moment(v.Fecha).isValid()){
+                            Old = (v.Fecha)?moment(v.Fecha).utc().format('YYYY-MM-DD'):v.Fecha;
+                        }
+                        if(moment(f.Fecha).isValid()){
+                            New = (f.Fecha)?moment(f.Fecha).utc().format('YYYY-MM-DD'):f.Fecha;
+                        }
+                        if(v.Num_pago == f.Num_pago && Old == New && v.Pagado == 1){
                             return v;
                         }
                     });
+//                    console.log('existe',existe);
                     if(!existe){
                         modFinanciamiento.push(f);
                     }
                 }
             })
-            console.log('modFinanciamiento',modFinanciamiento);
+//            console.log('modFinanciamiento',modFinanciamiento);
         }
-        let Viejos = d.DatosCliente.Anualidades;
-        let Nuevos = d.Datos_nuevo.Adeudos_anualidades;
+        let ViejosA = d.DatosCliente.Anualidades;
+        let NuevosA = d.Datos_nuevo.Anualidades;
         //AnualidadES
-        if(Viejos[0] && Nuevos[0]){
-            Nuevos.forEach(f=>{
+        if(ViejosA[0] && NuevosA[0]){
+            NuevosA.forEach(f=>{
                 if(f.Pagado == 1){
-                    let existe = Viejos.find(v=>{
-                        let Old = moment(`${v.Fecha}`).utc().format('YYYY-MM-DD');
-                        let New = moment(`${f.Fecha}`).utc().format('YYYY-MM-DD');
-                        if(v.Num_pago == f.Num_pago && Old == New){
+                    let existe = ViejosA.find(v=>{
+                        let Old;let New;
+                        if(moment(v.Fecha).isValid()){
+                            Old = (v.Fecha)?moment(v.Fecha).utc().format('YYYY-MM-DD'):v.Fecha;
+                        }
+                        if(moment(f.Fecha).isValid()){
+                            New = (f.Fecha)?moment(f.Fecha).utc().format('YYYY-MM-DD'):f.Fecha;
+                        }
+                        if(v.Num_pago == f.Num_pago && Old == New && v.Pagado == 1){
                             return v;
                         }
                     });
@@ -2112,7 +2125,7 @@ module.exports = class Ventas {
                     }
                 }
             })
-            console.log('modAnualidad',modAnualidad);
+//            console.log('modAnualidad',modAnualidad);
         }
         return {Financiamiento:modFinanciamiento,Anualidad:modAnualidad};
      }
