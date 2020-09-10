@@ -65,7 +65,13 @@ export class VentaComponent implements OnInit {
             }).then(res=>{
                 let data = JSON.parse(JSON.stringify(res));
                 this.datosModificacion = data.Modificaciones;
-                console.log('res',res);
+                this.datosModificacion.Financiamiento.forEach(dm=>{
+                    dm.Fecha = moment(`${dm.Fecha}`).utc().format('YYYY-MM-DD');
+                });
+                this.datosModificacion.Anualidad.forEach(dm=>{
+                    dm.Fecha = moment(`${dm.Fecha}`).utc().format('YYYY-MM-DD');
+                });
+                console.log('data',data);
                 this.frmSolicitud.controls["File"].setValue(null);
                 let datosModal2;
                 if(!data.DatosCliente.Nombre){
