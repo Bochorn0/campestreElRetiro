@@ -53,10 +53,12 @@ export class UsuariosComponent implements OnInit {
     _catalogoEmpleados(){
         this.catalogosService.obtenerEmpleados().then(res=>{
             console.log('res',res);
-            this.catalogoEmpleados =  res['Data'];
-            this.nombresEmpleados = res['Data'].map((key)=>{
-                return key.Nombre;
-            });
+            if(res['Data']){
+                this.catalogoEmpleados =  res['Data'];
+                this.nombresEmpleados = res['Data'].map((key)=>{
+                    return key.Nombre;
+                });
+            }
         });
     }
     filtrarEmpleado = (text$: Observable<string>) =>
@@ -124,7 +126,10 @@ export class UsuariosComponent implements OnInit {
     }
     guardarCambiosPerfiles(){
         this.catalogosService.guardarCambiosPuestos(this.datosPuestos).then(res=>{
+            this._catalogoPuestos();
+            this._catalogoEmpleados();
             this.obtenerPuestos();
+            
         }).catch(err=>{console.log('err',err);});
     }
     editarUsuario(obj){
@@ -229,8 +234,11 @@ export class UsuariosComponent implements OnInit {
         this.datosPuestos = false;
         this._limpiarVariables();
         this.catalogosService.obtenerPuestos().then(res=>{
-            let datosPerfiles =  this._ordenarPerfiles(res['Data']);
-            this.datosPuestos = datosPerfiles;
+            if(res['Data']){
+                let datosPerfiles =  this._ordenarPerfiles(res['Data']);
+                this.datosPuestos = datosPerfiles;
+            }
+
             // this.datosPuestos = { Opciones:{Eliminar:true, Editar: true},Datos:datosPerfiles};
             this.vistaCentro=true;
             this.panelVisualizar = 'Perfiles';
@@ -290,11 +298,13 @@ export class UsuariosComponent implements OnInit {
         this._limpiarVariables();
         this.catalogosService.obtenerEmpleados().then(res =>{
             this.vistaCentro = true;
-            this.empladosActivos = res['Data'];
-            this.catalogoEmpleados =  res['Data'];
-            this.nombresEmpleados = res['Data'].map((key)=>{
-                return key.Nombre;
-            });
+            if(res['Data']){
+                this.empladosActivos = res['Data'];
+                this.catalogoEmpleados =  res['Data'];
+                this.nombresEmpleados = res['Data'].map((key)=>{
+                    return key.Nombre;
+                });
+            }
             this.panelVisualizar = 'Empleados';
             //this.empladosActivos =  { Datos : res['Data']};
         }).catch(err=>{this._limpiarVariables();});
@@ -322,9 +332,10 @@ export class UsuariosComponent implements OnInit {
             this.vistaCentro= true;
         })
     }
-    seleccionarEmpleado(selected,t){
+    seleccionarEmpleadoNomina(selected,t){
         this.datosEmpleado =  this.catalogoEmpleados.filter(ob=>ob.Nombre == selected.item.toString())[0];
-        this.datosEmpleado.DatosUsuario = this.catalogoUsuarios.filter(ob=>ob.IdEmpleado == this.datosEmpleado.IdEmpleado);
+        console.log('datos',this.datosEmpleado);
+//        this.datosEmpleado.DatosUsuario = this.catalogoUsuarios.filter(ob=>ob.IdEmpleado == this.datosEmpleado.IdEmpleado);
         this.sueldoEmpleado = this.datosEmpleado.Sueldo;
         console.log('datos empleado',this.datosEmpleado);
         this.visualizarSugerencias =  false;
@@ -345,6 +356,32 @@ export class UsuariosComponent implements OnInit {
         }else{
             this.datosEmpleado.Ventas = [];
         }
+        this.horasLaboradas = 40;        
+    }
+    seleccionarEmpleado(selected,t){
+        this.datosEmpleado =  this.catalogoEmpleados.filter(ob=>ob.Nombre == selected.item.toString())[0];
+        console.log('datos',this.datosEmpleado);
+//        this.datosEmpleado.DatosUsuario = this.catalogoUsuarios.filter(ob=>ob.IdEmpleado == this.datosEmpleado.IdEmpleado);
+        this.sueldoEmpleado = this.datosEmpleado.Sueldo;
+        console.log('datos empleado',this.datosEmpleado);
+        this.visualizarSugerencias =  false;
+        this.sugerenciasEmpleados = false;
+        this.uNombre = this.datosEmpleado.Nombre;
+        this.uCorreo = this.datosEmpleado.Correo;
+        this.uPassword = this._randomPassword(12);
+        // if(this.datosEmpleado.DatosUsuario[0]){
+        //     this.ventasService.obtenerVentasPorEmpleado(this.datosEmpleado.DatosUsuario[0]).then(res=>{
+
+        //         res['Datos'].forEach(re=>{
+        //             re.DatosTerreno = this.catalogoTerrenos.find(ct=>ct.IdTerreno ==  re.IdTerreno);
+        //             console.log('re',re);
+        //         });
+        //         this.datosEmpleado.Ventas = res['Datos'];
+        //         this.datosEmpleado.Cobros = res['Datos'];
+        //     }).catch(err=>{console.log('err',err);});
+        // }else{
+        //     this.datosEmpleado.Ventas = [];
+        // }
         this.horasLaboradas = 40;
     }
     calcularNominaEmpleado(){

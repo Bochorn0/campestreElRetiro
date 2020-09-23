@@ -9,16 +9,18 @@ import { StatModule} from '../../stat/stat.module';
 import {  } from '../../stat/stat.module';
 import { PageHeaderModule } from '../../page-header/page-header.module';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
-import { CatalogoClientesComponent } from './catalogo-clientes.component';
-import { DetalleClienteModule } from '../detalles-cliente/detalles-cliente.module';
-import { CliDetalleModule } from '../cli-detalle/cli-detalle.module';
-
+import { CliDetalleComponent } from './cli-detalle.component';
 import { FormularioClientesSeparadoModule } from '../../formularios/formulario-clientes-separado/formulario-clientes-separado.module';
 import { NgxSelectModule } from 'ngx-select-ex';
+import { AgmCoreModule } from '@agm/core';
 @NgModule({
-    imports: [CommonModule, RouterModule, FormsModule,DatatableModule,StatModule,PageHeaderModule,ReactiveFormsModule, NgxPaginationModule,    NgbTypeaheadModule, FroalaEditorModule, FroalaViewModule, NgbTabsetModule,FormularioClientesSeparadoModule,NgxSelectModule,DetalleClienteModule,CliDetalleModule],
-    declarations: [CatalogoClientesComponent],
-    exports: [CatalogoClientesComponent] 
+    imports: [CommonModule, RouterModule, FormsModule,DatatableModule,StatModule,PageHeaderModule,ReactiveFormsModule, NgxPaginationModule,    NgbTypeaheadModule, FroalaEditorModule, FroalaViewModule, NgbTabsetModule,FormularioClientesSeparadoModule,NgxSelectModule,
+    AgmCoreModule.forRoot({
+        apiKey: 'AIzaSyAoFHWCLKIAuLExC4zRgOMrB-r0XtwxnO8'
+        })
+    ],
+    declarations: [CliDetalleComponent],
+    exports: [CliDetalleComponent] 
 })
 
-export class CatalogoClientesModule {}
+export class CliDetalleModule {}

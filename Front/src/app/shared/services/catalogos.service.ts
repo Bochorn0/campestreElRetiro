@@ -181,6 +181,11 @@ export class CatalogosService {
       return Promise.resolve(response);
     }).catch(err => { return Promise.reject(err); });
   }
+  obtenerPlantillaClientes(){
+    return this.api.get(`/catalogos/plantillaClientes`).then(response => {
+      return Promise.resolve(response);
+    }).catch(err => { return Promise.reject(err); });
+  }
   obtenerPlantillaGastos() {
     return this.api.get(`/catalogos/plantillaGastos`).then(response => {
       return Promise.resolve(response);
@@ -234,6 +239,11 @@ export class CatalogosService {
   }
   obtenerDatosClientes(datos){
     return this.api.post(`/catalogos/obtenerDatosClientes`, datos).then(response => {
+      return Promise.resolve(response);
+    }).catch(err => { return Promise.reject(err); });
+  }
+  procesarCarpetasForzado(){
+    return this.api.post(`/catalogos/generarCarpetasClientes`,{}).then(response => {
       return Promise.resolve(response);
     }).catch(err => { return Promise.reject(err); });
   }

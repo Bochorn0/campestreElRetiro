@@ -20,7 +20,8 @@
         </div>
         <div class="col-6 col-lg-3">
             <div class="form-group">
-                <button (click)="mostrarCalcularNomina();" class="btn bg-warning menu w-100 text-white" ><i class="fa fa-wrench"></i> | Nomina</button>
+                <!-- [disabled]="!empladosActivos" -->
+                <button (click)="mostrarCalcularNomina({});"  [disabled]="!catalogoEmpleados" class="btn bg-warning menu w-100 text-white" ><i class="fa fa-wrench"></i> | Nomina</button>
             </div>
         </div>
     </div>
@@ -38,6 +39,10 @@
                     <button (click)="nuevoEmpleado();" style="margin: 0 10px;"  class="btn btn-success pull-right"><i class="fa fa-plus-circle"></i> Nuevo Empleado</button>
                     <br><br>
                 </div>                
+                <div class="col-12" *ngIf="panelVisualizar == 'Empleados' && !empladosActivos && !empleadoEditar">
+                    <b>No hay empleados registrados</b>
+                </div>
+                
                 <div class="col-12" *ngIf="this.empladosActivos && !empleadoEditar">
                     <div class="card card-default">
                         <div class="card-header bg-primary">
@@ -50,7 +55,7 @@
                                         <div class="card-body text-center">
                                             <div class="mb-2 img-fluid rounded-circle thumb64 {{(d.Activa == 1)?'activ':'activ2'}}" > <i class="fa fa-user fa-2x"></i></div>
                                             <h4>{{d.Nombre}}</h4>
-                                            <a class="" (click)="detUsuario = dr">
+                                            <a (click)="detUsuario = dr">
                                                 <b>{{d.Puesto}}</b>
                                             </a>
                                             <p> <b>{{d.Correo}}</b> </p>
@@ -116,7 +121,7 @@
                 </div>                    
             </div>
             <!-- SECCION DE NOMINAS -->
-            <div class="row" *ngIf="this.mostrarNomina" [@routerTransition]>
+            <div class="row" *ngIf="this.mostrarNomina && catalogoEmpleados" [@routerTransition]>
                 <div class="col-xl-12 col-lg-12 col-xs-12" >
                     <div class="card mb-3">
                         <div class="card-header bg-warning">
@@ -127,7 +132,7 @@
                                 <div class="col-lg-4">
                                     <div class="form-group">
                                         <label class="label-form"> Empleado </label>
-                                        <input autofocus id="typeahead-format" placeholder="Nombre del empleado:" type="text" class="form-control" [(ngModel)]="catalogoEmpleados.Nombre" [ngbTypeahead]="filtrarEmpleado" (selectItem)="seleccionarEmpleado($event)" [resultFormatter]="formatter" />
+                                        <input autofocus id="typeahead-format" placeholder="Nombre del empleado:" type="text" class="form-control" [(ngModel)]="catalogoEmpleados.Nombre" [ngbTypeahead]="filtrarEmpleado" (selectItem)="seleccionarEmpleadoNomina($event)" [resultFormatter]="formatter" />
                                         <input type="hidden" value="0" *ngIf="datosEmpleado" [(ngModel)]="datosEmpleado.IdEmpleado" />
                                     </div>
                                 </div>
@@ -315,6 +320,9 @@
                     </div>
                 </div>                
                 <!-- PANEL DE USUARIOS -->
+                <div class="col-12" *ngIf="panelVisualizar == 'Usuarios' && !datosUsuarios && !usuarioEditar">
+                    <b>No hay usuarios registrados</b>
+                </div>
                 <div class="col-12" *ngIf="this.datosUsuarios && !usuarioEditar">
                     <div class="card card-default">
                         <div class="card-header bg-purple">
@@ -501,6 +509,9 @@
                         </div>
                     </div>
                 </div>    
+                <div class="col-12" *ngIf="panelVisualizar == 'Perfiles' && !datosPuestos&& !altaNuevoPuesto">
+                    <b>No hay Perfiles registrados</b>
+                </div>
                 <!-- PANEL DE PERFILES -->
                 <div class="col-12" *ngIf="this.datosPuestos">
                     <div class="card card-default">

@@ -237,6 +237,15 @@ router.post('/nuevoIngresoArchivo', (req, res) => {
         res.status(400).send(error);
     })
 });
+router.post('/aprobarMovimientosNuevos', (req, res) => {
+    let objVentas = new Ventas();
+    objVentas.aprobar_movimientos_nuevos(req.body).then((result) => {
+        res.status(200).send(result);
+    }).catch((error) => { 
+        res.status(400).send(error);
+    })
+});
+
 
 
 

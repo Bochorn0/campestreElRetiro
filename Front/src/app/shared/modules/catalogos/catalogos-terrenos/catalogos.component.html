@@ -79,14 +79,16 @@
                             <div class="col-12 col-md-6 text-center" *ngFor="let a of datosTerrenos | paginate: { itemsPerPage: 6, currentPage: pageTerr, id: 'terr_r' };">
                                 <div class="card mb-3">
                                     <div class="card-header bg-{{(a.Color)?a.Color:'default'}}">
-                                        <i class="fa fa-map"></i> TER-{{a.IdTerreno}}
+                                        <i class="fa fa-map"></i> 
+                                        <!-- TER-{{a.IdTerreno}} -->
+                                        {{a.Folio}}
                                     </div>
                                     <div class="card-body">
                                         <span><b>Estatus: </b>{{a.Estado}}</span>
                                         <br>
                                         <table class="table" >
                                             <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th></tr>
-                                            <tr><td>{{a.etapa}}</td><td>{{a.lote}}</td><td>{{a.parcela}}</td></tr>
+                                            <tr><td>{{a.Etapa}}</td><td>{{a.Lote}}</td><td>{{a.Parcela}}</td></tr>
                                         </table>
                                         <span class="text-muted">
                                             <b style="color:#000 !important">
@@ -99,7 +101,7 @@
                                             <b style="color:#000 !important">
                                                 <i class="fa fa-address-book"></i> Actual:
                                             </b>
-                                            {{a.Pertenece}}
+                                            {{a.Actual}}
                                         </span>
                                         <!-- <span class="text-muted"><i class="fa fa-address-book"></i> Actual: {{a.Pertenece}}</span> -->
                                         <br>
@@ -137,15 +139,15 @@
                                     <div class="card-body row">
                                         <div class="form-group col-lg-3">
                                             <label class="label-form">Etapa</label><br>
-                                            <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.etapa" />
+                                            <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.Etapa" />
                                         </div>
                                         <div class="form-group col-lg-3">
                                             <label class="label-form"><b>Lote</b></label><br>
-                                            <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.lote" />
+                                            <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.Lote" />
                                         </div>
                                         <div class="form-group col-lg-3">
                                             <label class="label-form"><b>Parcela</b></label><br>
-                                            <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.parcela" />
+                                            <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.Parcela" />
                                         </div>
                                         <div class="form-group col-lg-3">
                                             <label class="label-form"><b>Superficie</b></label><br>
@@ -153,7 +155,7 @@
                                         </div>
                                         <div class="form-group col-lg-8">
                                             <label class="label-form"><b>Dueño Actual</b></label>
-                                            <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.Pertenece" />
+                                            <input type="text" class="form-control" [(ngModel)]="detalleTerrenos.Actual" />
                                         </div>
                                         <div class="form-group col-lg-4">
                                             <label class="label-form"><b>Estatus</b></label><br>

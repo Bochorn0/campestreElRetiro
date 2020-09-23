@@ -1,90 +1,115 @@
 <div class="row">
     <div class="col-xl-12 col-lg-12 col-xs-12" >
-                <div class="row" *ngIf="!clienteDetalles.IdCliente">
-                    <div class="col-6 col-sm-3 text-center">
-                        <div class="form-group">
-                            <button (click)="obtenerClientesActivos();" class="btn btn-dark w-100"><i class="fa fa-map"></i> | Ver Todos  </button>
+        <!-- MENU PRINCIPAL -->
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-0 col-lg-3"></div>
+                    <div class="col-0 col-lg-3"></div>
+                    <div class="col-6 col-lg-3">
+                        <div class="form-group" >
+                            <button (click)="obtenerPlantillaClientes();" class="btn bg-secondary text-white pull-right w-100"><i class="fa fa-download"></i> <i class="fa fa-file-excel"></i> Exportar Plantilla </button>
                         </div>
                     </div>
-                    <div class="col-6 col-sm-3 text-center">
-                        <label class="switch ">
-                            <input type="checkbox" [(ngModel)]="verFiltros" />
-                            <span class="slider round"></span>
-                        </label>
-                        <b style="vertical-align: sub;"> Mas Filtros</b>
-                    </div>
-                    <div class="col-12 col-sm-6 text-center">
-                        <div class="form-group"> 
-                            <input (keyup)="filtrarTerrenos();"  placeholder="Buscar en Terrenos:" type="text" class="form-control" [(ngModel)]="textoTerreno" />
+                    <div class="col-6 col-lg-3">
+                        <div class="form-group" >
+                            <button (click)="subirArchivo.click();" class="btn bg-orange pull-right w-100"><i class="fa fa-upload"></i> <i class="fa fa-file-excel"></i> Importar Cliente</button>
                         </div>
                     </div>
                 </div>
+                <form [formGroup]="frmSolicitud" class="form-validate" (keydown.enter)="$event.preventDefault()" novalidate="">
+                    <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)"  formControlName="File" />
+                </form>
                 <hr>
-                <div class="row" *ngIf="verFiltros && !clienteDetalles">
-                    <div class="col-6 col-lg-3">
-                        <div class="form-group">
-                            <label class="label-form">Parcela: </label>
-                            <ngx-select [items]="parcelas" optionValueField="Parcela" placeholder="Parcela:" (select)="filtrarTerrenos();" [(ngModel)]="parcelaFiltro"></ngx-select>
-                        </div>
+            </div>            
+        </div>
+        <!-- CLIENTE DETALLES -->
+        <div class="row" *ngIf="!clienteDetalles">
+            <div class="col-6 col-sm-3 text-center">
+                <div class="form-group">
+                    <button (click)="obtenerClientesActivos();" class="btn btn-dark w-100"><i class="fa fa-map"></i> | Ver Todos  </button>
+                </div>
+            </div>
+            <div class="col-6 col-sm-3 text-center">
+                <label class="switch ">
+                    <input type="checkbox" [(ngModel)]="verFiltros" />
+                    <span class="slider round"></span>
+                </label>
+                <b style="vertical-align: sub;"> Mas Filtros</b>
+            </div>
+            <div class="col-12 col-sm-6 text-center">
+                <div class="form-group"> 
+                    <input (keyup)="filtrarTerrenos();"  placeholder="Buscar en Terrenos:" type="text" class="form-control" [(ngModel)]="textoTerreno" />
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row" *ngIf="verFiltros && !clienteDetalles">
+            <div class="col-6 col-lg-3">
+                <div class="form-group">
+                    <label class="label-form">Parcela: </label>
+                    <ngx-select [items]="parcelas" optionValueField="Parcela" placeholder="Parcela:" (select)="filtrarTerrenos();" [(ngModel)]="parcelaFiltro"></ngx-select>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="form-group">
+                    <label class="label-form">Lote: </label>
+                    <ngx-select [items]="lotes" optionValueField="Lote" placeholder="Lote:" (select)="filtrarTerrenos();" [(ngModel)]="loteFiltro"></ngx-select>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3"> 
+                <div class="form-group">
+                    <label class="label-form">Etapa: </label>
+                    <ngx-select [items]="etapas" optionValueField="Etapa" placeholder="Etapa:" (select)="filtrarTerrenos();" [(ngModel)]="etapaFiltro"></ngx-select>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="form-group">
+                    <label class="label-form">Estatus: </label>
+                    <ngx-select [items]="estatusTodos" optionValueField="Estatus" placeholder="Estatus:" (select)="filtrarTerrenos();" [(ngModel)]="estatusFiltro"></ngx-select>
+                </div>
+            </div>
+        </div>         
+        <div class="row" *ngIf="clientesTodos && !clienteDetalles" id="cli_r">
+            <div class="col-12 col-md-6  text-center" *ngFor="let a of clientesTodos | paginate: { itemsPerPage: 6, currentPage: pageCli, id: 'cli_r' };">
+                <div class="card mb-3">
+                    <div class="card-header bg-{{(a.Color)?a.Color:'primary'}}">
+                        <i class="fa fa-user"></i> CLI-{{a.IdCliente}}
                     </div>
-                    <div class="col-6 col-lg-3">
-                        <div class="form-group">
-                            <label class="label-form">Lote: </label>
-                            <ngx-select [items]="lotes" optionValueField="Lote" placeholder="Lote:" (select)="filtrarTerrenos();" [(ngModel)]="loteFiltro"></ngx-select>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-3"> 
-                        <div class="form-group">
-                            <label class="label-form">Etapa: </label>
-                            <ngx-select [items]="etapas" optionValueField="Etapa" placeholder="Etapa:" (select)="filtrarTerrenos();" [(ngModel)]="etapaFiltro"></ngx-select>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-3">
-                        <div class="form-group">
-                            <label class="label-form">Estatus: </label>
-                            <ngx-select [items]="estatusTodos" optionValueField="Estatus" placeholder="Estatus:" (select)="filtrarTerrenos();" [(ngModel)]="estatusFiltro"></ngx-select>
-                        </div>
-                    </div>
-                </div>         
-                <div class="row" *ngIf="clientesTodos && !clienteDetalles.IdCliente" id="cli_r">
-                    <div class="col-12 col-md-6  text-center" *ngFor="let a of clientesTodos | paginate: { itemsPerPage: 6, currentPage: pageCli, id: 'cli_r' };">
-                        <div class="card mb-3">
-                            <div class="card-header bg-{{(a.Color)?a.Color:'primary'}}">
-                                <i class="fa fa-user"></i> CLI-{{a.IdCliente}}
+                    <div class="card-body">
+                        <span><b><i class="fa fa-user"></i> : </b>{{a.Nombre}}</span>
+                        <br>
+                        <span><b><i class="fa fa-envelope"></i> : </b> {{a.Correo}}</span>
+                        <table class="table"  *ngIf="a.Terrenos[0]">
+                            <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th><th>Estatus:</th></tr>
+                            <tr *ngFor="let t of a.Terrenos"><td>{{t.Etapa}}</td><td>{{t.Lote}}</td><td>{{(t.Parcela)?t.Parcela:'-'}}</td><td>{{t.Estatus}}</td></tr>
+                        </table>
+                        <table class="table"  *ngIf="!a.Terrenos[0]">
+                            <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th><th>Estatus:</th></tr>
+                            <tr ><td colspan="4">Sin Terrenos</td></tr>
+                        </table>
+                        <br>
+                        <div class="row card-footer">
+                            <div class="col-6">
+                                <button class="btn btn-info w-100" (click)="detalleCliente(a)"><i class="fa fa-pencil"></i> | Detalles</button>
                             </div>
-                            <div class="card-body">
-                                <span><b><i class="fa fa-user"></i> : </b>{{a.Nombre}}</span>
-                                <br>
-                                <span><b><i class="fa fa-envelope"></i> : </b> {{a.Correo}}</span>
-                                <table class="table"  *ngIf="a.Terrenos[0]">
-                                    <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th><th>Estatus:</th></tr>
-                                    <tr *ngFor="let t of a.Terrenos"><td>{{t.Etapa}}</td><td>{{t.Lote}}</td><td>{{(t.Parcela)?t.Parcela:'-'}}</td><td>{{t.Estatus}}</td></tr>
-                                </table>
-                                <table class="table"  *ngIf="!a.Terrenos[0]">
-                                    <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th><th>Estatus:</th></tr>
-                                    <tr ><td colspan="4">Sin Terrenos</td></tr>
-                                </table>
-                                <br>
-                                <div class="row card-footer">
-                                    <div class="col-6">
-                                        <button class="btn btn-info w-100" (click)="detalleCliente(a)"><i class="fa fa-pencil"></i> | Detalles</button>
-                                    </div>
-                                    <div class="col-6">
-                                        <button class="btn btn-danger w-100" (click)="confirmarBorrarCliente(a)" title="Borrar Cliente"><i class="fa fa-times"></i> | Borrar</button>
-                                    </div>
-                                </div>
+                            <div class="col-6">
+                                <button class="btn btn-danger w-100" (click)="confirmarBorrarCliente(a)" title="Borrar Cliente"><i class="fa fa-times"></i> | Borrar</button>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-12 text-right">
-                        <pagination-controls (pageChange)="pageCli = $event" id="cli_r"></pagination-controls>
                     </div>
                 </div>
-                <div class="row text-center" *ngIf="terrenos">
-                    <div class="col-12 col-lg-12" *ngIf="clienteDetalles.IdCliente || datosDetalle">
-                        <app-detalles-cliente [datosDetalles]="clienteDetalles" (vistaEmision)="obtenerClientesActivos();"></app-detalles-cliente>
-                    </div>
-                </div>
+            </div>
+            <div class="col-12 text-right">
+                <pagination-controls (pageChange)="pageCli = $event" id="cli_r"></pagination-controls>
+            </div>
+        </div>
+        <div class="row text-center" *ngIf="clienteDetalles">
+            <div class="col-12 col-lg-12" >
+                <!-- <app-detalles-cliente [datosDetalles]="clienteDetalles" (vistaEmision)="obtenerClientesActivos();"></app-detalles-cliente> -->
+                <app-cli-detalle [datosDetalles]="clienteDetalles" (vistaEmision)="obtenerClientesActivos();"></app-cli-detalle>
+            </div>
+        </div>
             <!-- </div>
         </div> -->
     </div>

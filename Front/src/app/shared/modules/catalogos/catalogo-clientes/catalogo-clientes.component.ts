@@ -4,6 +4,7 @@ import { CatalogosService } from '../../../services/catalogos.service';
 import { VentasService } from '../../../services/ventas.service';
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import swal from 'sweetalert2';
 import * as moment from 'moment';
 @Component({
@@ -14,6 +15,7 @@ import * as moment from 'moment';
     providers: [CatalogosService, VentasService]
 })
 export class CatalogoClientesComponent implements OnInit {
+    frmSolicitud: FormGroup; // Formulario de solicitud
     parcelas;lotes;etapas;terrenos;clientesTodos;estatusTodos
     clienteDetalles;nombresClientes;detallesClienteVista;mantenimientoVista;clientesTodosTodos;
     clientesTodosVista;nombreCliente;mensualidadesVista;contenidoContrato;anualidadesVista;
@@ -22,32 +24,12 @@ export class CatalogoClientesComponent implements OnInit {
     parcelaFiltro;loteFiltro;etapaFiltro;estatusFiltro;textoCliente;mantenimientosPagados;
     textoTerreno;
     @Output() public nuevaOperacion = new EventEmitter();
-    constructor(private catalogosService : CatalogosService, private ventasService: VentasService) {
-        this.clienteDetalles = {IdCliente:false};
+    constructor(private catalogosService : CatalogosService, private ventasService: VentasService, private fb : FormBuilder) {
+        this.frmSolicitud = fb.group({
+            'File': [null]
+        });
         this.obtenerClientesActivos();
-        this.idTerrenoMensualidad = this.IdTerrenoMantenimiento =  this.IdTerrenoContrato = 0;
-        //this.parcelaFiltro = this.loteFiltro =this.etapaFiltro = 
-        this.estatusFiltro = '0';
     }
-    formatter = (result: string) => result.toUpperCase();
-    filtrarCliente = (text$: Observable<string>) =>
-    text$.pipe( debounceTime(200), distinctUntilChanged(),
-      map(term => term === ''?[]:this.nombresClientes.filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
-    );
-    filtrarParcelas = (text$: Observable<string>) =>
-    
-    text$.pipe( debounceTime(200), distinctUntilChanged(),
-        map(term => term === ''?[]:this.parcelas.map(o=>o.parcela).filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
-    );    
-    filtrarLotes = (text$: Observable<string>) =>
-    text$.pipe( debounceTime(200), distinctUntilChanged(),
-        map(term => term === ''?[]:this.lotes.map(o=>o.lote).filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
-    );    
-    filtrarEtapas = (text$: Observable<string>) =>
-    text$.pipe( debounceTime(200), distinctUntilChanged(),
-        map(term => term === ''?[]:this.etapas.map(o=>o.etapa).filter(ob => ob.toUpperCase().indexOf(term.toUpperCase()) > -1))
-    );    
-
     filtrarTerrenos(){
         let filtrados = this.clientesTodosTodos;
         console.log('filtrados',filtrados);
@@ -237,15 +219,19 @@ export class CatalogoClientesComponent implements OnInit {
         }
     }
     obtenerClientesActivos(){
+        console.log('entro a clientes');
         this._limpiarPantallas(); 
         this.catalogosService.obtenerDatosClientes({}).then(res=>{
-            this.clientesTodosTodos = this.clientesTodos = res['Data'];
-            console.log('clientes',this.clientesTodos);
-            this.nombresClientes = res['Data'].map((key)=>{
-                return key.Nombre;
-            })
+            if(res['Data']){
+                this.clientesTodosTodos = this.clientesTodos = res['Data'];
+                console.log('clientes',this.clientesTodos);
+                this.nombresClientes = res['Data'].map((key)=>{
+                    return key.Nombre;
+                })
+            }
             this._recorrerFiltros(this.clientesTodosTodos);
             this.clientesTodosVista = true;
+
         }).catch(err=>{console.log('err',err);});
     }
     _ordenarDatosCliente(datos){
@@ -343,16 +329,16 @@ export class CatalogoClientesComponent implements OnInit {
     detalleCliente(cliente){
         this._limpiarPantallas();
         this.clienteDetalles = cliente;
-        if(this.clienteDetalles){
-            if(this.clienteDetalles.Terrenos[0]){
-                //this.mensualidades();
-                //this.anualidades();
-            }else{
-                this.clienteDetalles.Terrenos = [];
-            }
-            //this.mantenimientos();
-        }
-        console.log('clientes',this.clienteDetalles);
+        // if(this.clienteDetalles){            
+        //     if(this.clienteDetalles.Terrenos[0]){
+        //         this.mensualidades();
+        //         this.anualidades();
+        //     }else{
+        //         this.clienteDetalles.Terrenos = [];
+        //     }
+        //     this.mantenimientos();
+        // }
+//        console.log('clientes',this.clienteDetalles);
         this.detallesClienteVista = true;
     }
     estadosCuenta(nombre){
@@ -394,6 +380,42 @@ export class CatalogoClientesComponent implements OnInit {
                     this.mensualidadesVista = true;
                 }
             })
+        }
+    }
+    importar_excel($event): void {
+        let fileObject;
+        let file: File = $event.target.files[0];
+        let nom = file.name.split('.');
+        let compExt = `${nom[nom.length-1]}`;
+            if(compExt.toUpperCase() != 'XLSX'){
+                swal('error','El formato del archivo no es valido debe ser xlsx ','error');
+            }else{
+            // this.importarArchivo($event).then((resultado: any) => {
+            //     if (resultado) {
+            //         fileObject = { file: resultado.substring(78),Size: file.size , Tipo: `Cliente`, Ext: compExt}
+            //         return this.ventasService.nuevoIngresoArchivo(fileObject);
+            //     }else{
+            //         return Promise.resolve({});
+            //     }
+            // }).then(res=>{
+            //     let data = JSON.parse(JSON.stringify(res));
+            //     this.datosModificacion = data.Modificaciones;
+            //     this.datosModificacion.Financiamiento.forEach(dm=>{
+            //         dm.Fecha = moment(`${dm.Fecha}`).utc().format('YYYY-MM-DD');
+            //     });
+            //     this.datosModificacion.Anualidad.forEach(dm=>{
+            //         dm.Fecha = moment(`${dm.Fecha}`).utc().format('YYYY-MM-DD');
+            //     });
+            //     console.log('data',data);
+            //     this.frmSolicitud.controls["File"].setValue(null);
+            //     this.movimientoCliente(data);
+            //     let datosModal2;
+            // }).then(res=>{
+            //     console.log('res',res);
+            // }).catch(error => {
+            //     console.log('error',error);
+            //     this.frmSolicitud.controls["File"].setValue(null);
+            // });
         }
     }
     anualidades(){
@@ -589,6 +611,29 @@ export class CatalogoClientesComponent implements OnInit {
 
         this.datosDetalle =  this.clienteDetalles;
         
+    }
+    obtenerPlantillaClientes(){
+        console.log('entro clientes');
+        this.catalogosService.obtenerPlantillaClientes().then( res=>{
+            console.log('res',res);
+            this.descargarPlantilla(res['String'], 'Formato_general_clientes');
+        }).catch(err=>{
+            console.log('error al obtener plantilla', err);
+        })
+    }
+    descargarPlantilla(data, nombre = "Formato_general_clientes_") {
+        let dwldLink = document.createElement("a");
+        let url = 'data:application/vnd.ms-excel;base64,' + data;
+        let isSafariBrowser = navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1;
+        if (isSafariBrowser) {
+            dwldLink.setAttribute("target", "_blank");
+        }
+        dwldLink.setAttribute("href", url);
+        dwldLink.setAttribute("download", `${nombre}${new Date().toLocaleDateString()}.xlsx`);
+        dwldLink.style.visibility = "hidden";
+        document.body.appendChild(dwldLink);
+        dwldLink.click();
+        document.body.removeChild(dwldLink);
     }
     enviarContratoCorreo(){
         return new Promise ((resolve,reject)=>{

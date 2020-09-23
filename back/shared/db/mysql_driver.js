@@ -6,7 +6,8 @@ module.exports = {
                 host     : 'localhost',
                 user     : 'root',
                 password : 'Sakaunperikin24*',
-                database : 'ElRetiro',
+//                database : 'ElRetiro',
+                database : 'DBRetiro',
                 acquireTimeout: 100000000000000000
               });
             conexion.connect();

@@ -5,6 +5,7 @@ import { CatalogosService } from '../../shared/services/catalogos.service';
 import * as moment  from 'moment';
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
+import swal from 'sweetalert2';
 @Component({
     selector: 'app-catalogos',
     templateUrl: './catalogos.component.html',
@@ -14,7 +15,7 @@ import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 })
 export class CatalogosComponent implements OnInit {
     catalogoTerrenos;catalogoCliente;ingresoNuevo;datosVenta;mantenimientoNuevo;datosMantenimiento;ingresosExtraNuevo;
-    datosIngresosExtra =[];
+    datosIngresosExtra =[];verCarpetasClientes;
     clientesCatalogos;catalogoCuentas;
     frmSolicitud: FormGroup; // Formulario de solicitud
     frmCliente: FormGroup; // Formulario de solicitud
@@ -212,13 +213,63 @@ export class CatalogosComponent implements OnInit {
     }
     verCatalogoClientes(event){
         this._limpiarVistas();
-        this.catalogosService.obtenerDatosTodos().then(res=>{
-            this.vistaCentro = true;
-            this.catalogoCliente = true;
-        }).catch(err=>{
-            console.log('err',err);
+        this.vistaCentro = true;
+        this.catalogoCliente = true;
+        // this.catalogosService.obtenerDatosTodos().then(res=>{
+        //     this.vistaCentro = true;
+        //     this.catalogoCliente = true;
+        // }).catch(err=>{
+        //     console.log('err',err);
+        // });
+    }
+    correrCarpetasCliente(){
+        this._limpiarVistas();
+        return new Promise ((resolve,reject)=>{
+            swal({ title: 'PROCESAR CARPETAS',
+              html: `<b style="font-size: 20px; color: #c00;">Esta operación borra los datos actuales de los clientes y su financiamiento y genera datos nuevos en base a los documentos contenidos en el directorio de carga, no se puede deshacer esta operación</b><br> <b style="font-size:22px;">Introduce el password de administrador para confirmar</b>`,
+              input:'password',
+              type: 'warning',
+              showCancelButton: true,
+              cancelButtonColor:'#D33',
+              confirmButtonText: 'Confirmar'
+            }).then((result)=>{
+              if(result.value == 'ElRetiro87!'){
+//                  return Promise.resolve({});
+               return this.catalogosService.procesarCarpetasForzado();
+              }else if(result.value){
+                return Promise.reject({error:false,result: result.value});
+              }else{
+                return Promise.reject({error:true});
+              }
+            }).then((termino)=>{
+                this.verCatalogoClientes({ok:true});
+            }).catch((err)=>{
+                if(err.result){
+                    swal('Advertencia', `El password no es correcto`,'warning');
+                }
+                // else{
+                //     swal('Advertencia', `Ocurrio un error`,'warning');
+                // }
+            });
         });
     }
+    _confirmarModal(datos, datosAlert){
+        return new Promise ((resolve,reject)=>{
+          swal({ title: datosAlert.Titulo,
+            html: `<p class="">${datosAlert.Contenido}</p>`,
+            type: datosAlert.Tipo,
+            showCancelButton: true,
+            cancelButtonColor:'#D33',
+            confirmButtonText: datosAlert.Confirm
+          }).then((result)=>{
+            if(result.value){
+              return resolve(true);
+            }
+          }).catch((err)=>{
+            return reject(false);
+          });
+        });
+      }
     verDatosTodos(){
         this._limpiarVistas();
         this.catalogosService.obtenerDatosTodos().then(res=>{
@@ -243,10 +294,13 @@ export class CatalogosComponent implements OnInit {
         this.lotes.push({lote:'TODOS'});
         this.etapas.push({etapa:'TODOS'});
         this.estatusTodos.push({Estatus:'TODOS'});
+        console.log('datos',datos);
         if(datos){
             datos.forEach(dd=>{        
+                console.log('d',dd);
                 if(dd.Terrenos[0]){
                     dd.Terrenos.forEach(d=>{
+                        console.log('d',d);
                         let existePar = this.parcelas.find(pa=>pa.parcela == d['PARCELA']);
                         if(!existePar){
                             this.parcelas.push({parcela:d['PARCELA']});
@@ -499,7 +553,7 @@ export class CatalogosComponent implements OnInit {
     _limpiarVistas(){
         // this.datosTodosTotales  = [];
         // this.datosTodos  =  { Datos: [], Ordenes : {Saldo_credito:'',Saldo_certificado: '', Saldo_mantenimiento: '', Saldo_agua: ''}};
-        this.catalogoCuentas = this.vistaCentro = this.datosTodos = this.detalleCliente =  this.datosDetalle =  this.ingresoNuevo = this.mantenimientoNuevo = this.datosMantenimiento = this.catalogoTerrenos = this.catalogoCliente = false;
+        this.verCarpetasClientes = this.catalogoCuentas = this.vistaCentro = this.datosTodos = this.detalleCliente =  this.datosDetalle =  this.ingresoNuevo = this.mantenimientoNuevo = this.datosMantenimiento = this.catalogoTerrenos = this.catalogoCliente = false;
         this.panelVisualizar = '';
     }
 }

@@ -348,9 +348,12 @@ module.exports = class Catalogos {
     Obtener_datos_contrato(datos){
         return new Promise((resolve, reject)=>{
             if(datos.datosTerreno.IdTerreno){
-                let ruta_archivo = `${process.env.Shared}uploads/${datos.datosCliente.Nombre}/`;
-                let nombre_archivo =  `Contrato-parcela_${datos.datosTerreno.parcela}-lote_${datos.datosTerreno.lote}-etapa_${datos.datosTerreno.etapa}.html`;
-                let file = `${ruta_archivo}${nombre_archivo}`;
+                let compPath = `${datos.datosCliente.Carpeta}`;
+                let compNombre =  `Contrato-Lote_${datos.datosTerreno.Lote}-Etapa_${datos.datosTerreno.Etapa}.html`;
+
+                // let compPath = `${process.env.Shared}uploads/${datos.datosCliente.Nombre}/`;
+                // let compNombre =  `Contrato-parcela_${datos.datosTerreno.parcela}-lote_${datos.datosTerreno.lote}-etapa_${datos.datosTerreno.etapa}.html`;
+                let file = `${compPath}${compNombre}`;
                 if(fs.existsSync(file)){
                     fs.readFile(file,'utf8' ,(err, data) => {
                         if(err) {
@@ -551,6 +554,14 @@ module.exports = class Catalogos {
             return resolve({String:cont.toString('base64')});
         });
     }
+    Obtener_plantilla_clientes(datos){
+        return new Promise((resolve, reject) => {
+            let path = `./shared/Plantillas/FORMATO_GENERAL_CLIENTE.xlsx`;
+            let cont = fs.readFileSync(path);
+            return resolve({String:cont.toString('base64')});
+        });
+    }
+    
     Obtener_plantilla_gastos(datos){
         return new Promise((resolve, reject) => {
             let path = `./shared/Plantillas/Plantilla_gastos.xlsx`;
@@ -743,16 +754,16 @@ module.exports = class Catalogos {
                 fecha = (d.Fecha_contrato)?moment(d.Fecha_contrato).utc().format('YYYY-MM-DD'):null;                
             }
             let campos = ` Folio, Nombre, Direccion, Vendedor, Telefono, Contrato_firmado, Adeudo_terreno, Adeudo_mantenimientos, Adeudo_anualidades, Adeudo_enganche, Carpeta, Activo ${(fecha)?',Fecha_contrato':''}`;
-            let valores = `'CLI','${d.Nombre}','${d.Direccion}','${d.Vendedor}',${(d.Telefono)?`'${d.Telefono}'`:null},${(d.Contrato_firmado)?d.Contrato_firmado:0},${d.Adeudo_terreno},0,${d.Total_anualidad},${d.Total_enganche},'${path}/${d.Nombre}/${d.Nombre}.xlsx',1 ${(fecha)?`,'${fecha}'`:''}`;
+            ///${d.Nombre}.xlsx
+            let valores = `'CLI','${d.Nombre}','${d.Direccion}','${d.Vendedor}',${(d.Telefono)?`'${d.Telefono}'`:null},${(d.Contrato_firmado)?d.Contrato_firmado:0},${d.Adeudo_terreno},0,${d.Total_anualidad},${d.Total_enganche},'${path}${d.Nombre}/',1 ${(fecha)?`,'${fecha}'`:''}`;
             return Promise.resolve({}).then(res=>{
                 if(d.Nombre ){
                     console.log('////////////////////////////GUARDANDO DIRECTORIO Y DATOS DE CLIENTE: ',d.Nombre);
-
                         (!fs.existsSync(path))?fs.mkdirSync(path):'';
                         (!fs.existsSync(`${path}/${d.Nombre}`))?fs.mkdirSync(`${path}/${d.Nombre}`):'';
                         if(d.Dir ){
                             fs.copyFileSync(`${d.Dir}`, `${path}/${d.Nombre}/${d.Nombre}.xlsx`);
-                        }                    
+                        }
                     return this._ordenarQuery(conexion,`INSERT INTO Clientes (${campos}) VALUES (${valores});`)
                 }else{
                     return Promise.resolve({});
@@ -787,7 +798,7 @@ module.exports = class Catalogos {
                         let fecha = (a.Fecha && a.Fecha!= 'x'  && moment(a.Fecha).isValid())?moment(a.Fecha).utc().format('YYYY-MM-DD'):null;
                         let obs = (d.Observaciones)?`'${d.Observaciones}'`:null;
                         let fecha_p = (a.Fecha_pago  && a.Fecha_pago!= 'x'  && moment(a.Fecha_pago).isValid())?moment(a.Fecha_pago).utc().format('YYYY-MM-DD'):null;
-                        let campos = ` IdCliente, Num_pago, Cantidad, Saldo_restante, Pagado, Num_recibo, Firmado ${(obs)?`,Observacion`:''} ${(fecha)?',Fecha':''} ${(fecha_p)?',Fecha_pago':''} `;
+                        let campos = ` IdCliente, Num_pago, Cantidad, Saldo_restante, Pagado, Num_recibo, Firmado ${(obs)?`,Observaciones`:''} ${(fecha)?',Fecha':''} ${(fecha_p)?',Fecha_pago':''} `;
                         let valores = `${d.IdCliente},${a.Num_pago},${(a.Cantidad)?a.Cantidad:(!a.Pagado)?d.Mensualidad:a.Cantidad},${a.Saldo_restante},${(a.Pagado)?1:0},'${`${a.Num_recibo}`.split("'").join('')}',${(a.Firmado)?1:0} ${(obs)?`,'${obs}'`:''} ${(fecha)?`,'${fecha}'`:''} ${(fecha_p)?`,'${fecha_p}'`:''}`;
 //                        if(a.Cantidad){
                         if(Number.isInteger(a.Num_pago)){
@@ -805,7 +816,7 @@ module.exports = class Catalogos {
                         let fecha = (a.Fecha && a.Fecha!= 'x' && moment(a.Fecha).isValid() )?moment(a.Fecha).utc().format('YYYY-MM-DD'):null;
                         let obs = (d.Observaciones)?`'${d.Observaciones}'`:null;
                         let fecha_p = (a.Fecha_pago  && a.Fecha_pago!= 'x' && moment(a.Fecha_pago).isValid() )?moment(`${a.Fecha_pago}`).utc().format('YYYY-MM-DD'):null;
-                        let campos = ` IdCliente, Num_pago, Cantidad, Pagado, Num_recibo, Firmado ${(obs)?`,Observacion`:''} ${(fecha)?',Fecha':''} ${(fecha_p)?',Fecha_pago':''} `;
+                        let campos = ` IdCliente, Num_pago, Cantidad, Pagado, Num_recibo, Firmado ${(obs)?`,Observaciones`:''} ${(fecha)?',Fecha':''} ${(fecha_p)?',Fecha_pago':''} `;
                         let valores = `${d.IdCliente},${a.Num_pago},${(a.Cantidad)?a.Cantidad:(!a.Pagado)?d.Anualidad:a.Cantidad},${(a.Pagado)?1:0},'${`${a.Num_recibo}`.split("'").join('')}',${(a.Firmado)?1:0} ${(obs)?`,'${obs}'`:''} ${(fecha)?`,'${fecha}'`:''} ${(fecha_p)?`,'${fecha_p}'`:''}`;
                         if(Number.isInteger(a.Num_pago)){
                             Promesas_anualidades.push(this._ordenarQuery(conexion,`INSERT INTO Financiamiento_anualidades (${campos}) VALUES (${valores});`));
@@ -817,12 +828,29 @@ module.exports = class Catalogos {
                 }
                 return Promise.all(Promesas_anualidades);
             }).then(res=>{
+                let Promesas_ventas = [];
+                if(d.Ventas[0]){
+//                    console.log('ventas',d.Ventas);
+                    console.log('////////////////////////////GUARDANDO VENTAS ',d.Nombre);
+                    d.Ventas.forEach(a=>{
+                        let fecha = (a.Fecha && a.Fecha!= 'x' && moment(a.Fecha).isValid() )?moment(a.Fecha).utc().format('YYYY-MM-DD'):null;
+                        let obs = (d.Observaciones)?`'${d.Observaciones}'`:null;
+                        let campos = `Folio, Num_recibo, IdUsuario, IdCliente, IdTerreno, IdCuenta, Concepto, Tipo_venta, Forma_pago, Cliente, Auxiliar, Importe ${(obs)?`,Observaciones`:''} ${(fecha)?',Fecha':''} `;                       
+                        let valores = `'${a.Folio}','${`${a.Num_recibo}`.split("'").join('')}',0,${d.IdCliente},0,0,'${a.Tipo_venta}','${a.Tipo_venta}','Efectivo','${d.Nombre}','VEN',${a.Cantidad} ${(obs)?`,'${obs}'`:''} ${(fecha)?`,'${fecha}'`:''}`;
+                        if(a.Num_recibo){
+                            Promesas_ventas.push(this._ordenarQuery(conexion,`INSERT INTO Ventas (${campos}) VALUES (${valores});`));
+                        }
+                    });
+                }
+                return Promise.all(Promesas_ventas);                
+            }).then(res=>{
+                
 //                console.log('res',res);
 //                return resolve(res[0]);
                 return resolve({Cliente:d.Nombre,Error:0});
             }).catch(err=>{
 //                console.log('d',d);
-//                console.log('error',err);
+                console.log('error',err);
                 return resolve({Cliente:d.Nombre, Error: err});
             });
         });
@@ -841,7 +869,7 @@ module.exports = class Catalogos {
         return new Promise((resolve, reject) => {
             console.log('filtros',filtros);
             let condiciones = ` WHERE 1=1 `; 
-            condiciones += (filtros.Nombre)?` AND Nombre = '${filtros.Nombre}' `:``;
+            condiciones += (filtros.Nombre && filtros.Nombre != '')?` AND Nombre = '${filtros.Nombre}' `:``;
             //WHERE Nombre = '${d.Nombre}' 
             return this._ordenarQuery(conexion,`SELECT * FROM Clientes ${condiciones}; `).then(res=>{
                 Datos = res;
@@ -862,7 +890,14 @@ module.exports = class Catalogos {
                         d.Financiamiento = (deuda_terrenos[0])?deuda_terrenos.filter(o=>o.IdCliente == d.IdCliente):[];
                     });
                 }
-                return this._ordenarQuery(conexion,` SELECT * FROM Financiamiento_anualidades WHERE IdCliente IN (${ids_Clientes.slice(0,-1)}); `);
+                return this._ordenarQuery(conexion,` SELECT * FROM Mantenimientos WHERE IdCliente IN (${ids_Clientes.slice(0,-1)}); `);
+            }).then(deuda_mantenimientos=>{        
+                if(Datos[0]){
+                    Datos.forEach(d=>{
+                        d.Mantenimientos = (deuda_mantenimientos[0])?deuda_mantenimientos.filter(o=>o.IdCliente == d.IdCliente):[];
+                    });
+                }
+                return this._ordenarQuery(conexion,` SELECT * FROM Financiamiento_anualidades WHERE IdCliente IN (${ids_Clientes.slice(0,-1)}); `);                
             }).then(deuda_anualidades=>{
                 if(Datos[0]){
                     Datos.forEach(d=>{
@@ -920,6 +955,7 @@ module.exports = class Catalogos {
                 }
             });
          }
+         datosCliente.Ventas = this._dataGenericaVentas(datosCliente);
 //         console.log('datosCliente',datosCliente.Nombre);
         datosCliente.Total_enganche = (datosCliente.Total_enganche)?datosCliente.Total_enganche:0;
         datosCliente.Adeudo_terreno = (datosCliente.Adeudo_terreno)?datosCliente.Adeudo_terreno:0;
@@ -930,35 +966,37 @@ module.exports = class Catalogos {
         //                console.log('d',d);
         let activo_mensualidad = false;
         datosOrdenados.forEach(d=>{
-            if(d[1] == 'VENDEDOR'){ datosCliente.Vendedor = d[2]; }
-            if(d[1] == 'COMPRADOR'){ datosCliente.Nombre = `${d[2]}`.trim().toUpperCase(); }
-            if(d[1] == 'DIRECCIÓN'){ datosCliente.Direccion = d[2]; }
-            if(d[1] == 'TELÉFONO'){ datosCliente.Telefono = d[2]; }
-            if(d[1] == 'FECHA DE CONTRATO'){ datosCliente.Fecha_contrato = d[2]; }
-            if(d[1] == 'LOTE '){ datosCliente.Lotes = (`${d[2]}`.indexOf('Y') > -1)?`${d[2]}`.split('Y'):[`${d[2]}`]; }
-            if(d[1] == 'ETAPA'){ datosCliente.Etapas = (`${d[2]}`.indexOf('Y') > -1)?`${d[2]}`.split('Y'):[`${d[2]}`]; }
-            if(d[1] == 'TOTAL TERRENO'){ datosCliente.Adeudo_terreno = (d[2])?d[2].result:0; }
-            if(d[1] == 'FINANCIAMIENTO'){ datosCliente.Num_mensualidades = d[2]; }
-            if(d[1] == 'CONTRATO FIRMADO'){ datosCliente.Firmado = (d[2]=='P')?1:0; }
-            if(d[1] == 'ANUALIDAD'){ datosCliente.Contiene_anualidades = (d[2]=='P')?1:0; }
-            if(d[1] == 'ENGANCHE'){ datosCliente.Contiene_enganche = (d[2]=='P')?1:0; }
-            if(d[1] == 'MANTENIMIENTO'){ datosCliente.Contiene_mantenimiento = (d[2]=='P')?1:0; }
-
-            if(d[1] == 'TOTAL TERRENO' && d[4]== 'MENSUALIDAD' && d[7]== '# PAGOS' && d[21]== 'TOTAL ANUALIDAD'){
-                datosCliente.Total_terreno_original = d[2].result;
-                datosCliente.Mensualidad = d[5];
-                datosCliente.Num_pagos = d[8]; 
-                datosCliente.Total_anualidad = (d[22])?d[22].result:0; 
-                datosCliente.Anualidad = (`${d[24]}`.indexOf('Y') > -1)?`${d[24]}`.split('Y')[0]:d[24]; 
-                datosCliente.Num_pagos_anualidad = d[26]; 
-                datosCliente.Fecha_anualidad = d[27]; 
-                activo_mensualidad = true;
-            }else{
-                datosCliente.Total_anualidad = 0; 
-            }
-            if(activo_mensualidad){
-                datosCliente.Mensualidades.push(d);
-            }
+//            if(d[0]){
+                if(d[1] == 'VENDEDOR'){ datosCliente.Vendedor = `${d[2]}`.trim().toUpperCase(); }
+                if(d[1] == 'COMPRADOR'){ datosCliente.Nombre = `${d[2]}`.trim().toUpperCase(); }
+                if(d[1] == 'DIRECCIÓN'){ datosCliente.Direccion = d[2]; }
+                if(d[1] == 'TELÉFONO'){ datosCliente.Telefono = d[2]; }
+                if(d[1] == 'FECHA DE CONTRATO'){ datosCliente.Fecha_contrato = d[2]; }
+                if(d[1] == 'LOTE '){ datosCliente.Lotes = (`${d[2]}`.indexOf('Y') > -1)?`${d[2]}`.split('Y'):[`${d[2]}`]; }
+                if(d[1] == 'ETAPA'){ datosCliente.Etapas = (`${d[2]}`.indexOf('Y') > -1)?`${d[2]}`.split('Y'):[`${d[2]}`]; }
+                if(d[1] == 'TOTAL TERRENO'){ datosCliente.Adeudo_terreno = (d[2])?d[2].result:0; }
+                if(d[1] == 'FINANCIAMIENTO'){ datosCliente.Num_mensualidades = d[2]; }
+                if(d[1] == 'CONTRATO FIRMADO'){ datosCliente.Firmado = (d[2]=='P')?1:0; }
+                if(d[1] == 'ANUALIDAD'){ datosCliente.Contiene_anualidades = (d[2]=='P')?1:0; }
+                if(d[1] == 'ENGANCHE'){ datosCliente.Contiene_enganche = (d[2]=='P')?1:0; }
+                if(d[1] == 'MANTENIMIENTO'){ datosCliente.Contiene_mantenimiento = (d[2]=='P')?1:0; }
+//                console.log('d',d);
+                if(d[1] == 'TOTAL TERRENO' && d[4]== 'MENSUALIDAD' && d[7]== '# PAGOS' && d[21]== 'TOTAL ANUALIDAD'){
+                    datosCliente.Total_terreno_original = d[2].result;
+                    datosCliente.Mensualidad = d[5];
+                    datosCliente.Num_pagos = d[8]; 
+                    datosCliente.Total_anualidad = (d[22])?d[22].result:0; 
+                    datosCliente.Anualidad = (`${d[24]}`.indexOf('Y') > -1)?`${d[24]}`.split('Y')[0]:d[24]; 
+                    datosCliente.Num_pagos_anualidad = d[26]; 
+                    datosCliente.Fecha_anualidad = d[27]; 
+                    activo_mensualidad = true;
+                }else{
+                    datosCliente.Total_anualidad = 0; 
+                }
+                if(activo_mensualidad){
+                    datosCliente.Mensualidades.push(d);
+                }
+//            }
         });
         if(datosCliente.Lotes[0] && datosCliente.Etapas[0]){
             for(let i = 0; i < datosCliente.Lotes.length; i++){
@@ -967,6 +1005,65 @@ module.exports = class Catalogos {
         }
         datosCliente.Mensualidades.shift();datosCliente.Mensualidades.shift();
         return datosCliente;
+     }
+     _dataGenericaVentas(datos){
+//        console.log('datos',datos);
+        let Ventas = []; let F;
+        //FINANCIAMIENTOS
+        F = datos.Adeudos_clientes.filter(a=>a.Pagado == 1);
+        if(F[0]){
+            F.forEach(f=>{
+                f.Folio = 'VEN';
+                f.Tipo_venta = 'Financiamiento';
+                Ventas.push(f);
+            });
+        }
+        //ANUALIDADES
+        F = datos.Anualidades.filter(a=>a.Pagado == 1);
+        if(F[0]){
+            F.forEach(f=>{
+                f.Folio = 'ANU';
+                f.Tipo_venta = 'Anualidad';
+                Ventas.push(f);
+            });
+        }
+        //MANTENIMIENTOS
+        F = datos.Mantenimientos.filter(a=>a.Pagado == 1);
+        if(F[0]){
+            F.forEach(f=>{
+                f.Folio = 'MAN';
+                f.Tipo_venta = 'Mantenimiento';
+                Ventas.push(f);
+            });
+        }
+        //ENGANCHES
+        F = datos.Enganches.filter(a=>a.Pagado == 1);
+        if(F[0]){
+            F.forEach(f=>{
+                f.Folio = 'ENG';
+                f.Tipo_venta = 'Enganche';
+                Ventas.push(f);
+            });
+        }
+        //CERTIFICADOS
+        F = datos.Certificados.filter(a=>a.Pagado == 1);
+        if(F[0]){
+            F.forEach(f=>{
+                f.Folio = 'CER';
+                f.Tipo_venta = 'Certificado';
+                Ventas.push(f);
+            });
+        }
+        //AGUA
+        F = datos.Agua.filter(a=>a.Pagado == 1);
+        if(F[0]){
+            F.forEach(f=>{
+                f.Folio = 'AGU';
+                f.Tipo_venta = 'Agua';
+                Ventas.push(f);
+            });
+        }        
+        return Ventas;
      }
      _dataMensualidad(m){
         return {
@@ -1011,7 +1108,7 @@ module.exports = class Catalogos {
 
      }
      generar_carpetas_clientes(){
-        let Promesas = [];let DatosWork = [];
+        let Promesas = [];let DatosWork = []; let Datos;
         var mysql = require('mysql');
         var conexion = mysql.createConnection({
             host     : 'localhost',
@@ -1027,14 +1124,38 @@ module.exports = class Catalogos {
             let Prom_truncates = [this._ordenarQuery(conexion,`TRUNCATE Clientes;`),
             this._ordenarQuery(conexion,`TRUNCATE Financiamiento_anualidades;`),
             this._ordenarQuery(conexion,`TRUNCATE Financiamiento_terrenos;`),
+            this._ordenarQuery(conexion,`TRUNCATE Ventas;`),
+            this._ordenarQuery(conexion,`DELETE FROM Empleados WHERE Puesto = 'Vendedor';`),
             this._ordenarQuery(conexion,`TRUNCATE Terrenos;`)];
             return Promise.all(Prom_truncates).then(res=>{
                 return this._datosOrdenados(carpetasCliente);
             }).then(dat=>{
+                //console.log('data',dat);
+                Datos = dat;
+                let Vend = [];
+                if(Datos[0]){
+                    Datos.forEach(d=>{
+                        let existe =  Vend.find(v=>v.Vendedor == d.Data.Vendedor);
+                        if(!existe){
+                            Vend.push({Vendedor:d.Data.Vendedor});
+                        }
+                    });
+                }
+                let Prom_vend = []; 
+                let campos = `Nombre, Puesto, Fecha_registro`;
+                console.log('////// INICIA GUARDADO DE VENDEDORES');
+                if(Vend[0]){
+                    Vend.forEach(v=>{
+                        let valores = `'${v.Vendedor}','Vendedor', '${moment().format('YYYY-MM-DD HH:mm:ss')}' `;
+                        Prom_vend.push(this._ordenarQuery(conexion,`INSERT INTO Empleados (${campos}) VALUES (${valores});`));
+                    })
+                }
+                return Promise.all(Prom_vend);
+            }).then(vend=>{
 //                console.log('dat',dat);
                 let PromCli = [];
-                if(dat[0]){
-                    dat.forEach(d=>{
+                if(Datos[0]){
+                    Datos.forEach(d=>{
                         d.Data.Dir = d.Dir;
                         d.Data.Carpeta = d.Carpeta;
                         if(d.Data.Nombre){
@@ -1050,7 +1171,7 @@ module.exports = class Catalogos {
                 console.log('////// TERMINA GUARDADO DE CLIENTES');
                 return resolve(res);
             }).catch(err=>{
-//                console.log('err',err);
+                console.log('err',err);
                 return reject(err);
             });
         });
@@ -1085,7 +1206,7 @@ module.exports = class Catalogos {
             <h3>CONTRATO DE PROMESA DE COMPRA VENTA</h3>
             <p>
                 EN LA CIUDAD DE HERMOSILLO SONORA SIENDO LAS 10:00 HORAS DEL DIA 02 DE  AGOSTO  DE 2017   CELEBRAN: POR UNA PARTE LA C. LIDIA ALEJANDRA DUARTE MEDRANO   QUIEN BAJO PROTESTA DE DECIR VERDAD CELEBRA ESTE CONTRATO COMO POSESIONARIA  DEL POBLADO EL CARMEN MUNICIPIO DE HERMOSILLO COMO PROMITENTE VENDEDOR.
-                POR UNA SEGUNDA PARTE COMPARECE EL C. &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Nombre}</u></b> &nbsp;&nbsp;  QUIEN EN LO SUCESIVO SE LE DENOMINARA PROMITENTE COMPRADOR.
+                POR UNA SEGUNDA PARTE COMPARECE EL C. &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Nombre)?`${datosContrato.datosCliente.Nombre}`:`-`}</u></b> &nbsp;&nbsp;  QUIEN EN LO SUCESIVO SE LE DENOMINARA PROMITENTE COMPRADOR.
                 MANIFESTARON QUE TIENEN CONCERTADO UN CONTRATO DE PROMESA DE COMPRAVENTA MISMO QUE DEJAN FORMALIZADO AL TENOR DE LOS ANTECEDENTES, DECLARACIONES Y CLAUSULAS SIGUIENTES:
             </p>
             <h3>ANTECEDENTES </h3>
@@ -1103,46 +1224,46 @@ module.exports = class Catalogos {
             </p>
             <p>
                 <b>CUARTA:</b>
-                QUE CON FECHA 25  DE OCTUBRE  DE 2014 EN ASAMBLEA DE DELIMITACION, DESTINO Y ASIGNACION DE TIERRAS ( CERTIFICACION DE LA TIERRA INCORPORADA AL REGIMEN EJIDAL COMO AREA PARCELADA)  SE FORMALIZO LA CERTIFICACION DE LA MISMA CORRESPONDIENDOLE A LA LIDIA ALEJANDRA DUARTE MEDRANO  UNA PARCELA CON EL NUMERO ${datosContrato.datosTerreno.parcela} .-
+                QUE CON FECHA 25  DE OCTUBRE  DE 2014 EN ASAMBLEA DE DELIMITACION, DESTINO Y ASIGNACION DE TIERRAS ( CERTIFICACION DE LA TIERRA INCORPORADA AL REGIMEN EJIDAL COMO AREA PARCELADA)  SE FORMALIZO LA CERTIFICACION DE LA MISMA CORRESPONDIENDOLE A LA LIDIA ALEJANDRA DUARTE MEDRANO  UNA PARCELA CON EL NUMERO ${(datosContrato.datosTerreno.Parcela)?`${datosContrato.datosTerreno.Parcela}`:`-`} .-
             </p>
             <br>
 
             <h3>DECLARACIONES</h3>                    
             <p>
                 <b>PRIMERA:</b>
-                LA C. LIDIA ALEJANDRA DUARTE MEDRANO  DECLARA QUE ES TITULAR DE LA PARCELA  N°  ${datosContrato.datosTerreno.parcela} CON SUPERFICIE DE ${datosContrato.datosTerreno.Superficie} MTS. 2  UBICADO EN EL EJIDO EL CARMEN MUNICIPIO DE HERMOSILLO Y QUE SE LOCALIZA EN EL CONJUNTO “CAMPESTRE FAMILIAR EL RETIRO”, EN EL KILOMETRO 15.0 DE LA CARRETERA A SAN MIGUEL DE HORCASITAS. 
+                LA C. LIDIA ALEJANDRA DUARTE MEDRANO  DECLARA QUE ES TITULAR DE LA PARCELA  N°  ${(datosContrato.datosTerreno.Parcela)?`${datosContrato.datosTerreno.Parcela}`:`-`} CON SUPERFICIE DE ${(datosContrato.datosTerreno.Superficie)?`${datosContrato.datosTerreno.Superficie}`:`-`} MTS. 2  UBICADO EN EL EJIDO EL CARMEN MUNICIPIO DE HERMOSILLO Y QUE SE LOCALIZA EN EL CONJUNTO “CAMPESTRE FAMILIAR EL RETIRO”, EN EL KILOMETRO 15.0 DE LA CARRETERA A SAN MIGUEL DE HORCASITAS. 
             </p>                    
             
             <h3 class="text-right">HOJA NO.02 </h3>
             <p>
                 <b>SEGUNDA:</b>
-                LA C. LIDIA ALEJANDRA DUARTE MEDRANO, ACREDITA LA TITULARIDAD DE LA PARCELA NUMERO  ${datosContrato.datosTerreno.parcela}  CON SUPERFICIE ${datosContrato.datosTerreno.Superficie} MTS. CON CERTIFICADO PARCELARIO NÚMERO&nbsp;&nbsp;<b><u>${datosContrato.datosTerreno.parcela}</u></b> &nbsp;&nbsp; Y FOLIO: &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.NumIfe}</u></b> &nbsp;&nbsp; EXPEDIDO  POR EL REGISTRO AGRARIO NACIONAL .
+                LA C. LIDIA ALEJANDRA DUARTE MEDRANO, ACREDITA LA TITULARIDAD DE LA PARCELA NUMERO  ${(datosContrato.datosTerreno.Parcela)?`${datosContrato.datosTerreno.Parcela}`:`-`}  CON SUPERFICIE ${(datosContrato.datosTerreno.Superficie)?`${datosContrato.datosTerreno.Superficie}`:`-`} MTS. CON CERTIFICADO PARCELARIO NÚMERO&nbsp;&nbsp;<b><u>${(datosContrato.datosTerreno.Parcela)?`${datosContrato.datosTerreno.Parcela}`:`-`}</u></b> &nbsp;&nbsp; Y FOLIO: &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.NumIfe)?`${datosContrato.datosCliente.NumIfe}`:`-`}</u></b> &nbsp;&nbsp; EXPEDIDO  POR EL REGISTRO AGRARIO NACIONAL .
                 <br>
                 LAS PARTES DE COMUN ACUERDO SE SUJETAN A LAS CLAUSULAS SIGUIENTES:
             </p>
             <h3 class="text-center">CLÁUSULAS </h3>
             <p>
                 <b>PRIMERA:</b>
-                LA C. LIDIA ALEJANDRA DUARTE MEDRANO  ESTA FORMALIZANDO CONTRATO DE PROMESA DE COMPRAVENTA CON EL (LA) C.&nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Nombre}</u></b> &nbsp;&nbsp;  RESPECTO DE LA PARCELA NUMERO &nbsp;&nbsp;<b><u>${datosContrato.datosTerreno.parcela}</u></b> &nbsp;&nbsp; QUE SE UBICA EN EL EJIDO EL CARMEN MUNICIPIO DE HERMOSILLO Y SE LOCALIZA DENTRO DEL CONJUNTO “CAMPESTRE FAMILIAR EL RETIRO”, EN EL KILOMETRO 15.0 DE LA CARRETERA A SAN MIGUEL DE HORCASITAS. 
+                LA C. LIDIA ALEJANDRA DUARTE MEDRANO  ESTA FORMALIZANDO CONTRATO DE PROMESA DE COMPRAVENTA CON EL (LA) C.&nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Nombre)?`${datosContrato.datosCliente.Nombre}`:`-`}</u></b> &nbsp;&nbsp;  RESPECTO DE LA PARCELA NUMERO &nbsp;&nbsp;<b><u>${(datosContrato.datosTerreno.Parcela)?`${datosContrato.datosTerreno.Parcela}`:`-`}</u></b> &nbsp;&nbsp; QUE SE UBICA EN EL EJIDO EL CARMEN MUNICIPIO DE HERMOSILLO Y SE LOCALIZA DENTRO DEL CONJUNTO “CAMPESTRE FAMILIAR EL RETIRO”, EN EL KILOMETRO 15.0 DE LA CARRETERA A SAN MIGUEL DE HORCASITAS. 
             </p>
             <p>
                 <b>SEGUNDA:</b>
-                DESDE ESTE MOMENTO SEÑALAN LAS PARTES CONTRATANTES LA OBLIGACION DE LA PARTE PROMITENTE COMPRADORA DE PAGAR LA CANTIDAD DE $ 125,000.00  ( CIENTO VEINTICINCO MIL  PESOS  )   POR UNA SUPERFICIE DE  ${datosContrato.datosTerreno.Superficie} MTS. 2  
+                DESDE ESTE MOMENTO SEÑALAN LAS PARTES CONTRATANTES LA OBLIGACION DE LA PARTE PROMITENTE COMPRADORA DE PAGAR LA CANTIDAD DE $ 125,000.00  ( CIENTO VEINTICINCO MIL  PESOS  )   POR UNA SUPERFICIE DE  ${(datosContrato.datosTerreno.Superficie)?`${datosContrato.datosTerreno.Superficie}`:`-`} MTS. 2  
                 <br>
                 DICHA CANTIDAD SE CUBRIRA DE LA SIGUIENTE FORMA: PAGO INMEDIATO A LA FIRMA DE ESTE CONTRATO .
             </p>
             <p>
                 <b>TERCERA:</b>
-                SI POR ALGUNA RAZON EL(LA) C.&nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Nombre}</u></b> &nbsp;&nbsp; QUISIERE TRASPASAR O CEDER LA PARCELA NUMERO ${datosContrato.datosTerreno.parcela} , SE TENDRA QUE DAR PREVIO AVISO POR ESCRITO A LA C.LIDIA ALEJANDRA DUARTE MEDRANO , PARA QUE UNA VEZ CONCLUIDO EL PAGO TOTAL  SE TENGAN LOS DATOS ACUALIZADOS Y REALIZAR LA CESION DE DERECHOS A FAVOR DE LA PARTE PROMITENTE COMPRADORA Y O BIEN A QUIEN ESTA PERSONA ELIJA POR ASI CONVENIR A SUS INTERESES.-                        
+                SI POR ALGUNA RAZON EL(LA) C.&nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Nombre)?`${datosContrato.datosCliente.Nombre}`:`-`}</u></b> &nbsp;&nbsp; QUISIERE TRASPASAR O CEDER LA PARCELA NUMERO ${(datosContrato.datosTerreno.Parcela)?`${datosContrato.datosTerreno.Parcela}`:`-`} , SE TENDRA QUE DAR PREVIO AVISO POR ESCRITO A LA C.LIDIA ALEJANDRA DUARTE MEDRANO , PARA QUE UNA VEZ CONCLUIDO EL PAGO TOTAL  SE TENGAN LOS DATOS ACUALIZADOS Y REALIZAR LA CESION DE DERECHOS A FAVOR DE LA PARTE PROMITENTE COMPRADORA Y O BIEN A QUIEN ESTA PERSONA ELIJA POR ASI CONVENIR A SUS INTERESES.-                        
             </p>
             <p>
                 <b>CUARTA:</b>
-                LA C. LIDIA ALEJANDRA DUARTE MEDRANO  MANIFIESTA ESTAR REALIZANDO Y FORMALIZANDO ESTE CONTRATO DE PROMESA DE COMPRA-VENTA CON EL (LA)C. &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Nombre}</u></b> &nbsp;&nbsp; EL CUAL CULMINA EN CONVENIO DE CESION DE DERECHOS  A FAVOR DEL( DE LA )  C. &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Nombre}</u></b> &nbsp;&nbsp; NO TENIENDO NINGÚN INCONVENIENTE  LA C. LIDIA ALEJANDRA DUARTE MEDRANO  QUE EL CERTIFICADO PARCELARIO CORRESPONDIENTE SEA A NOMBRE DE LA PERSONA ANTES MENCIONADA,O A QUIEN ESTA SEÑALE  QUIEN SE HARÁ RESPONSABLE DE LOS PAGOS Y COSTOS DEL TRASLADO  ANTE LA DEPENDENCIA QUE CORRESPONDE .                        
+                LA C. LIDIA ALEJANDRA DUARTE MEDRANO  MANIFIESTA ESTAR REALIZANDO Y FORMALIZANDO ESTE CONTRATO DE PROMESA DE COMPRA-VENTA CON EL (LA)C. &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Nombre)?`${datosContrato.datosCliente.Nombre}`:`-`}</u></b> &nbsp;&nbsp; EL CUAL CULMINA EN CONVENIO DE CESION DE DERECHOS  A FAVOR DEL( DE LA )  C. &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Nombre)?`${datosContrato.datosCliente.Nombre}`:`-`}</u></b> &nbsp;&nbsp; NO TENIENDO NINGÚN INCONVENIENTE  LA C. LIDIA ALEJANDRA DUARTE MEDRANO  QUE EL CERTIFICADO PARCELARIO CORRESPONDIENTE SEA A NOMBRE DE LA PERSONA ANTES MENCIONADA,O A QUIEN ESTA SEÑALE  QUIEN SE HARÁ RESPONSABLE DE LOS PAGOS Y COSTOS DEL TRASLADO  ANTE LA DEPENDENCIA QUE CORRESPONDE .                        
             </p>
             <h3 class="text-right">HOJA NO.03 </h3>
             <p>
                 <b>QUINTA:</b>
-                CONVIENEN AMBAS PARTES QUE EL(LA) C. &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Nombre}</u></b> &nbsp;&nbsp; PAGARÁ EL CONTRATO DE AGUA A LA C. LIDIA ALEJANDRA DUARTE MEDRANO   UNA VEZ INSTALADA LA TOMA DE AGUA EN SU TERRENO, EL(LA)  C.&nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Nombre}</u></b> &nbsp;&nbsp; SOLO UTILIZARA ESTE SERVICIO DE SUMINISTRO DE AGUA EN LA PARCELA  YA ESPECIFICADA, HACIENDO UN USO ADECUADO DEL AGUA PARA EL CONSUMO MODERADO DE LAS NECESIDADES QUE REQUIERE UN TERRENO CAMPESTRE DENTRO DE LAS INSTALACIONES DE CAMPESTRE FAMILIAR “ EL RETIRO ” , POR NINGUN MOTIVO SE PERMITIRA DESPLAZAR EL SUMINISTRO DE AGUA A OTRO LUGAR QUE NO SEA EL MENCIONADO EN ESTE CONTRATO, EN CASO CONTRARIO SE RACIONARA O SUSPENDERA DICHO SUMINISTRO , COBRANDOSE UNA CUOTA POR RECONECCION. EL PAGO DE CONTRATO DE AGUA SE REALIZARÁ EN LAS OFICINAS GENERALES A MÁS TARDAR 30 DÍAS DESPUÉS DE SU INSTALACIÓN, ASI COMO UN PAGO SEMESTRAL POR MANTENIMIENTO.
+                CONVIENEN AMBAS PARTES QUE EL(LA) C. &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Nombre)?`${datosContrato.datosCliente.Nombre}`:`-`}</u></b> &nbsp;&nbsp; PAGARÁ EL CONTRATO DE AGUA A LA C. LIDIA ALEJANDRA DUARTE MEDRANO   UNA VEZ INSTALADA LA TOMA DE AGUA EN SU TERRENO, EL(LA)  C.&nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Nombre)?`${datosContrato.datosCliente.Nombre}`:`-`}</u></b> &nbsp;&nbsp; SOLO UTILIZARA ESTE SERVICIO DE SUMINISTRO DE AGUA EN LA PARCELA  YA ESPECIFICADA, HACIENDO UN USO ADECUADO DEL AGUA PARA EL CONSUMO MODERADO DE LAS NECESIDADES QUE REQUIERE UN TERRENO CAMPESTRE DENTRO DE LAS INSTALACIONES DE CAMPESTRE FAMILIAR “ EL RETIRO ” , POR NINGUN MOTIVO SE PERMITIRA DESPLAZAR EL SUMINISTRO DE AGUA A OTRO LUGAR QUE NO SEA EL MENCIONADO EN ESTE CONTRATO, EN CASO CONTRARIO SE RACIONARA O SUSPENDERA DICHO SUMINISTRO , COBRANDOSE UNA CUOTA POR RECONECCION. EL PAGO DE CONTRATO DE AGUA SE REALIZARÁ EN LAS OFICINAS GENERALES A MÁS TARDAR 30 DÍAS DESPUÉS DE SU INSTALACIÓN, ASI COMO UN PAGO SEMESTRAL POR MANTENIMIENTO.
             </p>
             <p>
                 <b>SEXTA:</b>
@@ -1150,7 +1271,7 @@ module.exports = class Catalogos {
             </p>
             <p>
                 <b>SEPTIMA:</b>
-                LA C.LIDIA ALEJANDRA DUARTE MEDRANO  ENTREGA A LA CELEBRACION DEL PRESENTE INSTRUMENTO LA POSESIÓN FORMAL, MATERIAL Y JURIDICA DEL INMUEBLE DESCRITO EN LA DECLARACIÓNES DE ESTE CONTRATO DE PROMESA DE COMPRA-VENTA AL(A LA ) C. &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Nombre}</u></b> &nbsp;&nbsp; QUIEN EN ESTE MISMO ACTO LA RECIBE DE CONFORMIDAD.
+                LA C.LIDIA ALEJANDRA DUARTE MEDRANO  ENTREGA A LA CELEBRACION DEL PRESENTE INSTRUMENTO LA POSESIÓN FORMAL, MATERIAL Y JURIDICA DEL INMUEBLE DESCRITO EN LA DECLARACIÓNES DE ESTE CONTRATO DE PROMESA DE COMPRA-VENTA AL(A LA ) C. &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Nombre)?`${datosContrato.datosCliente.Nombre}`:`-`}</u></b> &nbsp;&nbsp; QUIEN EN ESTE MISMO ACTO LA RECIBE DE CONFORMIDAD.
             </p>
             <p>
                 <b>OCTAVA:</b>
@@ -1166,7 +1287,7 @@ module.exports = class Catalogos {
             </p>
             <p>
                 <b>DECIMA PRIMERA:</b>
-                LA C. LIDIA ALEJANDRA DUARTE MEDRANO   PROMITENTE VENDEDOR MANIFIESTA QUE EN ESTA OCACION ESTA REALIZANDO Y FORMALIZANDO ESTE CONTRATO DE PROMESA DE COMPRAVENTA CON EL (LA)C. &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Nombre}</u></b> &nbsp;&nbsp; COMO PROMITENTE COMPRADOR QUE CULMINARA EN CONVENIO DE CESION DE DERECHOS PARCELARIOS A FAVOR DE EL(DE LA ) C.&nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Nombre}</u></b> &nbsp;&nbsp; No TENIENDO NINGUN INCONVENIENTE LA C.LIDIA ALEJANDRA DUARTE MEDRANO QUE LA ENAJENACION CORRESPONDIENTE SEA A NOMBRE DEL ANTES SEÑALADO SIENDO LA PARTE PROMITENTE COMPRADORA QUIEN SE HARA RESPONSABLE DE LOS PAGOS Y COSTOS DEL TRASLADO ANTE LA DEPENDENCIA QUE CORRESPONDA, SIENDO IMPORTANTE SEÑALAR QUE SE DA EL CASO DE INEXISTENCIA DE LAS PARTES  POR EL CASO DE FALLECIMIENTO , LAS PARTES  QUE PARTICIPAN    SOLICITAN QUE  ESTE CONTRATO SEA RESPETADO EN TODOS SUS TERMINOS Y CONDICIONES DEBIENDO CULMINAR  A FAVOR DE QUIENES EN SU MOMENTO DEMUESTREN TENER DEREHO A ELLO CON ARREGLO A LA LEY .-
+                LA C. LIDIA ALEJANDRA DUARTE MEDRANO   PROMITENTE VENDEDOR MANIFIESTA QUE EN ESTA OCACION ESTA REALIZANDO Y FORMALIZANDO ESTE CONTRATO DE PROMESA DE COMPRAVENTA CON EL (LA)C. &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Nombre)?`${datosContrato.datosCliente.Nombre}`:`-`}</u></b> &nbsp;&nbsp; COMO PROMITENTE COMPRADOR QUE CULMINARA EN CONVENIO DE CESION DE DERECHOS PARCELARIOS A FAVOR DE EL(DE LA ) C.&nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Nombre)?`${datosContrato.datosCliente.Nombre}`:`-`}</u></b> &nbsp;&nbsp; No TENIENDO NINGUN INCONVENIENTE LA C.LIDIA ALEJANDRA DUARTE MEDRANO QUE LA ENAJENACION CORRESPONDIENTE SEA A NOMBRE DEL ANTES SEÑALADO SIENDO LA PARTE PROMITENTE COMPRADORA QUIEN SE HARA RESPONSABLE DE LOS PAGOS Y COSTOS DEL TRASLADO ANTE LA DEPENDENCIA QUE CORRESPONDA, SIENDO IMPORTANTE SEÑALAR QUE SE DA EL CASO DE INEXISTENCIA DE LAS PARTES  POR EL CASO DE FALLECIMIENTO , LAS PARTES  QUE PARTICIPAN    SOLICITAN QUE  ESTE CONTRATO SEA RESPETADO EN TODOS SUS TERMINOS Y CONDICIONES DEBIENDO CULMINAR  A FAVOR DE QUIENES EN SU MOMENTO DEMUESTREN TENER DEREHO A ELLO CON ARREGLO A LA LEY .-
             </p>
             <h3 class="text-right">HOJA NO.04 </h3>
             <h3 class="text-center">PERSONALIDAD </h3>
@@ -1175,9 +1296,9 @@ module.exports = class Catalogos {
             </p>
             <h3 class="text-center">GENERALES DE LOS DECLARANTES</h3>
             <p class="text-center">
-                    LA C.LIDIA ALEJANDRA DUARTE MEDRANO   MANIFESTO POR SUS GENERALES SER MEXICANO POR NACIMIENTO  E HIJA DE PADRES MEXICANOS , SOLTERA   POSESIONARIA   ORIGINARIO  DE    HERMOSILLO  ,  SONORA   , NACIDO  EL DÍA  06 DE AGOSTO DE 1990, QUIEN SE IDENTIFICO CON  CREDENCIAL DE ELECTOR FOLIO   &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.NumIfe}</u></b> &nbsp;&nbsp; CON DOMICILIO CONOCIDO EJIDO EL ZACATON , MUNICIPIO DE HERMOSILLO .
+                    LA C.LIDIA ALEJANDRA DUARTE MEDRANO   MANIFESTO POR SUS GENERALES SER MEXICANO POR NACIMIENTO  E HIJA DE PADRES MEXICANOS , SOLTERA   POSESIONARIA   ORIGINARIO  DE    HERMOSILLO  ,  SONORA   , NACIDO  EL DÍA  06 DE AGOSTO DE 1990, QUIEN SE IDENTIFICO CON  CREDENCIAL DE ELECTOR FOLIO   &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.NumIfe)?`${datosContrato.datosCliente.NumIfe}`:`-`}</u></b> &nbsp;&nbsp; CON DOMICILIO CONOCIDO EJIDO EL ZACATON , MUNICIPIO DE HERMOSILLO .
                     <br>
-                    EL (LA)C.&nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Nombre}</u></b> &nbsp;&nbsp;  MANIFESTO POR SUS GENERALES SER MEXICANO POR NACIMIENTO E HIJO DE PADRES MEXICANOS ORIGINARIO DE: &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Origen}</u></b> &nbsp;&nbsp; NACIDO EL DIA &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Fecha_nacimiento}</u></b> &nbsp;&nbsp; IDENTIFICANDOSE CON CREDENCIAL DE ELECTOR FOLIO NUMERO &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.NumIfe}</u></b> &nbsp;&nbsp;, CON DOMICILIO EN: &nbsp;&nbsp;<b><u>${datosContrato.datosCliente.Direccion}</u></b> &nbsp;&nbsp;.-
+                    EL (LA)C.&nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Nombre)?`${datosContrato.datosCliente.Nombre}`:`-`}</u></b> &nbsp;&nbsp;  MANIFESTO POR SUS GENERALES SER MEXICANO POR NACIMIENTO E HIJO DE PADRES MEXICANOS ORIGINARIO DE: &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Origen)?`${datosContrato.datosCliente.Origen}`:`-`}</u></b> &nbsp;&nbsp; NACIDO EL DIA &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Fecha_nacimiento)?`${datosContrato.datosCliente.Fecha_nacimiento}`:`-`}</u></b> &nbsp;&nbsp; IDENTIFICANDOSE CON CREDENCIAL DE ELECTOR FOLIO NUMERO &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.NumIfe)?`${datosContrato.datosCliente.NumIfe}`:`-`}</u></b> &nbsp;&nbsp;, CON DOMICILIO EN: &nbsp;&nbsp;<b><u>${(datosContrato.datosCliente.Direccion)?`${datosContrato.datosCliente.Direccion}`:`-`}</u></b> &nbsp;&nbsp;.-
                     <br>
                     LEIDO QUE FUE EL PRESENTE CONTRATO POR LOS PARTICIPANTES LO RATIFICAN Y LO FIRMAN, MANIFESTANDO QUE EN LA CELEBRACION DEL MISMO NO EXISTE DOLO O VICIOS OCULTOS, ASI MISMO SEÑALA NO HABER SIDO COACCIONADOS DE MANERA ALGUNA PARA SU CELEBRACION, ARGUMENTANDO QUE EL PRESENTE DOCUMENTO ES LA REPRESENTACION ESCRITA DE SU VOLUNTAD, POR LO QUE LO FIRMAN DE CONFORMIDAD ABAJO.
                     <br><br>

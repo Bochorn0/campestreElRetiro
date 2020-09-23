@@ -18,10 +18,12 @@ import * as moment from 'moment';
 })
 export class VentaComponent implements OnInit {
     @ViewChild('ModificacionModal')ModificacionModal;
+    @ViewChild('AltaModal')AltaModal;
+    @ViewChild('NuevoMovimientoModal')NuevoMovimientoModal;
     frmSolicitud: FormGroup; // Formulario de solicitud
     //
     datosCliente;mensualidadesPendientes;mensualidad;nombresClientes;datosTerreno;datosMensualidad;
-    VentaCompleta;anualidadesPendientes;anualidad;terrenoSelect;activeModal;modalDatos;
+    VentaCompleta;anualidadesPendientes;anualidad;terrenoSelect;activeModal;modalDatos;movimientoNuevo =false;
     //Formulario ingresos
     clientesTodos = [];today;terrenos;
     folIngreso;folRecibo;tipoIngreso;conceptoIngreso;etapaIngreso;abonoVenta;totalVenta;
@@ -73,16 +75,10 @@ export class VentaComponent implements OnInit {
                 });
                 console.log('data',data);
                 this.frmSolicitud.controls["File"].setValue(null);
+                this.movimientoCliente(data);
                 let datosModal2;
-                if(!data.DatosCliente.Nombre){
-                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Este cliente no existe actualmente, deseas darlo de alta?`, Tipo:'warning', Confirm: 'Si guardar'}  ;
-                }else if(data.Modificaciones){
-                    this.abrirModalModificacion(this.ModificacionModal);
-//                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Hay actualizaciones en el nuevo archivo, deseas remplazarlo ? `, Tipo:'warning', Confirm: 'Si remplazar'}  ;
-                }else{
-                    datosModal2 =  {Titulo: 'Información',Contenido:` Se han Obtenido los detalles del cliente "${data.DatosCliente.Nombre}", Deseas Ingresar un Nuevo movimiento ?  `, Tipo:'success', Confirm: 'Si'}  ;
-                }
-//                return this._confirmarModal({},datosModal2);
+
+//                return this._confirmarModal({},datosModal2); 
             }).then(res=>{
                 console.log('res',res);
             }).catch(error => {
@@ -91,8 +87,26 @@ export class VentaComponent implements OnInit {
             });
         }
     }
-    abrirModalModificacion(content){
-        this.modalDatos = {Tipo: 'Datos Modificaciones', Clase: 'bg-info', Titulo: 'Datos modificaciones'} ;
+    movimientoCliente(data){
+        if(!data.Modificaciones && !data.DatosCliente.Nombre ){
+//                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Este cliente no existe actualmente, deseas darlo de alta?`, Tipo:'warning', Confirm: 'Si guardar'}  ;
+            this.modalDatos = {Tipo: ' Alta Cliente ', Clase: 'bg-info', Titulo: 'Alta de Cliente '} ;
+            this.abrirModal(this.AltaModal);
+        }else if(data.Modificaciones){
+            this.modalDatos = {Tipo: 'Datos Modificaciones', Clase: 'bg-info', Titulo: 'Cambios detectados'} ;
+            this.abrirModal(this.ModificacionModal);
+//                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Hay actualizaciones en el nuevo archivo, deseas remplazarlo ? `, Tipo:'warning', Confirm: 'Si remplazar'}  ;
+        }else{
+            this.movimientoNuevo = true;
+            this.datosCliente =  data.DatosCliente;
+            // let datosModal2 =  {Titulo: 'Advertencia',Contenido:`Se cargo la configuración del`, Tipo:'warning', Confirm: 'Si guardar'}  ;
+            // return this._confirmarModal({},datosModal2); 
+            // this.modalDatos = {Tipo: 'Movimiento Nuevo', Clase: 'bg-info', Titulo: 'Nuevo Movimiento'} ;
+            // this.abrirModal(this.NuevoMovimientoModal);
+//                    datosModal2 =  {Titulo: 'Información',Contenido:` Se han Obtenido los detalles del cliente "${data.DatosCliente.Nombre}", Deseas Ingresar un Nuevo movimiento ?  `, Tipo:'success', Confirm: 'Si'}  ;
+        }
+    }
+    abrirModal(content){
         this.activeModal = this.modalService.open(content, {windowClass: 'modal-holder', size: 'lg'});
     }
     importarArchivo($event){
@@ -208,6 +222,17 @@ export class VentaComponent implements OnInit {
             swal('Error','Ocurrio un problema al obtener el folio automatico, solicita apoyo en soporte','error');
         })
     }
+    aprobarCambios(){
+        if(this.datosModificacion){
+            return this.ventasService.aprobar_movimientos_nuevos(this.datosModificacion).then(res=>{
+                let data = JSON.parse(JSON.stringify(res));
+                console.log('data',data);
+            }).catch(error => {
+                console.log('error',error);
+                this.frmSolicitud.controls["File"].setValue(null);
+            });            
+        }
+    }
     ngOnInit() {
         if(this.datosClienteVenta){
             this.datosCliente =  this.datosClienteVenta;
@@ -261,15 +286,7 @@ export class VentaComponent implements OnInit {
                 let data = JSON.parse(JSON.stringify(res));
                 console.log('res',res);
                 this.frmSolicitud.controls["File"].setValue(null);
-                let datosModal2;
-                if(!data.DatosCliente.Nombre){
-                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Este cliente no existe actualmente, deseas darlo de alta?`, Tipo:'warning', Confirm: 'Si guardar'}  ;
-                }else if(data.Modificaciones){
-                    datosModal2 =  {Titulo: 'Advertencia',Contenido:`Hay actualizaciones en el nuevo archivo, deseas remplazarlo ? `, Tipo:'warning', Confirm: 'Si remplazar'}  ;
-                }else{
-                    datosModal2 =  {Titulo: 'Información',Contenido:` Se han Obtenido los detalles del cliente "${data.DatosCliente.Nombre}", Deseas Ingresar un Nuevo movimiento ?  `, Tipo:'success', Confirm: 'Si'}  ;
-                }
-                return this._confirmarModal({},datosModal2);
+                this.movimientoCliente(data);
             }).then(res=>{
                 console.log('res',res);
             }).catch(error => {
@@ -400,7 +417,7 @@ export class VentaComponent implements OnInit {
         this.idTerreno = 0;
         this.mensualidad = this.totalVenta = this.formaPago  = this.tipoIngreso  = 0;
         this.conceptoIngreso =  this.etapaIngreso =  '';
-        this.obtenerClientesActivos();
+        //this.obtenerClientesActivos();
         this.VentaCompleta = false;
         
     }

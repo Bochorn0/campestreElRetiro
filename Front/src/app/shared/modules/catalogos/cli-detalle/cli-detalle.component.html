@@ -1,0 +1,266 @@
+
+<div class="row" >
+    <div class="col-0 col-sm-3"></div>
+    <div class="col-0 col-sm-3"></div>
+    <div class="col-6 col-sm-3 text-center">
+        <div class="form-group">
+            <button (click)="volverTodosClientes();" class="btn btn-dark w-100"><i class="fa fa-book"></i> | Ver Todos  </button>
+        </div>
+    </div>
+    <div class="col-6 col-sm-3 text-center">
+        <div class="form-group">
+            <button class="btn btn-warning text-white w-100 pull-right" (click)="obtenerPlantillaClientes();"><i class="fa fa-pencil"></i> | Editar Cliente</button>
+        </div>
+    </div>
+</div>    
+<div class="col-12">
+    <ngb-tabset>
+        <ngb-tab>
+            <ng-template ngbTabTitle ><b class="text-info">Datos del Cliente</b> </ng-template>
+            <ng-template ngbTabContent> 
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 style="color: #000;">Datos Basicos </h4>
+                            </div>
+                            <div class="card-body row text-left">
+                                <div class="col-12">
+                                    <h4> {{datosDetalles.Folio}}{{datosDetalles.IdCliente}} - {{ datosDetalles.Nombre}} </h4>
+                                    <br><br>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="label-form"><i class="fa fa-user"></i> Vendedor :</label>
+                                         {{ datosDetalles.Vendedor}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="label-form"><i class="fa fa-phone"></i> Teléfono :</label>
+                                         {{ datosDetalles.Telefono}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form"><i class="fa fa-check-circle"></i> Contrato Firmado :</label>
+                                         {{ datosDetalles.Contrato_firmado}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form"><i class="fa fa-calendar"></i> Fecha Contrato :</label>
+                                         {{ datosDetalles.Fecha_contrato | date}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="label-form"><i class="fa fa-adress-book"></i> Direccion :</label>
+                                         {{ datosDetalles.Direccion}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form"> Adeudo Terreno :</label>
+                                        $ {{ datosDetalles.Adeudo_terreno | number}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form"> Adeudo Anualidades :</label>
+                                        $ {{ datosDetalles.Adeudo_anualidades | number}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form"> Adeudo Mantenimiento :</label>
+                                        $ {{ datosDetalles.Adeudo_mantenimientos | number}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label class="label-form"> Adeudo Enganche :</label>
+                                        $ {{ datosDetalles.Adeudo_enganche | number}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <label class="label-form"><i class="fa fa-commenting"></i> Observaciones:</label>
+                                     {{ datosDetalles.Observaciones}}
+                                </div> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </ngb-tab>
+        <ngb-tab *ngIf="datosDetalles.Terrenos[0]">
+            <ng-template ngbTabTitle ><b class="text-purple">Terrenos</b> </ng-template>
+            <ng-template ngbTabContent>
+                <div class="row" *ngIf="datosDetalles.Terrenos[0]">
+                    <div class="col-12"><br></div>
+                    <div class="col-12 col-md-6 text-center" *ngFor="let a of datosDetalles.Terrenos">
+                        <div class="card mb-3">
+                            <div class="card-header bg-{{(a.Color)?a.Color:'default'}}" style="color:#000 !important;">
+                                <i class="fa fa-map"></i> 
+                                {{a.Folio}}
+                            </div>
+                            <div class="card-body">
+                                <span><b>Estatus: </b>{{a.Estado}}</span>
+                                <br>
+                                <table class="table" >
+                                    <tr style="background-color:#999;"><th>Etapa:</th><th>Lote:</th><th>Parcela:</th></tr>
+                                    <tr><td>{{a.Etapa}}</td><td>{{a.Lote}}</td><td>{{a.Parcela}}</td></tr>
+                                </table>
+                                <span class="text-muted">
+                                    <b style="color:#000 !important">
+                                        <i class="fa fa-address-book"></i> Original:
+                                    </b>
+                                    {{a.Original}}
+                                </span>
+                                <br>
+                                <span class="text-muted">
+                                    <b style="color:#000 !important">
+                                        <i class="fa fa-address-book"></i> Actual:
+                                    </b>
+                                    {{a.Actual}}
+                                </span>
+                                <!-- <span class="text-muted"><i class="fa fa-address-book"></i> Actual: {{a.Pertenece}}</span> -->
+                                <br>
+                                <span style="font-size: 15px;"><i class="fa fa-chart-area"></i> Superficie : {{a.Superficie}} |  Asignado : <i class="fa fa-{{(!a.Asignado)?'times-circle text-danger':'check-circle text-success'}}"></i> </span>
+                                <br/><br/>
+                                <div class="row card-footer">
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn btn-info w-100" (click)="terrenoActual = a; abrirModal(modalTerrenosLat);  modalDatos = {Tipo: 'Modal Terrenos', Clase: 'bg-info', Titulo: 'Mapa del Terreno'};"><i class="fa fa-map"></i> | Mapa </button>
+                                        <br><br>
+                                    </div>
+                                    <div class="col-12 col-sm-6">
+                                        <button class="btn bg-warning text-center w-100" (click)="terrenoActual = a; obtenerContratoTerreno(a);"> <b><i class="fa fa-file"></i> | Contrato</b></button>
+                                    </div>
+                                    <!-- <div class="col-6">
+                                        <button class="btn bg-danger text-center w-100" (click)="confirmarBorrarTerreno(a)"> <b><i class="fa fa-times"></i> | Editar</b></button>                                                
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" *ngIf="contenidoContrato">
+                    <hr>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="label-form"> &nbsp;</label>
+                            <button class="btn bg-warning w-100 pull-right" (click)="enviarContratoCorreo();"><i class="fa fa-envelope"></i> | Correo</button>
+                        </div>                                        
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="label-form"> &nbsp;</label>
+                            <button class="btn btn-primary w-100 pull-right" (click)="guardarContrato();"><i class="fa fa-save"></i> | Guardar</button>
+                        </div>                                        
+                    </div>
+                    <div class="col-12" [froalaEditor] [(froalaModel)]="contenidoContrato" ></div>                                    
+                </div>
+            </ng-template>
+        </ngb-tab>
+        <ngb-tab *ngIf="datosDetalles.Financiamiento[0]">
+            <ng-template ngbTabTitle ><b class="text-success">Financiamiento</b> </ng-template>
+            <ng-template ngbTabContent>
+                <div class="col-12"><br></div>
+                <div class="row" *ngIf="datosDetalles.Financiamiento[0]">
+                    <div class="col-12">
+                        <table class="table table-striped">
+                            <tr><th>Num Pago</th><th>Fecha</th><th>Cantidad</th><th>Restante</th><th>Pagado</th><th>Fecha Pago</th><th>Recibo</th><th>Firma</th><th>Observaciones</th></tr>
+                            <tr *ngFor="let f of datosDetalles.Financiamiento | paginate: { itemsPerPage: 10, currentPage: pageFin, id: 'fin_' };">
+                                <td>{{f.Num_pago}}</td>
+                                <td>{{(f.Fecha)?f.Fecha.split('T')[0]:'-'}}</td>
+                                <td>{{f.Cantidad}}</td>
+                                <td>{{f.Saldo_restante}}</td>
+                                <td><i class="fa fa-{{(f.Pagado)?'check-circle text-success':'times-circle text-danger'}}"></i></td>
+                                <td>{{(f.Fecha_pago)?f.Fecha_pago.split('T')[0]:'-'}}</td>
+                                <td>{{(f.Num_recibo)?f.Num_recibo:'-'}}</td>
+                                <td><i class="fa fa-{{(f.Firmado)?'check-circle text-success':'times-circle text-danger'}}"></i></td>
+                                <td>{{f.Observaciones}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-12 text-right">
+                        <pagination-controls (pageChange)="pageFin = $event" id="fin_"></pagination-controls>
+                    </div>
+                </div>
+            </ng-template>
+        </ngb-tab>
+        <ngb-tab *ngIf="datosDetalles.Anualidades[0]">
+            <ng-template ngbTabTitle ><b class="text-warning">Anualidades</b> </ng-template>
+            <ng-template ngbTabContent>
+                <div class="col-12"><br></div>
+                <div class="row" *ngIf="datosDetalles.Anualidades[0]">
+                    <div class="col-12">
+                        <table class="table table-striped">
+                            <tr><th>Num Pago</th><th>Fecha</th><th>Cantidad</th><th>Restante</th><th>Pagado</th><th>Fecha Pago</th><th>Recibo</th><th>Firma</th><th>Observaciones</th></tr>
+                            <tr *ngFor="let f of datosDetalles.Anualidades | paginate: { itemsPerPage: 10, currentPage: pageAnu, id: 'anu_' };">
+                                <td>{{f.Num_pago}}</td>
+                                <td>{{(f.Fecha)?f.Fecha.split('T')[0]:'-'}}</td>
+                                <td>{{f.Cantidad}}</td>
+                                <td>{{f.Saldo_restante}}</td>
+                                <td><i class="fa fa-{{(f.Pagado)?'check-circle text-success':'times-circle text-danger'}}"></i></td>
+                                <td>{{(f.Fecha_pago)?f.Fecha_pago.split('T')[0]:'-'}}</td>
+                                <td>{{(f.Num_recibo)?f.Num_recibo:'-'}}</td>
+                                <td><i class="fa fa-{{(f.Firmado)?'check-circle text-success':'times-circle text-danger'}}"></i></td>
+                                <td>{{f.Observaciones}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-12 text-right">
+                        <pagination-controls (pageChange)="pageAnu = $event" id="anu_"></pagination-controls>
+                    </div>
+                </div>
+            </ng-template>
+        </ngb-tab>
+        <ngb-tab *ngIf="datosDetalles.Mantenimientos[0]">
+            <ng-template ngbTabTitle ><b class="text-danger">Mantenimientos</b> </ng-template>
+            <ng-template ngbTabContent>
+                <div class="col-12"><br></div>
+                <div class="row" *ngIf="datosDetalles.Mantenimientos[0]">
+                    <div class="col-12">
+                        <table class="table table-striped">
+                            <tr><th>Num Pago</th><th>Fecha</th><th>Cantidad</th><th>Restante</th><th>Pagado</th><th>Fecha Pago</th><th>Recibo</th><th>Firma</th><th>Observaciones</th></tr>
+                            <tr *ngFor="let f of datosDetalles.Mantenimientos | paginate: { itemsPerPage: 10, currentPage: pageMan, id: 'man_' };">
+                                <td>{{f.Num_pago}}</td>
+                                <td>{{(f.Fecha)?f.Fecha.split('T')[0]:'-'}}</td>
+                                <td>{{f.Cantidad}}</td>
+                                <td>{{f.Saldo_restante}}</td>
+                                <td><i class="fa fa-{{(f.Pagado)?'check-circle text-success':'times-circle text-danger'}}"></i></td>
+                                <td>{{(f.Fecha_pago)?f.Fecha_pago.split('T')[0]:'-'}}</td>
+                                <td>{{(f.Num_recibo)?f.Num_recibo:'-'}}</td>
+                                <td><i class="fa fa-{{(f.Firmado)?'check-circle text-success':'times-circle text-danger'}}"></i></td>
+                                <td>{{f.Observaciones}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-12 text-right">
+                        <pagination-controls (pageChange)="pageMan = $event" id="man_"></pagination-controls>
+                    </div>
+                </div>
+            </ng-template>
+        </ngb-tab>        
+    </ngb-tabset>    
+</div> 
+
+<!-- MODAL MAPA TERRENOS -->
+<ng-template #modalTerrenosLat let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header {{modalDatos.Clase?modalDatos.Clase:''}}">
+        <h4 class="modal-title text-white">{{modalDatos.Titulo}} </h4>
+        <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-12" *ngIf="terrenoActual.Latitud && terrenoActual.Longitud"> 
+                <agm-map [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [zoom]="18" >
+                    <agm-marker [latitude]="terrenoActual.Latitud" [longitude]="terrenoActual.Longitud" [label]="'T'"></agm-marker>
+                </agm-map>
+            </div>
+        </div>
+    </div>
+</ng-template>

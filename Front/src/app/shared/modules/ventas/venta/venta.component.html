@@ -61,6 +61,10 @@
                                     Esta cotizacion se encuentra bloqueada por abono a capital, se necesita recotizar.
                                 </b>
                             </div>
+                            <div class="col-12 alert alert-info">
+                                <b>Información: </b>
+                                Debes cargar un archivo actualizado del cliente si ya haz realizado el movimiento, o seleccionar el cliente al cual modificaras
+                            </div>
                             <div class="col-12 col-sm-6" *ngIf="clientesTodos[0]">
                                 <div class="form-group">
                                     <div class="row">
@@ -236,45 +240,78 @@
     <div class="col-xs-12">
         <ng-template #ModificacionModal let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-header modal-lg {{modalDatos.Clase}} text-white">
-                <h4 class="modal-title"> {{modalDatos.Titulo}} </h4>
+                <h4 class="modal-title"> {{modalDatos.Titulo}}  </h4>
                 <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="row"  *ngIf="datosModificacion">
+                    <div class="alert alert-info">
+                        <b>Información: </b>
+                        Se encontraron los siguientes datos nuevos en el documento del cliente, que no se encuentran en el archivo anterior, 
+                        da click en <b> "Guardar Cambios" </b> si deseas aplicar los cambios al documento de cliente
+                    </div>
                     <div class="col-12" *ngIf="datosModificacion.Financiamiento[0]">
-                        <h4>Cambios Financiamientos</h4>
+                        <h4>Cambios En Financiamiento</h4>
                         <table class="table table-striped text-center">
                             <tr>
                                 <th>Num Pago</th>
                                 <th>Cantidad</th>
                                 <th>Fecha</th>
                             </tr>
-                            <tr *ngFor="let d of datosModificacion.Financiamiento;">
+                            <tr *ngFor="let d of datosModificacion.Financiamiento | paginate: { itemsPerPage: 3, currentPage: pageFinan, id:'Finan_id' }">
                                 <td>{{d.Num_pago}}</td>
                                 <td>{{d.Cantidad | number}}</td>
                                 <td>{{d.Fecha | date}}</td>
                             </tr>
                         </table>
+                        <div class=" col-12 text-center">
+                            <br>
+                            <pagination-controls (pageChange)="pageFinan = $event" id="Finan_id"></pagination-controls>
+                        </div>
                     </div>
                     <div class="col-12" *ngIf="datosModificacion.Anualidad[0]">
-                        <h4>Cambios Anualidades</h4>
+                        <h4>Cambios En Anualidades</h4>
                         <table class="table table-striped text-center">
                             <tr>
                                 <th>Num Pago</th>
                                 <th>Cantidad</th>
                                 <th>Fecha</th>
                             </tr>
-                            <tr *ngFor="let d of datosModificacion.Anualidad;">
+                            <tr *ngFor="let d of datosModificacion.Anualidad  | paginate: { itemsPerPage: 3, currentPage: pageAnua, id:'Anua_id' }">
                                 <td>{{d.Num_pago}}</td>
                                 <td>{{d.Cantidad| number}}</td>
                                 <td>{{d.Fecha | date}}</td>
                             </tr>
                         </table>
-                    </div>                    
+                        <div class=" col-12 text-center">
+                            <br>
+                            <pagination-controls (pageChange)="pageAnua = $event" id="Anua_id"></pagination-controls>
+                        </div>
+                    </div>           
+                    <div class="col-12">
+                        <button click="aprobarCambios();" class="btn btn-primary pull-right">
+                            Guardar Cambios
+                        </button>
+                    </div>         
                 </div>
             </div>
         </ng-template>        
     </div>    
+    <div class="col-xs-12">
+        <ng-template #AltaModal let-modal class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-header modal-lg {{modalDatos.Clase}} text-white">
+                <h4 class="modal-title"> {{modalDatos.Titulo}} </h4>
+                <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    Detalles usuario 
+                </div>
+            </div>
+        </ng-template>
+    </div>
 </div>

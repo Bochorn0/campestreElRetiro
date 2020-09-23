@@ -313,6 +313,14 @@ router.get('/plantillaTerrenos', (req, res) => {
         res.status(400).send(error);
     })
 });
+router.get('/plantillaClientes', (req, res) => {
+    let objCatalogos = new Catalogos();
+    objCatalogos.Obtener_plantilla_clientes(req.body).then((result) => {
+        res.status(200).send(result);
+    }).catch((error) => {
+        res.status(400).send(error);
+    })
+});
 router.get('/plantillaGastos', (req, res) => {
     let objCatalogos = new Catalogos();
     objCatalogos.Obtener_plantilla_gastos(req.body).then((result) => {

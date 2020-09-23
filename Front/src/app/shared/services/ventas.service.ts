@@ -126,4 +126,9 @@ export class VentasService {
       return Promise.resolve(response); 
     }).catch(err => { return Promise.reject(err); });
   }
+  aprobar_movimientos_nuevos(datos){
+    return this.api.post(`/ingresos/aprobarMovimientosNuevos`, datos).then(response => {
+      return Promise.resolve(response); 
+    }).catch(err => { return Promise.reject(err); });
+  }
 }

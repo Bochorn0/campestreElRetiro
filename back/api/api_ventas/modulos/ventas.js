@@ -1079,11 +1079,13 @@ module.exports = class Ventas {
     }
     Guardar_archivo_contrato(datos){
         return new Promise((resolve, reject)=>{
+//            console.log('datos',datos);
             let today =  moment(new Date()).format('YYYY-MM-DD');
             let compExt = datos.Ext;
             let compCont = datos.Contenido;
-            let compPath = `${process.env.Shared}uploads/${datos.datosCliente.Nombre}/`;
-            let compNombre =  `Contrato-parcela_${datos.datosTerreno.parcela}-lote_${datos.datosTerreno.lote}-etapa_${datos.datosTerreno.etapa}.${compExt}`;
+//            let compPath = `${process.env.Shared}uploads/${datos.datosCliente.Nombre}/`;
+            let compPath = `${datos.datosCliente.Carpeta}/`;
+            let compNombre =  `Contrato-Lote_${datos.datosTerreno.Lote}-Etapa_${datos.datosTerreno.Etapa}.${compExt}`;
             this._subirArchivo(compPath,compNombre,compCont,2097152).then(res=>{
                 return resolve({res});
             }).catch(err=>{ console.log('err',err);return reject({Error:err});});
@@ -2009,6 +2011,14 @@ module.exports = class Ventas {
             }).catch(err=>{console.log('err',err); return rejE(err);});
         });
      }
+     aprobar_movimientos_nuevos(datos_modificacion){
+         console.log('datos_modificacion',datos_modificacion);
+        return new Promise((resolve, reject)=>{
+            return Promise.resolve().then(res=>{
+                
+            });
+        });
+     }
      nuevo_ingreso_archivo(datos_archivo){
 //         console.log('data',datos_archivo);
          let file_;let datosArchivoNuevo={};let datosCliente={};let datosNombre = '-';let datosArchivoViejo={};
@@ -2073,10 +2083,12 @@ module.exports = class Ventas {
         });
      }
      _obtenerModificacionesCliente(d){
-//        console.log('d',d);
+        //console.log('d',d);
         let Modificaciones = [];let modFinanciamiento = [];let modAnualidad = [];
-        let Viejos = d.DatosCliente.Financiamiento;
-        let Nuevos = d.Datos_nuevo.Adeudos_clientes;
+        console.log('DatosCliente',d.DatosCliente);
+        console.log('Datos_nuevo',d.Datos_nuevo);
+        let Viejos = (d.DatosCliente)?d.DatosCliente.Financiamiento:[];
+        let Nuevos = (d.Datos_nuevo.Adeudos_clientes)?d.Datos_nuevo.Adeudos_clientes:[];
         //FINANCIAMIENTO
         if(Viejos[0] && Nuevos[0]){
             Nuevos.forEach(f=>{
@@ -2102,8 +2114,8 @@ module.exports = class Ventas {
             })
 //            console.log('modFinanciamiento',modFinanciamiento);
         }
-        let ViejosA = d.DatosCliente.Anualidades;
-        let NuevosA = d.Datos_nuevo.Anualidades;
+        let ViejosA = (d.DatosCliente)?d.DatosCliente.Anualidades:[];
+        let NuevosA = (d.Datos_nuevo.Anualidades)?d.Datos_nuevo.Anualidades:[];
         //AnualidadES
         if(ViejosA[0] && NuevosA[0]){
             NuevosA.forEach(f=>{
@@ -2127,7 +2139,12 @@ module.exports = class Ventas {
             })
 //            console.log('modAnualidad',modAnualidad);
         }
-        return {Financiamiento:modFinanciamiento,Anualidad:modAnualidad};
+        if(modFinanciamiento[0] && modAnualidad[0]){
+            return {Financiamiento:modFinanciamiento,Anualidad:modAnualidad};
+        }else{
+            return false;
+        }
+
      }
      _guardarArchivoDirectorio(path,nombre,datos,maxSize=false, encode=false){
         return new Promise((resolve, reject) => {

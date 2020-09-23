@@ -29,7 +29,7 @@ export class SidebarComponent {
         });
         this.datosUsuario = JSON.parse(localStorage.getItem('Datos'));
 
-        console.log('datosUsuario',this.datosUsuario.Modulos);
+        //console.log('datosUsuario',this.datosUsuario.Modulos);
         
     }
 
