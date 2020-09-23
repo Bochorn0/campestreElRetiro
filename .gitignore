@@ -2,6 +2,8 @@ back/node_modules
 back/shared/uploads
 back/shared/config/*
 Front/node_modules
+Front/package.json
+Front/package-lock.json
 Front/node_modules.zip
 Front/src/environments/*
 Front/dist
