@@ -1119,7 +1119,7 @@ module.exports = class Catalogos {
         });
         conexion.connect();
         return new Promise((resolve, reject) => {
-            let carpetasCliente = `${process.env.Shared}uploads/El Retiro/`;
+            let carpetasCliente = `${process.env.Clientes}`;
             console.log('////// ELIMINANDO DATOS CLIENTES');
             let Prom_truncates = [this._ordenarQuery(conexion,`TRUNCATE Clientes;`),
             this._ordenarQuery(conexion,`TRUNCATE Financiamiento_anualidades;`),
