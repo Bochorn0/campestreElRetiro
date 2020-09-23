@@ -8,17 +8,17 @@ module.exports = class Website {
         })
     }
     obtener_contenido_website(solicitud){
-        let Website = []; let url = `./shared/SitioOficial/`;
+        let Website = []; 
         return new Promise((resolve, reject)=>{
-            this._leerArchivo(`${url}Inicio.html`).then(str=>{
+            this._leerArchivo(`${process.env.Website}Inicio.html`).then(str=>{
                 Website.push({Seccion:'Inicio',Contenido: str});
-                return this._leerArchivo(`${url}about.html`);
+                return this._leerArchivo(`${process.env.Website}about.html`);
             }).then(str=>{
                 Website.push({Seccion:'Sobre',Contenido: str});
-                return this._leerArchivo(`${url}blog.html`);
+                return this._leerArchivo(`${process.env.Website}blog.html`);
             }).then(str=>{
                 Website.push({Seccion:'Noticias',Contenido: str});
-                return this._leerArchivo(`${url}contact.html`);
+                return this._leerArchivo(`${process.env.Website}contact.html`);
             }).then(str=>{
                 Website.push({Seccion:'Contacto',Contenido: str});
                 return resolve(Website);
@@ -29,17 +29,17 @@ module.exports = class Website {
         })
     }
     obtener_contenido_original_website(solicitud){
-        let Website = []; let url = `./shared/RespaldoSitio/`;
+        let Website = [];
         return new Promise((resolve, reject)=>{
-            this._leerArchivo(`${url}Inicio.html`).then(str=>{
+            this._leerArchivo(`${process.env.Respaldo_web}Inicio.html`).then(str=>{
                 Website.push({Seccion:'Inicio',Contenido: str});
-                return this._leerArchivo(`${url}about.html`);
+                return this._leerArchivo(`${process.env.Respaldo_web}about.html`);
             }).then(str=>{
                 Website.push({Seccion:'Sobre',Contenido: str});
-                return this._leerArchivo(`${url}blog.html`);
+                return this._leerArchivo(`${process.env.Respaldo_web}blog.html`);
             }).then(str=>{
                 Website.push({Seccion:'Noticias',Contenido: str});
-                return this._leerArchivo(`${url}contact.html`);
+                return this._leerArchivo(`${process.env.Respaldo_web}contact.html`);
             }).then(str=>{
                 Website.push({Seccion:'Contacto',Contenido: str});
                 return resolve(Website);
@@ -54,13 +54,13 @@ module.exports = class Website {
         return new Promise((resolve, reject)=>{
             return Promise.resolve({}).then(res=>{
                 if(datos.Tipo == 'Inicio'){
-                    return this._escribirarchivo(`${url}Inicio.html`,datos.Contenido);
+                    return this._escribirarchivo(`${process.env.Website}Inicio.html`,datos.Contenido);
                 }else if(datos.Tipo == 'Sobre'){
-                    return this._escribirarchivo(`${url}about.html`,datos.Contenido);
+                    return this._escribirarchivo(`${process.env.Website}about.html`,datos.Contenido);
                 }else if(datos.Tipo == 'Noticias'){
-                    return this._escribirarchivo(`${url}blog.html`,datos.Contenido);
+                    return this._escribirarchivo(`${process.env.Website}blog.html`,datos.Contenido);
                 }else if(datos.Tipo == 'Contacto'){
-                    return this._escribirarchivo(`${url}contact.html`,datos.Contenido);
+                    return this._escribirarchivo(`${process.env.Website}contact.html`,datos.Contenido);
                 }else{
                     return Promise.resolve({});
                 }

@@ -11,6 +11,8 @@ const bodyParser = require('body-parser');
 const config = require('./shared/config/config.json');
 process.env.Shared = `${config.URL_shared}`;
 process.env.Clientes = `${config.URL_clientes}`;
+process.env.Respaldo_web = `${config.URL_sitio_respaldo}`;
+process.env.Website = `${config.URL_sitio_web}`;
 
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
