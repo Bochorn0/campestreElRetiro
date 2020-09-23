@@ -1120,6 +1120,7 @@ module.exports = class Catalogos {
         conexion.connect();
         return new Promise((resolve, reject) => {
             let carpetasCliente = `${process.env.Clientes}`;
+            console.log('carpetas',carpetasCliente);
             console.log('////// ELIMINANDO DATOS CLIENTES');
             let Prom_truncates = [this._ordenarQuery(conexion,`TRUNCATE Clientes;`),
             this._ordenarQuery(conexion,`TRUNCATE Financiamiento_anualidades;`),
