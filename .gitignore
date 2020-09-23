@@ -1,6 +1,7 @@
 back/node_modules
 back/shared/uploads
 back/shared/config/*
+back/shared/db/*
 Front/node_modules
 Front/package.json
 Front/package-lock.json
