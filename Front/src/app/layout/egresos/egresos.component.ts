@@ -481,7 +481,7 @@ export class EgresosComponent implements OnInit {
         let workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
         let excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
         let datas: Blob = new Blob([excelBuffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'});
-        FileSaver.saveAs(datas, 'Formato_basico_comprador_marca_proveedor.xlsx');
+        FileSaver.saveAs(datas, 'FORMATO_GASTOS.xlsx');
 
         // let nombre = "Plantilla_gastos_";
         // let dwldLink = document.createElement("a");

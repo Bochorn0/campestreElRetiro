@@ -32,7 +32,7 @@ export class VentaComponent implements OnInit {
     pdfRecibo;formaDePago;formasDePago;
     @Input('datosVenta')datosClienteVenta: any;Nombre_cliente;datosModificacion;
 
-    tipoMovimiento;
+    tipoMovimiento;verPagadas = false;Financiamientos=[];
     constructor(private catalogosService : CatalogosService, private ventasService: VentasService,private fb: FormBuilder, private modalService: NgbModal) {
         this.frmSolicitud = fb.group({
             'File': [null]
@@ -42,12 +42,16 @@ export class VentaComponent implements OnInit {
         this.mensualidad =  this.anualidad = this.total_abono = this.tipoIngreso = this.etapaIngreso = 0;
         this.today =  moment().format('LL');
         this.conceptosAPagar = [];
-        this.datosCliente = {};
+//        this.datosCliente = {};
         this.idTerreno = 0;
         this.mostrarCuentas = false;
         this._tipoOperacion();
         this._formasDePago();
         this.modalDatos = {Tipo: '', Clase: 'bg-secondary', Titulo: ''};
+    }
+    filtrarFinanciamientos(){
+        this.Financiamientos = this.datosCliente.Financiamiento;
+        this.Financiamientos = this.Financiamientos.filter(f=>f.Pagado == this.verPagadas);
     }
     importar_excel($event): void {
         let fileObject;
@@ -99,6 +103,7 @@ export class VentaComponent implements OnInit {
         }else{
             this.movimientoNuevo = true;
             this.datosCliente =  data.DatosCliente;
+            this.filtrarFinanciamientos();
             // let datosModal2 =  {Titulo: 'Advertencia',Contenido:`Se cargo la configuración del`, Tipo:'warning', Confirm: 'Si guardar'}  ;
             // return this._confirmarModal({},datosModal2); 
             // this.modalDatos = {Tipo: 'Movimiento Nuevo', Clase: 'bg-info', Titulo: 'Nuevo Movimiento'} ;

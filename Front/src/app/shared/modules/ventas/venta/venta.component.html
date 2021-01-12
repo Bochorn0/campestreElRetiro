@@ -28,14 +28,11 @@
                         </table>
                     </div> -->
                     <div class="col-12" >
-                        <hr />
-                        <div class="row" *ngIf="datosCliente.IdCliente">
+                        <!-- <hr />
+                        <div class="row" *ngIf="datosCliente">
                             <div class="col-lg-3 text-center">
                                 <b class="text-primary">Adeudo Enganche: <b> $ {{datosCliente.Adeudo_enganche | number}}</b></b>
                             </div>
-                            <!-- <div class="col-lg-3 text-center">
-                                <b class="text-info"> Adeudo Moroso: <b> $ {{datosCliente.Adeudo_moroso | number}}</b></b>
-                            </div> -->
                             <div class="col-lg-3 text-center">
                                 <b class="text-primary">Adeudo Terreno: <b> $ {{datosCliente.Adeudo_terreno | number}} </b></b>
                             </div>
@@ -46,15 +43,17 @@
                                 <b class="text-primary">Adeudo Mantenimiento: <b> $ {{datosCliente.Adeudo_mantenimientos | number}}</b></b>
                             </div>
                             <div class="col-lg-12"><hr></div>
-                            <!-- <div class="col-lg-6 text-center">
+                            <div class="col-lg-3 text-center">
+                                <b class="text-info"> Adeudo Moroso: <b> $ {{datosCliente.Adeudo_moroso | number}}</b></b>
+                            </div>
+                            <div class="col-lg-6 text-center">
                                 <b>Crédito Original: <b> $ {{datosCliente.Credito_original | number}} </b></b> 
-                            </div> -->
-                            <!-- <div class="col-lg-6 text-center">
+                            </div>
+                            <div class="col-lg-6 text-center">
                                 <b>Saldo TOTAL: <b> $ {{(datosCliente.Saldo_credito + datosCliente.Saldo_adeudo + datosCliente.Saldo_agua + datosCliente.Saldo_mantenimiento +  datosCliente.Saldo_anualidad + datosCliente.Saldo_certificado) | number}} </b></b>
-                            </div> -->
+                            </div>
                             <div class="col-lg-12"><hr></div>
-                        </div>
-                        <br>
+                        </div> -->
                         <div class="row">
                             <div class="col-lg-12" *ngIf="datosTerreno">
                                 <b class="text-danger text-center" *ngIf="datosTerreno.Bloqueado">
@@ -65,11 +64,11 @@
                                 <b>Información: </b>
                                 Debes cargar un archivo actualizado del cliente si ya haz realizado el movimiento, o seleccionar el cliente al cual modificaras
                             </div>
-                            <div class="col-12 col-sm-6" *ngIf="clientesTodos[0]">
+                            <div class="col-12 col-sm-12" *ngIf="clientesTodos[0]">
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-12">
-                                            <label class="label-form"> Tipo de venta </label>
+                                            <!-- <label class="label-form"> Tipo de venta </label> -->
                                             <form [formGroup]="frmSolicitud" class="form-validate" (keydown.enter)="$event.preventDefault()" novalidate="">
                                                 <input #subirArchivo style="display: none;" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" type="file" (change)="importar_excel($event)"  formControlName="File" />
                                             </form>
@@ -83,23 +82,103 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="input-group mb-3">
-                                    <div class="input-group-prepend">
-                                      <span class="input-group-text" id="basic-addon1">
-                                        <button class="btn btn-secondary" type="button"><i class="fa fa-cloud-upload"></i> |  Excel</button>
-                                      </span>
+                            </div>
+                        </div>
+                        <div clas="row"  *ngIf="datosCliente">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-6 col-sm-3">
+                                        <div class="form-group">
+                                            <b class="text-primary text-center">Adeudo Enganche: <b> $ {{datosCliente.Adeudo_enganche | number}}</b></b><br>
+                                            <button class="btn bg-info w-100 text-white " [disabled]="datosCliente.Adeudo_enganche < 1" ><i class="fa fa-cloud-download"></i> | Pagar Enganche </button>
+                                        </div>
                                     </div>
-                                    <ngx-select [items]="clientesTodos"  style="position: relative;  flex: 1 1 auto; width: 100%; margin-bottom: 0;"  optionValueField="Nombre" placeholder="Nombre del cliente:" (select)="seleccionarCliente($event);" aria-describedby="basic-addon2" ></ngx-select>
-                                  </div> -->
-                                
-                                <!-- <div class="input-group mb-3">
-                                    <ngx-select [items]="clientesTodos" class="form-control"  optionValueField="Nombre" placeholder="Nombre del cliente:" (select)="seleccionarCliente($event);" aria-describedby="basic-addon2" ></ngx-select>
-                                    <div class="input-group-prepend">
-                                        <button class="btn btn-secondary" type="button"><i class="fa fa-cloud-upload"></i> |  Excel</button>
+                                    <div class="col-6 col-sm-3">
+                                        <div class="form-group">
+                                            <b class="text-primary  text-center">Adeudo Terreno: <b> $ {{datosCliente.Adeudo_terreno | number}} </b></b><br>
+                                            <button class="btn bg-success w-100 text-white " [disabled]="datosCliente.Adeudo_terreno < 1"><i class="fa fa-cloud-download"></i> | Pagar Terreno </button>
+                                        </div>
                                     </div>
-
-                                </div> -->
-                                <!-- <div class="form-group">                                </div> -->
+                                    <div class="col-6 col-sm-3">
+                                        <div class="form-group">
+                                            <b class="text-primary  text-center">Adeudo Anualidad: <b> $ {{datosCliente.Adeudo_anualidades | number}}</b></b><br>
+                                            <button class="btn bg-warning w-100 text-white " [disabled]="datosCliente.Adeudo_anualidades < 1" ><i class="fa fa-cloud-download"></i> | Pagar Anualidad </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-sm-3">
+                                        <div class="form-group  text-center">
+                                            <b class="text-primary">Adeudo Mantenimiento: <b> $ {{datosCliente.Adeudo_mantenimientos | number}}</b></b><br>
+                                            <button class="btn bg-danger w-100 text-white " [disabled]="datosCliente.Adeudo_mantenimientos < 1" ><i class="fa fa-cloud-download"></i> | Pagar Mantenimiento </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12" *ngIf="datosCliente.Financiamiento[0]">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <label class="switch">
+                                            <input type="checkbox" [(ngModel)]="verPagadas"  (change)="filtrarFinanciamientos();"/>
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <h4 class="text-center">Mensualidades</h4>
+                                <table class="table table-striped table-bordered">
+                                    <tr>
+                                        <th colspan="2">TOTAL TERRENO</th>
+                                        <th>{{datosCliente.Deuda_original}}</th>
+                                        <th>MENSUALIDAD</th>
+                                        <th>${{datosCliente.Financiamiento[0].Cantidad}}</th>
+                                        <th></th>
+                                        <th># PAGOS</th>
+                                        <th>${{datosCliente.Financiamiento.length}}</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr>
+                                        <th>Nº Pago</th>
+                                        <th>Fecha</th>
+                                        <th>Cantidad</th>
+                                        <th>Saldo actual</th>
+                                        <th>Pagado</th>
+                                        <th>Fecha pago</th>
+                                        <th># Recibo</th>
+                                        <th>Firmado</th>
+                                        <th>Observaciones</th>
+                                    </tr>    
+                                    <tr *ngFor="let f of Financiamientos | paginate: { itemsPerPage: 10, currentPage: pageFinan_d, id:'Finan_det_id' }">
+                                        <td>{{f.Num_pago}}</td>
+                                        <td>{{f.Fecha.split('T')[0]}}</td>
+                                        <td>{{f.Cantidad}}</td>
+                                        <td>{{f.Saldo_restante}}</td>
+                                        <td><i *ngIf="f.Pagado == 1" class="fa fa-check-circle text-success"></i>
+                                            <label class="switch " *ngIf="f.Pagado == 0">
+                                                <input type="checkbox" [(ngModel)]="f.Pagado" />
+                                                <span class="slider round"></span>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <b *ngIf="f.Fecha_pago != null">
+                                                {{f.Fecha_pago.split('T')[0]}}
+                                            </b>
+                                            <b *ngIf="f.Fecha_pago == null">
+                                                -
+                                            </b>
+                                            
+                                        </td>
+                                        <td>{{f.Num_recibo}}</td>
+                                        <td><i *ngIf="f.Firmado == 1" class="fa fa-check-circle text-success"></i>
+                                            <label class="switch " *ngIf="f.Firmado == 0">
+                                                <input type="checkbox" [(ngModel)]="f.Firmado" />
+                                                <span class="slider round"></span>
+                                            </label>
+                                        </td>
+                                        <td>{{f.Observaciones}}</td>
+                                    </tr>    
+                                </table>
+                                <div class=" col-12 text-center">
+                                    <br>
+                                    <pagination-controls (pageChange)="pageFinan_d = $event" id="Finan_det_id"></pagination-controls>
+                                </div>
                             </div>
                             <!-- <div class="col-12 col-sm-6">
                                 <div class="form-group">
@@ -117,7 +196,7 @@
                                 </div>
                             </div> -->
                             <div class="col-lg-3">
-                                <div class="form-group" *ngIf="datosCliente.IdCliente && datosTerreno">
+                                <div class="form-group" *ngIf="datosCliente && datosTerreno">
                                     <label class="label-form"> Tipo de venta </label>
                                     <select class="form-control" (change)="cambiarTotalesYConceptos();" [(ngModel)]="tipoIngreso">
                                         <option value="0">Selecciona tipo de venta</option>
@@ -161,7 +240,7 @@
                             </div>
 
                             <div class="col-xs-12 col-lg-12">
-                                <div class="form-group pull-right" *ngIf="datosCliente.IdCliente && tipoIngreso != '0' ">
+                                <div class="form-group pull-right" *ngIf="datosCliente && tipoIngreso != '0' ">
                                     <label class="label-form"> <br> </label><br>
                                     <button class="btn btn-success " (click)="agregarVenta();"><i class="fa fa-plus-circle" ></i> Agregar</button>
                                 </div>
@@ -187,7 +266,7 @@
                                 <hr>
                             </div>
                             <div class="col-lg-4">
-                                <div class="form-group" *ngIf="datosCliente.IdCliente && tipoIngreso != '0' ">
+                                <div class="form-group" *ngIf="datosCliente && tipoIngreso != '0' ">
                                     <label class="label-form"> Forma de Pago </label>
                                     <div class="form-group">
                                         <!--<input autofocus id="typeahead-format" placeholder="Fuente del gasto:" type="text" class="form-control" [(ngModel)]="fuenteGasto" [ngbTypeahead]="filtrarFuentes" [resultFormatter]="formatter" />-->

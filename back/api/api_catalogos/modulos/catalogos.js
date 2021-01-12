@@ -632,6 +632,7 @@ module.exports = class Catalogos {
         });        
     }
     _ordenarQuery(conexion, query){
+//        console.log('query',query);
         return new Promise((resolve, reject) => {
             conexion.query(query, (error, results)=>{
                 if(results){
@@ -753,9 +754,10 @@ module.exports = class Catalogos {
             if(moment(d.Fecha_contrato).isValid()){
                 fecha = (d.Fecha_contrato)?moment(d.Fecha_contrato).utc().format('YYYY-MM-DD'):null;                
             }
-            let campos = ` Folio, Nombre, Direccion, Vendedor, Telefono, Contrato_firmado, Adeudo_terreno, Adeudo_mantenimientos, Adeudo_anualidades, Adeudo_enganche, Carpeta, Activo ${(fecha)?',Fecha_contrato':''}`;
+            let obs = (d.Observaciones)?`${d.Observaciones}`:null;
+            let campos = ` Folio, Nombre, Direccion, Vendedor, Telefono, Contrato_firmado, Adeudo_terreno, Adeudo_mantenimientos, Adeudo_anualidades, Adeudo_enganche, Carpeta, Activo ${(obs)?`,Observaciones`:''} ${(fecha)?',Fecha_contrato':''}`;
             ///${d.Nombre}.xlsx
-            let valores = `'CLI','${d.Nombre}','${d.Direccion}','${d.Vendedor}',${(d.Telefono)?`'${d.Telefono}'`:null},${(d.Contrato_firmado)?d.Contrato_firmado:0},${d.Adeudo_terreno},0,${d.Total_anualidad},${d.Total_enganche},'${path}${d.Nombre}/',1 ${(fecha)?`,'${fecha}'`:''}`;
+            let valores = `'CLI','${d.Nombre}','${d.Direccion}','${d.Vendedor}',${(d.Telefono)?`'${d.Telefono}'`:null},${(d.Contrato_firmado)?d.Contrato_firmado:0},${d.Adeudo_terreno},0,${d.Total_anualidad},${d.Total_enganche},'${path}${d.Nombre}/',1 ${(obs)?`,'${obs}'`:''}  ${(fecha)?`,'${fecha}'`:''}`;
             return Promise.resolve({}).then(res=>{
                 if(d.Nombre ){
                     console.log('////////////////////////////GUARDANDO DIRECTORIO Y DATOS DE CLIENTE: ',d.Nombre);
@@ -795,11 +797,14 @@ module.exports = class Catalogos {
                 if(d.Adeudos_clientes[0]){
                     console.log('////////////////////////////GUARDANDO ADEUDOS ',d.Nombre);
                     d.Adeudos_clientes.forEach(a=>{
+//                        console.log('a',a);
                         let fecha = (a.Fecha && a.Fecha!= 'x'  && moment(a.Fecha).isValid())?moment(a.Fecha).utc().format('YYYY-MM-DD'):null;
-                        let obs = (d.Observaciones)?`'${d.Observaciones}'`:null;
+                        let obs = (a.Observaciones)?`${a.Observaciones}`:null;
+                        let recib = (a.Num_recibo)?`${`${a.Num_recibo}`.split("'").join('')}`:null;
                         let fecha_p = (a.Fecha_pago  && a.Fecha_pago!= 'x'  && moment(a.Fecha_pago).isValid())?moment(a.Fecha_pago).utc().format('YYYY-MM-DD'):null;
-                        let campos = ` IdCliente, Num_pago, Cantidad, Saldo_restante, Pagado, Num_recibo, Firmado ${(obs)?`,Observaciones`:''} ${(fecha)?',Fecha':''} ${(fecha_p)?',Fecha_pago':''} `;
-                        let valores = `${d.IdCliente},${a.Num_pago},${(a.Cantidad)?a.Cantidad:(!a.Pagado)?d.Mensualidad:a.Cantidad},${a.Saldo_restante},${(a.Pagado)?1:0},'${`${a.Num_recibo}`.split("'").join('')}',${(a.Firmado)?1:0} ${(obs)?`,'${obs}'`:''} ${(fecha)?`,'${fecha}'`:''} ${(fecha_p)?`,'${fecha_p}'`:''}`;
+
+                        let campos = ` IdCliente, Num_pago, Cantidad, Saldo_restante, Pagado, Firmado ${(recib)?`,Num_recibo`:''} ${(obs)?`,Observaciones`:''} ${(fecha)?',Fecha':''} ${(fecha_p)?',Fecha_pago':''} `;
+                        let valores = `${d.IdCliente},${a.Num_pago},${(a.Cantidad)?a.Cantidad:(!a.Pagado)?d.Mensualidad:a.Cantidad},${a.Saldo_restante},${(a.Pagado)?1:0},${(a.Firmado)?1:0} ${(recib)?`,'${recib}'`:''} ${(obs)?`,'${obs}'`:''} ${(fecha)?`,'${fecha}'`:''} ${(fecha_p)?`,'${fecha_p}'`:''}`;
 //                        if(a.Cantidad){
                         if(Number.isInteger(a.Num_pago)){
                             Promesas_financiamiento.push(this._ordenarQuery(conexion,`INSERT INTO Financiamiento_terrenos (${campos}) VALUES (${valores});`));
@@ -814,10 +819,11 @@ module.exports = class Catalogos {
                     console.log('////////////////////////////GUARDANDO ANUALIDADES ',d.Nombre);
                     d.Anualidades.forEach(a=>{
                         let fecha = (a.Fecha && a.Fecha!= 'x' && moment(a.Fecha).isValid() )?moment(a.Fecha).utc().format('YYYY-MM-DD'):null;
-                        let obs = (d.Observaciones)?`'${d.Observaciones}'`:null;
+                        let obs = (a.Observaciones)?`${a.Observaciones}`:null;
+                        let recib = (a.Num_recibo)?`${`${a.Num_recibo}`.split("'").join('')}`:null;
                         let fecha_p = (a.Fecha_pago  && a.Fecha_pago!= 'x' && moment(a.Fecha_pago).isValid() )?moment(`${a.Fecha_pago}`).utc().format('YYYY-MM-DD'):null;
-                        let campos = ` IdCliente, Num_pago, Cantidad, Pagado, Num_recibo, Firmado ${(obs)?`,Observaciones`:''} ${(fecha)?',Fecha':''} ${(fecha_p)?',Fecha_pago':''} `;
-                        let valores = `${d.IdCliente},${a.Num_pago},${(a.Cantidad)?a.Cantidad:(!a.Pagado)?d.Anualidad:a.Cantidad},${(a.Pagado)?1:0},'${`${a.Num_recibo}`.split("'").join('')}',${(a.Firmado)?1:0} ${(obs)?`,'${obs}'`:''} ${(fecha)?`,'${fecha}'`:''} ${(fecha_p)?`,'${fecha_p}'`:''}`;
+                        let campos = ` IdCliente, Num_pago, Cantidad, Pagado, Firmado  ${(recib)?`,Num_recibo`:''}  ${(obs)?`,Observaciones`:''} ${(fecha)?',Fecha':''} ${(fecha_p)?',Fecha_pago':''} `;
+                        let valores = `${d.IdCliente},${a.Num_pago},${(a.Cantidad)?a.Cantidad:(!a.Pagado)?d.Anualidad:a.Cantidad},${(a.Pagado)?1:0},${(a.Firmado)?1:0}  ${(recib)?`,'${recib}'`:''} ${(obs)?`,'${obs}'`:''} ${(fecha)?`,'${fecha}'`:''} ${(fecha_p)?`,'${fecha_p}'`:''}`;
                         if(Number.isInteger(a.Num_pago)){
                             Promesas_anualidades.push(this._ordenarQuery(conexion,`INSERT INTO Financiamiento_anualidades (${campos}) VALUES (${valores});`));
                         }
@@ -834,9 +840,10 @@ module.exports = class Catalogos {
                     console.log('////////////////////////////GUARDANDO VENTAS ',d.Nombre);
                     d.Ventas.forEach(a=>{
                         let fecha = (a.Fecha && a.Fecha!= 'x' && moment(a.Fecha).isValid() )?moment(a.Fecha).utc().format('YYYY-MM-DD'):null;
-                        let obs = (d.Observaciones)?`'${d.Observaciones}'`:null;
-                        let campos = `Folio, Num_recibo, IdUsuario, IdCliente, IdTerreno, IdCuenta, Concepto, Tipo_venta, Forma_pago, Cliente, Auxiliar, Importe ${(obs)?`,Observaciones`:''} ${(fecha)?',Fecha':''} `;                       
-                        let valores = `'${a.Folio}','${`${a.Num_recibo}`.split("'").join('')}',0,${d.IdCliente},0,0,'${a.Tipo_venta}','${a.Tipo_venta}','Efectivo','${d.Nombre}','VEN',${a.Cantidad} ${(obs)?`,'${obs}'`:''} ${(fecha)?`,'${fecha}'`:''}`;
+                        let obs = (a.Observaciones)?`${a.Observaciones}`:null;
+                        let recib = (a.Num_recibo)?`${`${a.Num_recibo}`.split("'").join('')}`:null;
+                        let campos = `Folio, IdUsuario, IdCliente, IdTerreno, IdCuenta, Concepto, Tipo_venta, Forma_pago, Cliente, Auxiliar, Importe  ${(recib)?`,Num_recibo`:''}  ${(obs)?`,Observaciones`:''} ${(fecha)?',Fecha':''} `;                       
+                        let valores = `'${a.Folio}',0,${d.IdCliente},0,0,'${a.Tipo_venta}','${a.Tipo_venta}','Efectivo','${d.Nombre}','VEN',${a.Cantidad}  ${(recib)?`,'${recib}'`:''} ${(obs)?`,'${obs}'`:''} ${(fecha)?`,'${fecha}'`:''}`;
                         if(a.Num_recibo){
                             Promesas_ventas.push(this._ordenarQuery(conexion,`INSERT INTO Ventas (${campos}) VALUES (${valores});`));
                         }
@@ -904,6 +911,7 @@ module.exports = class Catalogos {
                         d.Anualidades = (deuda_anualidades[0])?deuda_anualidades.filter(o=>o.IdCliente == d.IdCliente):[];
                     });
                 }
+//                console.log('Datos',Datos);
                 conexion.end();
                 return resolve({Data:Datos, Error:0});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
@@ -962,24 +970,33 @@ module.exports = class Catalogos {
         datosCliente.Adeudo_terreno = (datosCliente.Adeudo_terreno.error)?0:datosCliente.Adeudo_terreno;
         return datosCliente;
      }
+     _observacionesCliente(datosCliente,d){
+        let obs = '';
+        if(d[9]){
+            obs =`${d[9]}`.trim();
+        }
+        datosCliente.Observaciones += (obs != '' && datosCliente.Observaciones != '')?',':'';
+        datosCliente.Observaciones += obs;
+     }
      _datosBasicosCliente(datosOrdenados,datosCliente){
         //                console.log('d',d);
         let activo_mensualidad = false;
+        datosCliente.Observaciones = '';
         datosOrdenados.forEach(d=>{
 //            if(d[0]){
-                if(d[1] == 'VENDEDOR'){ datosCliente.Vendedor = `${d[2]}`.trim().toUpperCase(); }
-                if(d[1] == 'COMPRADOR'){ datosCliente.Nombre = `${d[2]}`.trim().toUpperCase(); }
-                if(d[1] == 'DIRECCIÓN'){ datosCliente.Direccion = d[2]; }
-                if(d[1] == 'TELÉFONO'){ datosCliente.Telefono = d[2]; }
-                if(d[1] == 'FECHA DE CONTRATO'){ datosCliente.Fecha_contrato = d[2]; }
-                if(d[1] == 'LOTE '){ datosCliente.Lotes = (`${d[2]}`.indexOf('Y') > -1)?`${d[2]}`.split('Y'):[`${d[2]}`]; }
-                if(d[1] == 'ETAPA'){ datosCliente.Etapas = (`${d[2]}`.indexOf('Y') > -1)?`${d[2]}`.split('Y'):[`${d[2]}`]; }
-                if(d[1] == 'TOTAL TERRENO'){ datosCliente.Adeudo_terreno = (d[2])?d[2].result:0; }
-                if(d[1] == 'FINANCIAMIENTO'){ datosCliente.Num_mensualidades = d[2]; }
-                if(d[1] == 'CONTRATO FIRMADO'){ datosCliente.Firmado = (d[2]=='P')?1:0; }
-                if(d[1] == 'ANUALIDAD'){ datosCliente.Contiene_anualidades = (d[2]=='P')?1:0; }
-                if(d[1] == 'ENGANCHE'){ datosCliente.Contiene_enganche = (d[2]=='P')?1:0; }
-                if(d[1] == 'MANTENIMIENTO'){ datosCliente.Contiene_mantenimiento = (d[2]=='P')?1:0; }
+                if(d[1] == 'VENDEDOR'){ datosCliente.Vendedor = `${d[2]}`.trim().toUpperCase(); this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'COMPRADOR'){ datosCliente.Nombre = `${d[2]}`.trim().toUpperCase();  this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'DIRECCIÓN'){ datosCliente.Direccion = d[2];  this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'TELÉFONO'){ datosCliente.Telefono = d[2];  this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'FECHA DE CONTRATO'){ datosCliente.Fecha_contrato = d[2];  this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'LOTE '){ datosCliente.Lotes = (`${d[2]}`.indexOf('Y') > -1)?`${d[2]}`.split('Y'):[`${d[2]}`]; this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'ETAPA'){ datosCliente.Etapas = (`${d[2]}`.indexOf('Y') > -1)?`${d[2]}`.split('Y'):[`${d[2]}`]; this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'TOTAL TERRENO'){ datosCliente.Adeudo_terreno = (d[2])?d[2].result:0; this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'FINANCIAMIENTO'){ datosCliente.Num_mensualidades = d[2]; this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'CONTRATO FIRMADO'){ datosCliente.Firmado = (d[2]=='P')?1:0; this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'ANUALIDAD'){ datosCliente.Contiene_anualidades = (d[2]=='P')?1:0; this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'ENGANCHE'){ datosCliente.Contiene_enganche = (d[2]=='P')?1:0; this._observacionesCliente(datosCliente,d);}
+                if(d[1] == 'MANTENIMIENTO'){ datosCliente.Contiene_mantenimiento = (d[2]=='P')?1:0; this._observacionesCliente(datosCliente,d);}
 //                console.log('d',d);
                 if(d[1] == 'TOTAL TERRENO' && d[4]== 'MENSUALIDAD' && d[7]== '# PAGOS' && d[21]== 'TOTAL ANUALIDAD'){
                     datosCliente.Total_terreno_original = d[2].result;

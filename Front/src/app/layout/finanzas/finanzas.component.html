@@ -21,9 +21,54 @@
         </div>
         <div *ngIf="vistaCentro">
             <!--Cotizaciones-->
-            <app-estado-financiero class="row" *ngIf="verEstadoFinanciero" [@routerTransition]></app-estado-financiero>
+            <!-- <app-estado-financiero class="row" *ngIf="verEstadoFinanciero" [@routerTransition]></app-estado-financiero> -->
             <!--Clientes-->
             <!-- <app-catalogo-cuentas class="row" *ngIf="verCatalogoCuentas" [@routerTransition]></app-catalogo-cuentas> -->
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Fecha Inicio</label>
+                        <input type="date" [(ngModel)]="fInicio" class="form-control" />
+                    </div>
+                </div>
+                <!--fecha fin-->
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Fecha Fin</label>
+                        <input type="date" [(ngModel)]="fFin" class="form-control" />
+                        <span class="text-danger" *ngIf="errorFecha">Fecha Fin no puede ser menor a Fecha Inicio</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 pull-right">
+                    <div class="form-group">
+                        <label><br></label><br>
+                        <button type="submit" class="btn btn-labeled btn-primary pull-right buscar-mov" (click)="generarReporte()">
+                            <span class="btn-label btn-label-left "><i class="fa fa-search "></i></span> | Generar
+                        </button>
+                    </div>
+                </div>                
+            </div>            
+            <div class="col-12"><br></div>
+            <div class="row" *ngIf="Ventas[0]">
+                <div class="col-12">
+                    <table class="table table-striped">
+                        <tr><th>Folio</th><th>Num Recibo</th><th>Concepto</th><th>Tipo Venta</th><th>Cliente</th><th>Fecha</th><th>Cantidad</th><th>Observaciones</th></tr>
+                        <tr *ngFor="let f of Ventas | paginate: { itemsPerPage: 10, currentPage: pageFin, id: 'fin_' };">
+                            <td>{{f.Folio}}</td>
+                            <td>{{(f.Num_recibo)?f.Num_recibo:'-'}}</td>
+                            <td>{{f.Concepto}}</td>
+                            <td>{{f.Tipo_venta}}</td>
+                            <td>{{f.Cliente}}</td>
+                            <td>{{(f.Fecha)?f.Fecha.split('T')[0]:'-'}}</td>
+                            <td>{{f.Importe}}</td>
+                            <td>{{f.Observaciones}}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-12 text-right">
+                    <pagination-controls (pageChange)="pageFin = $event" id="fin_"></pagination-controls>
+                </div>
+            </div>            
         </div> 
     </div>
     

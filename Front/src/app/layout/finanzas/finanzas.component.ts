@@ -13,7 +13,7 @@ import * as _ from 'lodash';
 })
 
 export class FinanzasComponent implements OnInit {
-verCatalogoCuentas; verEstadoFinanciero;vistaCentro;panelVisualizar;
+verCatalogoCuentas; verEstadoFinanciero;vistaCentro;panelVisualizar;fInicio;fFin;
 constructor(private estadisticasService: EstadisticasService, private catalogosService : CatalogosService) {
 //    this.verCatalogoCuentas = this.verEstadoFinanciero = false;
     //this.estadosFinancieros({});
@@ -32,6 +32,14 @@ estadosFinancieros(event){
         this.verEstadoFinanciero = true;
         this.vistaCentro = true;
     });
+}
+obtenerVentas(){
+    let Filtros = {Fecha_inicio: this.fInicio, Fecha_fin: this.fFin};
+    // this.estadisticasService.obtenerVentas(Filtros).then(res=>{
+    //     console.log('res',res);
+    // }).catch(err=>{
+    //     console.log('err',err);
+    // });
 }
 _limpiarVista(){
     this.panelVisualizar = '';

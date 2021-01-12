@@ -19,7 +19,7 @@ module.exports = class Ventas {
     }
     Obtener_folio_venta(){
         return new Promise((resolve, reject)=>{
-            mysql.ejecutar(`SELECT IdVenta, Folio_venta FROM Ventas ORDER BY IdVenta desc LIMIT 1`).then((res)=>{
+            mysql.ejecutar(`SELECT IdVenta, Folio FROM Ventas ORDER BY IdVenta desc LIMIT 1`).then((res)=>{
                 return resolve({Data:res,Error:false});
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
@@ -2025,7 +2025,7 @@ module.exports = class Ventas {
          let Data;
         return new Promise((resolve, reject)=>{
             let objCatalogos = new Catalogos();
-            return Promise.resolve().then(res=>{
+            return Promise.resolve({}).then(res=>{
                 if(datos_archivo.Nombre_cliente && datos_archivo.Nombre_cliente != ''){
                     return Promise.resolve('');
                 }else{
@@ -2036,6 +2036,7 @@ module.exports = class Ventas {
                     return this._guardarArchivoDirectorio(path,fileName,myBuffer,2097152,'base64');
                 }
             }).then(fullPath=>{
+                console.log('full',fullPath);
                 if(fullPath != ''){
                     file_ = fullPath;
                     let wb = new Excel.Workbook();
@@ -2057,11 +2058,12 @@ module.exports = class Ventas {
 //                console.log('nombre',datosNombre);
                 return objCatalogos.obtener_datos_clientes_nuevo({Nombre: datosNombre});
             }).then(datosCli=>{
+//                console.log('datosCli',datosCli);
                 if(datosCli.Data){
 //                    console.log('datos',datosCli);
                     datosCliente = datosCli.Data[0];
                     let wbb = new Excel.Workbook();
-                    return wbb.xlsx.readFile(`${datosCliente.Carpeta}`);
+                    return wbb.xlsx.readFile(`${datosCliente.Carpeta}${datosCliente.Nombre}.xlsx`);
                 }else{
                     return Promise.resolve();
                 }

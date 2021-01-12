@@ -1,6 +1,8 @@
 back/node_modules
 back/shared/uploads
 back/shared/config/*
+back/shared/RespaldoSitio
+back/shared/SitioOficial
 back/shared/db/*
 Front/node_modules
 Front/package.json

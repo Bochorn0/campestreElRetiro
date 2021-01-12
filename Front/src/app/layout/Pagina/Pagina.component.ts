@@ -24,6 +24,31 @@ export class PaginaComponent implements OnInit {
         this.websiteContent = {Inicio:'',Sobre:'',Noticias:'',Contacto:''};
         this.obtenerContenidosSecciones();
     }
+    public options: Object = {
+//      toolbarButtons:['bold','italic','underline','strikeThrough','|','undo', 'redo'],
+//      toolbarButtons: ['fullscreen', 'bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontFamily', 'fontSize', 'color', 'emoticons', 'inlineStyle', 'paragraphStyle', 'paragraphFormat', 'align', 'formatOL', 'formatUL', 'outdent'],
+//     toolbarButtons: [ 'insertHR','alignLeft', 'alignCenter', 'alignRight', 'alignJustify','|', 'bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'clearFormatting', 'html','|','undo', 'redo' ],
+      toolBarButtons:{
+        'moreText': {
+          'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontFamily', 'fontSize', 'textColor', 'backgroundColor', 'inlineClass', 'inlineStyle', 'clearFormatting'],
+          'buttonsVisible': 0
+        },
+        'moreParagraph': {
+          'buttons': ['alignLeft', 'alignCenter', 'formatOLSimple', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle', 'lineHeight', 'outdent', 'indent', 'quote'],
+          'buttonsVisible': 0
+        },
+        'moreRich': {
+          'buttons': ['insertLink', 'insertImage', 'insertVideo', 'insertTable', 'emoticons', 'fontAwesome', 'specialCharacters', 'embedly', 'insertFile', 'insertHR'],
+          'buttonsVisible': 0
+        },
+        'moreMisc': {
+          'buttons': ['undo', 'redo', 'fullscreen', 'print', 'getPDF', 'spellChecker', 'selectAll', 'html', 'help'],
+          'align': 'right',
+          'buttonsVisible': 2
+        }
+      }
+    }
+
     ngOnInit() {}
     obtenerContenidosSecciones(){
         this.websiteService.obtenerSeccionesPagina().then(res=>{

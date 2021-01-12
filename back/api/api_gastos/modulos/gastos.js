@@ -33,7 +33,8 @@ module.exports = class Gastos {
                     return Promise.resolve(0);
                 }
             }).then(arch=>{
-                datos.Archivo = arch;
+                console.log('arch',arch);
+                datos.Archivo = (arch)?arch:0;
                 let campos =  `Folio_gasto,Forma_pago,IdCuenta ,IdUsuario, Responsable,Concepto,Nota,Tipo,Total,Categoria,Subcategoria,Adjunto,Fecha_gasto,Fecha_insert`;
                 let valores = `'${(datos.folioGasto)?datos.folioGasto:'GAS'}','${datos.FormaPago}',${datos.IdCuenta}, ${datos.Usuario.Datos.IdUsuario},'${datos.Responsable}','${(datos.Concepto)?datos.Concepto:'-'}','${(datos.Nota)?datos.Nota:'-'}','${(datos.Tipo)?datos.Tipo:'01'}',${datos.Total},'${datos.Categoria}','${datos.Subcategoria}',${datos.Archivo},'${(datos.Fecha_gasto)?`${datos.Fecha_gasto}`:`${moment().format('YYYY-MM-DD')}`}','${moment().format('YYYY-MM-DD HH:mm:ss')}'`;
                 return mysql.ejecutar(`INSERT INTO Gastos (${campos}) VALUES (${valores});`);
