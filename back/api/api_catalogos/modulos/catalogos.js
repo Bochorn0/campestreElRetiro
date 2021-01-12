@@ -281,7 +281,7 @@ module.exports = class Catalogos {
             let update = ` `;
             update += (datos.Activa || datos.Activa == '0')?` Activa = ${datos.Activa},`:``;
             update += (datos.Nombre)?` Nombre = '${datos.Nombre}',`:``;
-            update += (datos.Saldo)?` Saldo = ${datos.Saldo},`:``;
+            update += (datos.Saldo || datos.Saldo == 0)?` Saldo = ${datos.Saldo},`:``;
             update += (datos.Numero)?` Numero = '${datos.Numero}',`:``;
             update = update.slice(0,-1);
             console.log('query',`UPDATE Cuentas_especiales ${update} WHERE IdCuenta = ${datos.IdCuenta};`);
@@ -549,14 +549,14 @@ module.exports = class Catalogos {
     }
     Obtener_plantilla_terrenos(datos){
         return new Promise((resolve, reject) => {
-            let path = `./shared/Plantillas/Plantilla_terrenos.xlsx`;
+            let path = `${process.env.Shared}Plantillas/Plantilla_terrenos.xlsx`;
             let cont = fs.readFileSync(path);
             return resolve({String:cont.toString('base64')});
         });
     }
     Obtener_plantilla_clientes(datos){
         return new Promise((resolve, reject) => {
-            let path = `./shared/Plantillas/FORMATO_GENERAL_CLIENTE.xlsx`;
+            let path = `${process.env.Shared}Plantillas/FORMATO_GENERAL_CLIENTE.xlsx`;
             let cont = fs.readFileSync(path);
             return resolve({String:cont.toString('base64')});
         });
@@ -564,7 +564,7 @@ module.exports = class Catalogos {
     
     Obtener_plantilla_gastos(datos){
         return new Promise((resolve, reject) => {
-            let path = `./shared/Plantillas/Plantilla_gastos.xlsx`;
+            let path = `${process.env.Shared}Plantillas/Plantilla_gastos.xlsx`;
             let cont = fs.readFileSync(path);
             return resolve({String:cont.toString('base64')});
         });

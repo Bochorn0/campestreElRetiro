@@ -13,7 +13,7 @@
                 </div>
                 <div class="card-body">            
                     <div class="row">
-                        <div class="col-12 text-center">
+                        <div class="col-12 text-center" *ngIf="!detalleCuenta">
                             <label class="switch">
                                 <input type="checkbox" [(ngModel)]="todasCuentas" (change)="obtenerCuentasActivas();" />
                                 <span class="slider round"></span>
@@ -82,6 +82,14 @@
                     </div>
                     <!-- DETALLE CUENTA -->
                     <div class="row" *ngIf="detalleCuenta">
+                        <div class="col-12" >
+                            <div class="col-6">
+                                <div class="form-group ">
+                                    <button (click)="detalleCuenta = false;" class="btn btn-dark w-100 pull-right"><i class="fa fa-book"></i> | Ver Todas  </button>
+                                </div>
+                            </div>
+                            <br><br>
+                        </div>
                         <div class="col-12" >
                             <div class="card text-center ">
                                 <div class="card-header bg-default" >
