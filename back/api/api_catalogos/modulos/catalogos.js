@@ -569,6 +569,41 @@ module.exports = class Catalogos {
             return resolve({String:cont.toString('base64')});
         });
     }
+    subir_excel_cliente_nuevo(datos_archivo){
+        var mysql = require('mysql');
+        var conexion = mysql.createConnection({
+            host     : 'localhost',
+            user     : 'root',
+            password : 'Sakaunperikin24*',
+            database : 'DBRetiro',
+            acquireTimeout: 100000000000000000
+        });
+        conexion.connect();        
+        return new Promise((resolve, reject) => {
+            let datos = new Buffer(datos_archivo.file, "base64");
+            let path = `${process.env.Shared}uploads/ClientesExcel/`;
+            let fileName = `CLI_TMP.xlsx`;
+            return this._guardarArchivoDirectorio(path,fileName,datos,2097152,'base64').then(fullPath=>{
+                //LEE EL ARCHIVO DE EXCEL Y LO TRANSFORMA EN UN OBJETO
+                return  new Excel.Workbook().xlsx.readFile(fullPath);
+            }).then((datosExcel) => {
+                return this.ordenarDatosClienteFormato(datosExcel.getWorksheet(1))
+            }).then((datosOrdenados) => {
+                console.log('datosOrdenados',datosOrdenados);
+                datosOrdenados.Dir = `${process.env.Shared}uploads/ClientesExcel/CLI_TMP.xlsx`;
+                datosOrdenados.Carpeta = `Nuevos`;
+                if(datosOrdenados.Nombre){
+                    datosOrdenados.Nombre = datosOrdenados.Nombre.split('/').join(' Y ');
+                }
+                return this.Guardar_cliente_nuevo(conexion,datosOrdenados);
+            }).then((terminarCliente) => {
+                return resolve({Procesado: true, Operacion: 'Los Datos fueron guardados correctamente ', Tipo: 'success'});
+            }).catch(err=>{
+                console.log('err',err);
+                return reject(err);
+            });
+        });
+    }
     Guardar_varios_terrenos(datos){
         return new Promise((resolve, reject)=>{
             let Promesas = [];
@@ -577,7 +612,7 @@ module.exports = class Catalogos {
                 host     : 'localhost',
                 user     : 'root',
                 password : 'Sakaunperikin24*',
-                database : 'ElRetiro',
+                database : 'DBRetiro',
                 acquireTimeout: 100000000000000000
               });
             conexion.connect();

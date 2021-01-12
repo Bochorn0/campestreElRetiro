@@ -425,6 +425,14 @@ router.post('/generarCarpetasClientes', (req, res) => {
         res.status(400).send(error);
     })
 });
+router.post('/subirExcelClienteNuevo', (req, res) => {
+    let objCatalogos = new Catalogos();
+    objCatalogos.subir_excel_cliente_nuevo(req.body).then((result) => {
+        res.status(200).send(result);
+    }).catch((error) => {
+        res.status(400).send(error);
+    })
+});
 router.post('/obtenerDatosClientes', (req, res) => {
     let objCatalogos = new Catalogos();
     objCatalogos.obtener_datos_clientes_nuevo(req.body).then((result) => {

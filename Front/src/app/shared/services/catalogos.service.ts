@@ -242,6 +242,11 @@ export class CatalogosService {
       return Promise.resolve(response);
     }).catch(err => { return Promise.reject(err); });
   }
+  subirClienteNuevo(datos){
+    return this.api.post(`/catalogos/subirExcelClienteNuevo`, datos).then(response => {
+      return Promise.resolve(response);
+    }).catch(err => { return Promise.reject(err); });
+  }
   procesarCarpetasForzado(){
     return this.api.post(`/catalogos/generarCarpetasClientes`,{}).then(response => {
       return Promise.resolve(response);

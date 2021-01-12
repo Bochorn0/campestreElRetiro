@@ -383,6 +383,25 @@ export class CatalogoClientesComponent implements OnInit {
             })
         }
     }
+
+
+    importarArchivo($event){
+        return new Promise((resolve, reject) => {
+            try {
+                let uploadFiles = $event.target.files;
+                let file: File = uploadFiles[0];
+                let myReader: FileReader = new FileReader();
+
+                myReader.readAsDataURL(file);
+
+                myReader.onloadend = (e) => {
+                    return resolve(myReader.result);
+                };
+            } catch (error) {
+                return reject({ errorMessage: "No se pudo cargar el archivo", error });
+            }
+        });
+    }
     importar_excel($event): void {
         let fileObject;
         let file: File = $event.target.files[0];
@@ -391,32 +410,21 @@ export class CatalogoClientesComponent implements OnInit {
             if(compExt.toUpperCase() != 'XLSX'){
                 swal('error','El formato del archivo no es valido debe ser xlsx ','error');
             }else{
-            // this.importarArchivo($event).then((resultado: any) => {
-            //     if (resultado) {
-            //         fileObject = { file: resultado.substring(78),Size: file.size , Tipo: `Cliente`, Ext: compExt}
-            //         return this.ventasService.nuevoIngresoArchivo(fileObject);
-            //     }else{
-            //         return Promise.resolve({});
-            //     }
-            // }).then(res=>{
-            //     let data = JSON.parse(JSON.stringify(res));
-            //     this.datosModificacion = data.Modificaciones;
-            //     this.datosModificacion.Financiamiento.forEach(dm=>{
-            //         dm.Fecha = moment(`${dm.Fecha}`).utc().format('YYYY-MM-DD');
-            //     });
-            //     this.datosModificacion.Anualidad.forEach(dm=>{
-            //         dm.Fecha = moment(`${dm.Fecha}`).utc().format('YYYY-MM-DD');
-            //     });
-            //     console.log('data',data);
-            //     this.frmSolicitud.controls["File"].setValue(null);
-            //     this.movimientoCliente(data);
-            //     let datosModal2;
-            // }).then(res=>{
-            //     console.log('res',res);
-            // }).catch(error => {
-            //     console.log('error',error);
-            //     this.frmSolicitud.controls["File"].setValue(null);
-            // });
+            this.importarArchivo($event).then((resultado: any) => {
+                //console.log('resu',resultado);
+                if (resultado) {
+                    fileObject = { file: resultado.substring(78), Tipo: `Cliente_nuevo`, Ext: compExt}
+                }
+                this.frmSolicitud.controls["File"].setValue(null);
+                return this.catalogosService.subirClienteNuevo(fileObject);
+            }).then(res=>{
+    //            console.log('res',res);    
+                let tipo = res['Tipo'];
+                swal('Exito', `${res['Operacion']}`, tipo);
+                this.obtenerClientesActivos();
+            }).catch(error => {
+                console.log('error',error);
+            });
         }
     }
     anualidades(){
