@@ -226,6 +226,7 @@ export class CatalogoClientesComponent implements OnInit {
                 this.clientesTodosTodos = this.clientesTodos = res['Data'];
                 console.log('clientes',this.clientesTodos);
                 this.nombresClientes = res['Data'].map((key)=>{
+                    key.Codigo = `CLI-${key.IdCliente}`;
                     return key.Nombre;
                 })
             }
