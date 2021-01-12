@@ -875,7 +875,7 @@ module.exports = class Catalogos {
         conexion.connect();
         return new Promise((resolve, reject) => {
             console.log('filtros',filtros);
-            let condiciones = ` WHERE 1=1 `; 
+            let condiciones = ` WHERE 1=1  AND Activo = 1 `; 
             condiciones += (filtros.Nombre && filtros.Nombre != '')?` AND Nombre = '${filtros.Nombre}' `:``;
             //WHERE Nombre = '${d.Nombre}' 
             return this._ordenarQuery(conexion,`SELECT * FROM Clientes ${condiciones}; `).then(res=>{

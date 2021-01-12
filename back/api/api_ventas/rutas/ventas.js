@@ -142,7 +142,7 @@ router.post('/obtenerMantenimientos', (req, res) => {
 });
 router.post('/borrarCliente', (req, res) => {
     let objVentas = new Ventas();
-    objVentas.Borrar_cliente(req.body).then((result) => {
+    objVentas.Borrar_cliente_nuevo(req.body).then((result) => {
         res.status(200).send(result);
     }).catch((error) => {
         res.status(400).send(error);

@@ -924,6 +924,35 @@ module.exports = class Ventas {
             }).catch(err => { console.log('err',err); return reject({Data: false, err })});
         });
     }
+    Borrar_cliente_nuevo(datos){
+        return new Promise((resolve, reject)=>{
+            let querys_borrar = [];
+            var mysql = require('mysql');
+            var conexion = mysql.createConnection({
+                host     : 'localhost',
+                user     : 'root',
+                password : 'Sakaunperikin24*',
+                database : 'DBRetiro',
+                acquireTimeout: 100000000000000000
+              });
+            conexion.connect();
+            querys_borrar.push(this._ordenarQuery(conexion,`UPDATE Clientes SET Activo = 0 WHERE IdCliente= ${datos.IdCliente};`));
+            datos.Terrenos.forEach(t=>{
+                querys_borrar.push(this._ordenarQuery(conexion,`UPDATE Terrenos SET Activo = 1  WHERE IdTerreno = ${t.IdTerreno};`));
+            });
+            querys_borrar.reduce((BC, current) => {
+                return BC.then(results => {
+                return current.then(currentResult => {
+                    return Promise.resolve({Procesado:true,Res:currentResult});
+                }).catch(e => {
+                    return Promise.resolve({Procesado:false,Res:e});
+                })
+                })
+            }, Promise.resolve([])).then(r => {
+                return resolve(r);
+                }).catch(err=>{ console.log('error',err); reject(err);})
+        });
+    }
     Borrar_cliente(datos){
         return new Promise((resolve, reject)=>{
             let querys_borrar = [];
