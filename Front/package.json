@@ -43,7 +43,7 @@
     "angular-print": "^0.3.8",
     "angular-text-input-autocomplete": "^0.2.0",
     "bootstrap": "^4.3.1",
-    "chart.js": "^2.7.2",
+    "chart.js": "^2.9.4",
     "core-js": "^2.5.5",
     "file-saver": "^2.0.2",
     "font-awesome": "^4.7.0",
